@@ -8,23 +8,10 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; }
-        
-        /* Announcement Banner */
-        .announcement-banner {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: #0f172a;
-            font-weight: bold;
-            font-size: 0.9rem;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
-        }
-
         h1 { font-size: 2rem; color: #38bdf8; margin-bottom: 5px; }
         .subtitle { font-size: 0.95rem; color: #94a3b8; margin-bottom: 25px; }
 
-        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 30px; }
+        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 20px; }
         .form-group { margin-bottom: 18px; }
         label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
@@ -38,15 +25,12 @@
         .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 10px; transition: background 0.2s ease; }
         .whatsapp-btn:hover { background: #20ba5a; }
         
-        footer { font-size: 0.85rem; color: #64748b; margin-top: 20px; }
+        .quality-note { background: #1e293b; border: 1px dashed #38bdf8; padding: 12px 15px; border-radius: 8px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4; }
+        footer { font-size: 0.85rem; color: #64748b; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="announcement-banner">
-            ✨ All our services are tested services — we only offer premium services!
-        </div>
-
         <h1>HKDM SMM Panel</h1>
         <p class="subtitle">Fast • Reliable • Affordable Social Media Growth</p>
 
@@ -98,37 +82,41 @@
             <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
         </div>
 
+        <div class="quality-note">
+            ⭐ All our services are thoroughly tested, and we offer only premium-quality services.
+        </div>
+
         <footer>© 2026 HKDM Digital Marketing</footer>
     </div>
 
     <script>
-        // Updated Pricing per 1,000 units in NGN
+        // Updated exact rates per 1,000 units in NGN
         const PRICING = {
             Instagram: {
-                "Followers": { rate: 5000, label: "₦5,000 per 1k" },
-                "Likes": { rate: 2000, label: "₦2,000 per 1k" },
-                "Views": { rate: 1500, label: "₦1,500 per 1k" },
-                "Comments": { rate: 10000, label: "₦10,000 per 1k" }
+                "Instagram Followers": { rate: 5000, label: "₦5,000 per 1k" },
+                "Instagram Likes": { rate: 2000, label: "₦2,000 per 1k" },
+                "Instagram Views": { rate: 1500, label: "₦1,500 per 1k" },
+                "Instagram Comments": { rate: 10000, label: "₦10,000 per 1k" }
             },
             TikTok: {
-                "Followers": { rate: 6000, label: "₦6,000 per 1k" },
-                "Likes": { rate: 2500, label: "₦2,500 per 1k" },
-                "Views": { rate: 1500, label: "₦1,500 per 1k" },
-                "Shares": { rate: 2000, label: "₦2,000 per 1k" },
-                "Saves": { rate: 1500, label: "₦1,500 per 1k" },
-                "Comments": { rate: 10000, label: "₦10,000 per 1k" }
+                "TikTok Followers": { rate: 6000, label: "₦6,000 per 1k" },
+                "TikTok Likes": { rate: 2500, label: "₦2,500 per 1k" },
+                "TikTok Views": { rate: 1500, label: "₦1,500 per 1k" },
+                "TikTok Shares": { rate: 2000, label: "₦2,000 per 1k" },
+                "TikTok Saves": { rate: 1500, label: "₦1,500 per 1k" },
+                "TikTok Comments": { rate: 10000, label: "₦10,000 per 1k" }
             },
             YouTube: {
-                "Subscribers": { rate: 25000, label: "₦25,000 per 1k" },
-                "Views": { rate: 2000, label: "₦2,000 per 1k" },
-                "Likes": { rate: 2000, label: "₦2,000 per 1k" }
+                "YouTube Subscribers": { rate: 25000, label: "₦25,000 per 1k" },
+                "YouTube Views": { rate: 2000, label: "₦2,000 per 1k" },
+                "YouTube Likes": { rate: 2000, label: "₦2,000 per 1k" }
             },
             Facebook: {
-                "Followers": { rate: 5000, label: "₦5,000 per 1k" },
-                "Likes": { rate: 2500, label: "₦2,500 per 1k" },
-                "Views": { rate: 1000, label: "₦1,000 per 1k" },
-                "Shares": { rate: 1500, label: "₦1,500 per 1k" },
-                "Comments": { rate: 10000, label: "₦10,000 per 1k" }
+                "Facebook Followers": { rate: 5000, label: "₦5,000 per 1k" },
+                "Facebook Likes": { rate: 2500, label: "₦2,500 per 1k" },
+                "Facebook Views": { rate: 1000, label: "₦1,000 per 1k" },
+                "Facebook Shares": { rate: 1500, label: "₦1,500 per 1k" },
+                "Facebook Comments": { rate: 10000, label: "₦10,000 per 1k" }
             }
         };
 
