@@ -3,19 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKDM SMM Panel</title>
+    <title>HKDM SMM Panel - Registration & Order</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 40px 20px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; }
         h1 { font-size: 2.2rem; color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { font-size: 1rem; color: #94a3b8; margin-bottom: 25px; font-weight: 500; }
-        .cta-btn { display: block; width: 100%; padding: 15px; background: #25d366; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 1.1rem; margin-bottom: 35px; }
+        .subtitle { font-size: 1rem; color: #94a3b8; margin-bottom: 10px; font-weight: 500; }
+        .unit-badge { display: inline-block; background: #0284c7; color: #ffffff; font-size: 0.85rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; margin-bottom: 25px; }
+        
+        .form-card { background: #1e293b; padding: 25px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 35px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 0.9rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 1rem; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
+        
+        .cta-btn { display: block; width: 100%; padding: 15px; background: #25d366; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 1.1rem; border: none; cursor: pointer; text-align: center; }
         .section-title { font-size: 1.4rem; color: #f8fafc; margin-bottom: 15px; text-align: left; border-bottom: 2px solid #334155; padding-bottom: 8px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 35px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 35px; }
         .card { background: #1e293b; padding: 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; }
-        .card h3 { color: #38bdf8; font-size: 1.1rem; margin-bottom: 5px; }
-        .card p { color: #cbd5e1; font-size: 0.9rem; }
+        .card h3 { color: #38bdf8; font-size: 1.2rem; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        .price-list { list-style: none; }
+        .price-item { display: flex; justify-content: space-between; font-size: 0.95rem; color: #cbd5e1; padding: 6px 0; border-bottom: 1px dashed #334155; }
+        .price-item:last-child { border-bottom: none; }
+        .price-tag { color: #38bdf8; font-weight: bold; }
         footer { font-size: 0.85rem; color: #64748b; margin-top: 20px; }
     </style>
 </head>
@@ -23,27 +34,107 @@
     <div class="container">
         <h1>HKDM SMM Panel</h1>
         <p class="subtitle">Fast • Reliable • Affordable Social Media Services</p>
+        <div class="unit-badge">⚡ Note: All prices are per 1,000 units</div>
         
-        <a href="https://wa.me/2348135349371" class="cta-btn">Get Started</a>
+        <!-- Registration / Order Form -->
+        <div class="form-card">
+            <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Order / Registration Form</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                </div>
 
-        <h2 class="section-title">Our Services</h2>
+                <div class="form-group">
+                    <label for="phone">Phone / WhatsApp Number</label>
+                    <input type="tel" id="phone" placeholder="e.g. 08123456789" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="platform">Select Platform</label>
+                    <select id="platform" required>
+                        <option value="">-- Select Platform --</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="TikTok">TikTok</option>
+                        <option value="YouTube">YouTube</option>
+                        <option value="Facebook">Facebook</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="service">Select Service</label>
+                    <select id="service" required>
+                        <option value="">-- Select Service --</option>
+                        <option value="Followers / Subscribers">Followers / Subscribers</option>
+                        <option value="Likes">Likes</option>
+                        <option value="Views">Views</option>
+                        <option value="Shares">Shares</option>
+                        <option value="Saves">Saves</option>
+                        <option value="Comments">Comments</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="link">Target Page / Video Link</label>
+                    <input type="url" id="link" placeholder="Paste your link here" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantity (Units)</label>
+                    <input type="number" id="quantity" placeholder="e.g. 1000" required>
+                </div>
+
+                <button type="button" onclick="sendToWhatsApp()" class="cta-btn">Submit Order via WhatsApp</button>
+            </form>
+        </div>
+
+        <h2 class="section-title">Our Price List (Per 1,000 Units)</h2>
         
         <div class="grid">
+            <!-- Instagram -->
             <div class="card">
-                <h3>Instagram</h3>
-                <p>Followers, Likes, Views</p>
+                <h3>Instagram Services</h3>
+                <ul class="price-list">
+                    <li class="price-item"><span>Instagram Followers (1k)</span> <span class="price-tag">₦5,000</span></li>
+                    <li class="price-item"><span>Instagram Likes (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>Instagram Views (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>Instagram Comments (1k)</span> <span class="price-tag">₦10,000</span></li>
+                </ul>
             </div>
+
+            <!-- TikTok -->
             <div class="card">
-                <h3>TikTok</h3>
-                <p>Followers, Likes, Shares</p>
+                <h3>TikTok Services</h3>
+                <ul class="price-list">
+                    <li class="price-item"><span>TikTok Followers (1k)</span> <span class="price-tag">₦6,000</span></li>
+                    <li class="price-item"><span>TikTok Likes (1k)</span> <span class="price-tag">₦2,500</span></li>
+                    <li class="price-item"><span>TikTok Views (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>TikTok Shares (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>TikTok Saves (1k)</span> <span class="price-tag">₦1,500</span></li>
+                    <li class="price-item"><span>TikTok Comments (1k)</span> <span class="price-tag">₦10,000</span></li>
+                </ul>
             </div>
+
+            <!-- YouTube -->
             <div class="card">
-                <h3>YouTube</h3>
-                <p>Subscribers, Views, Likes</p>
+                <h3>YouTube Services</h3>
+                <ul class="price-list">
+                    <li class="price-item"><span>YouTube Subscribers (1k)</span> <span class="price-tag">₦25,000</span></li>
+                    <li class="price-item"><span>YouTube Views (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>YouTube Likes (1k)</span> <span class="price-tag">₦2,000</span></li>
+                </ul>
             </div>
+
+            <!-- Facebook -->
             <div class="card">
-                <h3>Facebook</h3>
-                <p>Followers, Likes, Views</p>
+                <h3>Facebook Services</h3>
+                <ul class="price-list">
+                    <li class="price-item"><span>Facebook Followers (1k)</span> <span class="price-tag">₦5,000</span></li>
+                    <li class="price-item"><span>Facebook Likes (1k)</span> <span class="price-tag">₦2,500</span></li>
+                    <li class="price-item"><span>Facebook Views (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>Facebook Shares (1k)</span> <span class="price-tag">₦2,000</span></li>
+                    <li class="price-item"><span>Facebook Comments (1k)</span> <span class="price-tag">₦10,000</span></li>
+                </ul>
             </div>
         </div>
 
@@ -51,5 +142,31 @@
             © 2026 HKDM Social Media Marketing
         </footer>
     </div>
+
+    <script>
+        function sendToWhatsApp() {
+            const name = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const platform = document.getElementById('platform').value;
+            const service = document.getElementById('service').value;
+            const link = document.getElementById('link').value;
+            const quantity = document.getElementById('quantity').value;
+
+            if(!name || !phone || !platform || !service || !link || !quantity) {
+                alert('Please fill out all fields in the order form.');
+                return;
+            }
+
+            const message = `Hello HKDM! I want to place an order:%0A%0A` +
+                            `👤 *Name:* ${encodeURIComponent(name)}%0A` +
+                            `📞 *Phone:* ${encodeURIComponent(phone)}%0A` +
+                            `📱 *Platform:* ${encodeURIComponent(platform)}%0A` +
+                            `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
+                            `🔢 *Quantity:* ${encodeURIComponent(quantity)}%0A` +
+                            `🔗 *Link:* ${encodeURIComponent(link)}`;
+
+            window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
+        }
+    </script>
 </body>
 </html>
