@@ -22,7 +22,18 @@
         .price-value { font-size: 1.8rem; font-weight: bold; color: #38bdf8; margin-top: 2px; }
         .rate-hint { font-size: 0.8rem; color: #64748b; margin-top: 3px; }
 
-        .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 10px; transition: background 0.2s ease; }
+        /* Terms & Conditions Section */
+        .tc-card { background: #0f172a; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+        .tc-card details summary { cursor: pointer; color: #38bdf8; font-weight: bold; font-size: 0.85rem; outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        .tc-card details summary::-webkit-details-marker { display: none; }
+        .tc-card ul { margin-top: 10px; padding-left: 18px; text-align: left; }
+        .tc-card li { margin-bottom: 6px; }
+
+        /* Checkbox Option 1 */
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 0.85rem; color: #f8fafc; cursor: pointer; }
+        .checkbox-group input { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
+
+        .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 5px; transition: background 0.2s ease; }
         .whatsapp-btn:hover { background: #20ba5a; }
         
         .quality-note { background: #1e293b; border: 1px dashed #38bdf8; padding: 12px 15px; border-radius: 8px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4; }
@@ -73,15 +84,39 @@
                 <input type="number" id="quantity" placeholder="e.g. 1000" oninput="calculateTotal();">
             </div>
 
+            <!-- Price Calculator Display -->
             <div class="price-box">
                 <div class="price-label">Total Estimated Price</div>
                 <div class="price-value" id="totalPriceDisplay">₦0</div>
                 <div class="rate-hint" id="rateHintDisplay">Select service & enter quantity</div>
             </div>
 
+            <!-- Terms & Conditions Drawer -->
+            <div class="tc-card">
+                <details>
+                    <summary>
+                        <span>📜 Terms & Conditions (Click to Read)</span>
+                        <span>▼</span>
+                    </summary>
+                    <ul>
+                        <li><strong>Public Accounts Only:</strong> Target account or page must be set to <strong>Public</strong> during processing. Private accounts will delay or cancel delivery.</li>
+                        <li><strong>Correct Link:</strong> Double-check your target URL. HKDM is not responsible for incorrect links provided by clients.</li>
+                        <li><strong>Delivery Time:</strong> Most orders begin within 1–24 hours depending on platform updates.</li>
+                        <li><strong>No Overlapping Orders:</strong> Do not order the same service for the same link from multiple providers simultaneously while an order is active.</li>
+                    </ul>
+                </details>
+            </div>
+
+            <!-- Agreement Checkbox -->
+            <label class="checkbox-group">
+                <input type="checkbox" id="agreeTerms">
+                <span>I have read and agree to the Terms & Conditions</span>
+            </label>
+
             <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
         </div>
 
+        <!-- Quality Statement Note -->
         <div class="quality-note">
             ⭐ All our services are thoroughly tested, and we offer only premium-quality services.
         </div>
@@ -90,7 +125,6 @@
     </div>
 
     <script>
-        // Updated exact rates per 1,000 units in NGN
         const PRICING = {
             Instagram: {
                 "Instagram Followers": { rate: 5000, label: "₦5,000 per 1k" },
@@ -163,9 +197,15 @@
             const link = document.getElementById('link').value.trim();
             const quantity = document.getElementById('quantity').value.trim();
             const totalPrice = document.getElementById('totalPriceDisplay').textContent;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
 
             if (!name || !phone || !platform || !service || !link || !quantity) {
-                alert('Please complete all fields before sending your order.');
+                alert('Please complete all form fields before sending your order.');
+                return;
+            }
+
+            if (!agreeTerms) {
+                alert('Please check the box to agree to the Terms & Conditions before submitting.');
                 return;
             }
 
@@ -176,7 +216,8 @@
                             `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
                             `🔢 *Quantity:* ${encodeURIComponent(quantity)} units%0A` +
                             `💰 *Total Price:* ${encodeURIComponent(totalPrice)}%0A` +
-                            `🔗 *Target Link:* ${encodeURIComponent(link)}`;
+                            `🔗 *Target Link:* ${encodeURIComponent(link)}%0A` +
+                            `✅ *Terms Accepted:* Yes`;
 
             window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
         };
