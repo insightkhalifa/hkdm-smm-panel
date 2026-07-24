@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKDM Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; }
+        h1 { color: #38bdf8; margin-bottom: 20px; text-align: center; }
+        .order-card { background: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 15px; text-align: left; }
+        .order-header { display: flex; justify-content: space-between; font-weight: bold; color: #38bdf8; margin-bottom: 10px; }
+        .order-detail { font-size: 0.9rem; color: #cbd5e1; margin-bottom: 5px; }
+        .link-box { background: #0f172a; padding: 8px; border-radius: 6px; border: 1px solid #334155; word-break: break-all; font-family: monospace; color: #38bdf8; margin: 10px 0; }
+        .btn-copy { background: #0284c7; color: #ffffff; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>HKDM Admin Dashboard</h1>
+    <div id="ordersContainer">Loading orders...</div>
+
+    <script>
+        const SUPABASE_URL = "https://pdolwwhxattbfrtivnns.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkb2x3d2h4YXR0YmZydGl2bm5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTEyNjgsImV4cCI6MjEwMDQ4NzI2OH0.YAWIsmC1L95iw7RV2C6_QQ3GoRcq6Gi9Iumvd33zR4g";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchOrders() {
+            const { data: orders, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('ordersContainer');
+            if (error || !orders) {
+                container.innerHTML = "<p style='text-align:center;'>Error loading orders or no database table found.</p>";
+                return;
+            }
+
+            if (orders.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No automated web orders placed yet.</p>";
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span>${order.platform} - ${order.service}</span>
+                        <span>₦${order.amount} (${order.status})</span>
+                    </div>
+                    <div class="order-detail">👤 <strong>Client:</strong> ${order.full_name} (${order.phone})</div>
+                    <div class="order-detail">🔢 <strong>Quantity:</strong> ${order.quantity}</div>
+                    <div class="order-detail">💳 <strong>Ref:</strong> ${order.payment_ref}</div>
+                    <div class="link-box" id="link-${order.id}">${order.target_link}</div>
+                    <button class="btn-copy" onclick="navigator.clipboard.writeText('${order.target_link}'); alert('Link copied!');">Copy Target Link</button>
+                </div>
+            `).join('');
+        }
+
+        fetchOrders();
+    </script>
+</body>
+</html>
