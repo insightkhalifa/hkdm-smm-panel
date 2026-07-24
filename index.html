@@ -16,6 +16,12 @@
         label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
         
+        /* Price Display Box */
+        .price-box { background: #0f172a; border: 1px solid #38bdf8; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .price-label { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .price-value { font-size: 1.8rem; font-weight: bold; color: #38bdf8; margin-top: 2px; }
+        .rate-hint { font-size: 0.8rem; color: #64748b; margin-top: 3px; }
+
         .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 10px; transition: background 0.2s ease; }
         .whatsapp-btn:hover { background: #20ba5a; }
         
@@ -40,7 +46,7 @@
 
             <div class="form-group">
                 <label>Select Platform</label>
-                <select id="platform">
+                <select id="platform" onchange="updateServices(); calculateTotal();">
                     <option value="">-- Select Platform --</option>
                     <option value="Instagram">Instagram</option>
                     <option value="TikTok">TikTok</option>
@@ -51,14 +57,8 @@
 
             <div class="form-group">
                 <label>Select Service</label>
-                <select id="service">
-                    <option value="">-- Select Service --</option>
-                    <option value="Followers / Subscribers">Followers / Subscribers</option>
-                    <option value="Likes">Likes</option>
-                    <option value="Views">Views</option>
-                    <option value="Shares">Shares</option>
-                    <option value="Saves">Saves</option>
-                    <option value="Comments">Comments</option>
+                <select id="service" onchange="calculateTotal();">
+                    <option value="">-- Select Platform First --</option>
                 </select>
             </div>
 
@@ -69,7 +69,14 @@
 
             <div class="form-group">
                 <label>Quantity (Units)</label>
-                <input type="number" id="quantity" placeholder="e.g. 1000">
+                <input type="number" id="quantity" placeholder="e.g. 1000" oninput="calculateTotal();">
+            </div>
+
+            <!-- Real-Time Price Calculator -->
+            <div class="price-box">
+                <div class="price-label">Total Estimated Price</div>
+                <div class="price-value" id="totalPriceDisplay">₦0</div>
+                <div class="rate-hint" id="rateHintDisplay">Select service & enter quantity</div>
             </div>
 
             <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
@@ -79,6 +86,67 @@
     </div>
 
     <script>
+        // Pricing per 1,000 units in NGN
+        const PRICING = {
+            Instagram: {
+                "Followers": { rate: 2500, label: "₦2,500 per 1k" },
+                "Likes": { rate: 1000, label: "₦1,000 per 1k" },
+                "Views": { rate: 500, label: "₦500 per 1k" },
+                "Comments": { rate: 4000, label: "₦4,000 per 1k" }
+            },
+            TikTok: {
+                "Followers": { rate: 3500, label: "₦3,500 per 1k" },
+                "Likes": { rate: 1200, label: "₦1,200 per 1k" },
+                "Views": { rate: 400, label: "₦400 per 1k" },
+                "Shares": { rate: 1000, label: "₦1,000 per 1k" }
+            },
+            YouTube: {
+                "Subscribers": { rate: 8000, label: "₦8,000 per 1k" },
+                "Likes": { rate: 2000, label: "₦2,000 per 1k" },
+                "Views": { rate: 2500, label: "₦2,500 per 1k" }
+            },
+            Facebook: {
+                "Page Followers / Likes": { rate: 3000, label: "₦3,000 per 1k" },
+                "Post Likes": { rate: 1200, label: "₦1,200 per 1k" },
+                "Video Views": { rate: 800, label: "₦800 per 1k" }
+            }
+        };
+
+        function updateServices() {
+            const platform = document.getElementById('platform').value;
+            const serviceSelect = document.getElementById('service');
+            serviceSelect.innerHTML = '<option value="">-- Select Service --</option>';
+
+            if (platform && PRICING[platform]) {
+                Object.keys(PRICING[platform]).forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service;
+                    option.textContent = `${service} (${PRICING[platform][service].label})`;
+                    serviceSelect.appendChild(option);
+                });
+            }
+        }
+
+        function calculateTotal() {
+            const platform = document.getElementById('platform').value;
+            const service = document.getElementById('service').value;
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+
+            const priceDisplay = document.getElementById('totalPriceDisplay');
+            const rateDisplay = document.getElementById('rateHintDisplay');
+
+            if (platform && service && PRICING[platform] && PRICING[platform][service]) {
+                const ratePer1000 = PRICING[platform][service].rate;
+                const total = Math.round((quantity / 1000) * ratePer1000);
+
+                priceDisplay.textContent = `₦${total.toLocaleString()}`;
+                rateDisplay.textContent = `Rate: ${PRICING[platform][service].label}`;
+            } else {
+                priceDisplay.textContent = "₦0";
+                rateDisplay.textContent = "Select service & enter quantity";
+            }
+        }
+
         document.getElementById('submitBtn').onclick = function() {
             const name = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -86,6 +154,7 @@
             const service = document.getElementById('service').value;
             const link = document.getElementById('link').value.trim();
             const quantity = document.getElementById('quantity').value.trim();
+            const totalPrice = document.getElementById('totalPriceDisplay').textContent;
 
             if (!name || !phone || !platform || !service || !link || !quantity) {
                 alert('Please complete all fields before sending your order.');
@@ -97,8 +166,9 @@
                             `📞 *Phone:* ${encodeURIComponent(phone)}%0A` +
                             `📱 *Platform:* ${encodeURIComponent(platform)}%0A` +
                             `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
-                            `🔢 *Quantity:* ${encodeURIComponent(quantity)}%0A` +
-                            `🔗 *Link:* ${encodeURIComponent(link)}`;
+                            `🔢 *Quantity:* ${encodeURIComponent(quantity)} units%0A` +
+                            `💰 *Total Price:* ${encodeURIComponent(totalPrice)}%0A` +
+                            `🔗 *Target Link:* ${encodeURIComponent(link)}`;
 
             window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
         };
