@@ -4,26 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HKDM SMM Panel</title>
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; }
         h1 { font-size: 2rem; color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { font-size: 0.95rem; color: #94a3b8; margin-bottom: 20px; }
-        
-        .order-options { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-        .tab-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+        .subtitle { font-size: 0.95rem; color: #94a3b8; margin-bottom: 25px; }
 
-        .form-card { background: #1e293b; padding: 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 30px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 5px; }
+        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 30px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
         
-        .pay-btn { display: block; width: 100%; padding: 14px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1rem; border: none; cursor: pointer; text-align: center; margin-top: 10px; }
-        .pay-online { background: #38bdf8; color: #0f172a; }
+        .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 10px; transition: background 0.2s ease; }
+        .whatsapp-btn:hover { background: #20ba5a; }
         
         footer { font-size: 0.85rem; color: #64748b; margin-top: 20px; }
     </style>
@@ -33,21 +27,10 @@
         <h1>HKDM SMM Panel</h1>
         <p class="subtitle">Fast • Reliable • Affordable Social Media Growth</p>
 
-        <!-- Toggle Buttons -->
-        <div class="order-options">
-            <button type="button" class="tab-btn active" id="btnOnline">💳 Submit to Web (Auto)</button>
-            <button type="button" class="tab-btn" id="btnWhatsapp">💬 Order via WhatsApp</button>
-        </div>
-
         <div class="form-card">
             <div class="form-group">
                 <label>Full Name</label>
                 <input type="text" id="fullName" placeholder="Enter your name">
-            </div>
-
-            <div class="form-group" id="emailGroup">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="e.g. client@gmail.com">
             </div>
 
             <div class="form-group">
@@ -89,46 +72,15 @@
                 <input type="number" id="quantity" placeholder="e.g. 1000">
             </div>
 
-            <button type="button" id="submitBtn" class="pay-btn pay-online">Submit Order to Database</button>
+            <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
         </div>
 
-        <footer>© 2026 HKDM Social Media Marketing</footer>
+        <footer>© 2026 HKDM Digital Marketing</footer>
     </div>
 
     <script>
-        // Supabase Initialization
-        const SUPABASE_URL = "https://pdolwwhxattbfrtivnns.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkb2x3d2h4YXR0YmZydGl2bm5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTEyNjgsImV4cCI6MjEwMDQ4NzI2OH0.YAWIsmC1L95iw7RV2C6_QQ3GoRcq6Gi9Iumvd33zR4g"; 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let currentMode = 'online';
-
-        const btnOnline = document.getElementById('btnOnline');
-        const btnWhatsapp = document.getElementById('btnWhatsapp');
-        const emailGroup = document.getElementById('emailGroup');
-        const submitBtn = document.getElementById('submitBtn');
-
-        btnOnline.onclick = function() {
-            currentMode = 'online';
-            btnOnline.classList.add('active');
-            btnWhatsapp.classList.remove('active');
-            emailGroup.style.display = 'block';
-            submitBtn.innerText = 'Submit Order to Database';
-            submitBtn.className = 'pay-btn pay-online';
-        };
-
-        btnWhatsapp.onclick = function() {
-            currentMode = 'whatsapp';
-            btnWhatsapp.classList.add('active');
-            btnOnline.classList.remove('active');
-            emailGroup.style.display = 'none';
-            submitBtn.innerText = 'Submit Order to WhatsApp';
-            submitBtn.className = 'pay-btn';
-        };
-
-        submitBtn.onclick = async function() {
+        document.getElementById('submitBtn').onclick = function() {
             const name = document.getElementById('fullName').value.trim();
-            const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const platform = document.getElementById('platform').value;
             const service = document.getElementById('service').value;
@@ -136,61 +88,19 @@
             const quantity = document.getElementById('quantity').value.trim();
 
             if (!name || !phone || !platform || !service || !link || !quantity) {
-                alert('Please fill out all fields before submitting.');
+                alert('Please complete all fields before sending your order.');
                 return;
             }
 
-            if (currentMode === 'whatsapp') {
-                const message = `Hello HKDM! I want to place an order:%0A%0A` +
-                                `👤 *Name:* ${encodeURIComponent(name)}%0A` +
-                                `📞 *Phone:* ${encodeURIComponent(phone)}%0A` +
-                                `📱 *Platform:* ${encodeURIComponent(platform)}%0A` +
-                                `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
-                                `🔢 *Quantity:* ${encodeURIComponent(quantity)}%0A` +
-                                `🔗 *Link:* ${encodeURIComponent(link)}`;
-                
-                window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
-            } else {
-                if (!email) {
-                    alert('Email address is required.');
-                    return;
-                }
+            const message = `Hello HKDM! I want to place an order:%0A%0A` +
+                            `👤 *Name:* ${encodeURIComponent(name)}%0A` +
+                            `📞 *Phone:* ${encodeURIComponent(phone)}%0A` +
+                            `📱 *Platform:* ${encodeURIComponent(platform)}%0A` +
+                            `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
+                            `🔢 *Quantity:* ${encodeURIComponent(quantity)}%0A` +
+                            `🔗 *Link:* ${encodeURIComponent(link)}`;
 
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Processing...";
-
-                const amount = 2000;
-                const generatedRef = 'HKDM_' + Math.floor((Math.random() * 1000000000) + 1);
-
-                // Save directly to Supabase Database
-                const { data, error } = await supabase.from('orders').insert([{
-                    full_name: name,
-                    email: email,
-                    phone: phone,
-                    platform: platform,
-                    service: service,
-                    quantity: parseInt(quantity),
-                    target_link: link,
-                    amount: amount,
-                    payment_ref: generatedRef,
-                    status: 'Pending'
-                }]);
-
-                if (!error) {
-                    alert('✅ Order successfully submitted! Your link has been received in the admin dashboard.');
-                    // Clear inputs
-                    document.getElementById('fullName').value = '';
-                    document.getElementById('email').value = '';
-                    document.getElementById('phone').value = '';
-                    document.getElementById('link').value = '';
-                    document.getElementById('quantity').value = '';
-                } else {
-                    alert('❌ Database Error: ' + error.message);
-                }
-
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Order to Database";
-            }
+            window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
         };
     </script>
 </body>
