@@ -6,8 +6,6 @@
     <title>HKDM SMM Panel</title>
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Paystack Inline SDK -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
@@ -37,7 +35,7 @@
 
         <!-- Toggle Buttons -->
         <div class="order-options">
-            <button type="button" class="tab-btn active" id="btnOnline">💳 Pay Online (Card/Transfer)</button>
+            <button type="button" class="tab-btn active" id="btnOnline">💳 Submit to Web (Auto)</button>
             <button type="button" class="tab-btn" id="btnWhatsapp">💬 Order via WhatsApp</button>
         </div>
 
@@ -91,14 +89,14 @@
                 <input type="number" id="quantity" placeholder="e.g. 1000">
             </div>
 
-            <button type="button" id="submitBtn" class="pay-btn pay-online">Pay Online & Submit Order</button>
+            <button type="button" id="submitBtn" class="pay-btn pay-online">Submit Order to Database</button>
         </div>
 
         <footer>© 2026 HKDM Social Media Marketing</footer>
     </div>
 
     <script>
-        // Supabase Init
+        // Supabase Initialization
         const SUPABASE_URL = "https://pdolwwhxattbfrtivnns.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkb2x3d2h4YXR0YmZydGl2bm5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTEyNjgsImV4cCI6MjEwMDQ4NzI2OH0.YAWIsmC1L95iw7RV2C6_QQ3GoRcq6Gi9Iumvd33zR4g"; 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -115,7 +113,7 @@
             btnOnline.classList.add('active');
             btnWhatsapp.classList.remove('active');
             emailGroup.style.display = 'block';
-            submitBtn.innerText = 'Pay Online & Submit Order';
+            submitBtn.innerText = 'Submit Order to Database';
             submitBtn.className = 'pay-btn pay-online';
         };
 
@@ -154,53 +152,44 @@
                 window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
             } else {
                 if (!email) {
-                    alert('Email address is required for online payments.');
+                    alert('Email address is required.');
                     return;
                 }
 
-                const amount = 2000; // Standard total amount
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Processing...";
+
+                const amount = 2000;
                 const generatedRef = 'HKDM_' + Math.floor((Math.random() * 1000000000) + 1);
 
-                // Check if Paystack key is set up or placeholder
-                if (typeof PaystackPop !== 'undefined') {
-                    try {
-                        let handler = PaystackPop.setup({
-                            key: 'pk_test_PLACEHOLDER_KEY', // Update with real Paystack Key
-                            email: email,
-                            amount: amount * 100,
-                            currency: 'NGN',
-                            ref: generatedRef,
-                            callback: async function(response) {
-                                await supabase.from('orders').insert([{
-                                    full_name: name, email: email, phone: phone,
-                                    platform: platform, service: service, quantity: parseInt(quantity),
-                                    target_link: link, amount: amount, payment_ref: response.reference, status: 'Pending'
-                                }]);
-                                alert('Payment successful! Your order was logged.');
-                            },
-                            onClose: function() {
-                                alert('Transaction was closed.');
-                            }
-                        });
-                        handler.openIframe();
-                    } catch (e) {
-                        // Safe fallback if Paystack key isn't active yet: save order directly to backend & notify user!
-                        alert('Paystack gateway key is currently in setup mode. Registering your order directly to the backend database...');
-                        
-                        const { error } = await supabase.from('orders').insert([{
-                            full_name: name, email: email, phone: phone,
-                            platform: platform, service: service, quantity: parseInt(quantity),
-                            target_link: link, amount: amount, payment_ref: generatedRef, status: 'Pending'
-                        }]);
+                // Save directly to Supabase Database
+                const { data, error } = await supabase.from('orders').insert([{
+                    full_name: name,
+                    email: email,
+                    phone: phone,
+                    platform: platform,
+                    service: service,
+                    quantity: parseInt(quantity),
+                    target_link: link,
+                    amount: amount,
+                    payment_ref: generatedRef,
+                    status: 'Pending'
+                }]);
 
-                        if(!error) {
-                            alert('Order successfully saved to Admin Dashboard! Reference: ' + generatedRef);
-                        } else {
-                            alert('Database connection error. Redirecting to WhatsApp...');
-                            btnWhatsapp.click();
-                        }
-                    }
+                if (!error) {
+                    alert('✅ Order successfully submitted! Your link has been received in the admin dashboard.');
+                    // Clear inputs
+                    document.getElementById('fullName').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    document.getElementById('link').value = '';
+                    document.getElementById('quantity').value = '';
+                } else {
+                    alert('❌ Database Error: ' + error.message);
                 }
+
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Order to Database";
             }
         };
     </script>
