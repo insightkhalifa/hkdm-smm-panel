@@ -91,17 +91,18 @@
                 <div class="rate-hint" id="rateHintDisplay">Select service & enter quantity</div>
             </div>
 
-            <!-- Terms & Conditions Drawer -->
+            <!-- Terms & Conditions & Refund Policy Drawer -->
             <div class="tc-card">
                 <details>
                     <summary>
-                        <span>📜 Terms & Conditions (Click to Read)</span>
+                        <span>📜 Terms & Refund Policy (Click to Read)</span>
                         <span>▼</span>
                     </summary>
                     <ul>
                         <li><strong>Public Accounts Only:</strong> Target account or page must be set to <strong>Public</strong> during processing. Private accounts will delay or cancel delivery.</li>
                         <li><strong>Correct Link:</strong> Double-check your target URL. HKDM is not responsible for incorrect links provided by clients.</li>
-                        <li><strong>Fast Delivery:</strong> Most orders start within <strong>0 to 30 minutes</strong>. However, large quantities or specific services may take additional time to complete.</li>
+                        <li><strong>Fast Delivery:</strong> Most orders start within <strong>0 to 30 minutes</strong>. Large quantities or specific services may take additional time.</li>
+                        <li><strong>Refund Policy:</strong> Refunds or replacements are strictly provided if HKDM fails to deliver an active order. No refunds for incorrect links or private accounts once processing begins.</li>
                         <li><strong>No Overlapping Orders:</strong> Do not order the same service for the same link from multiple providers simultaneously while an order is active.</li>
                     </ul>
                 </details>
@@ -110,7 +111,7 @@
             <!-- Agreement Checkbox -->
             <label class="checkbox-group">
                 <input type="checkbox" id="agreeTerms">
-                <span>I have read and agree to the Terms & Conditions</span>
+                <span>I have read and agree to the Terms & Refund Policy</span>
             </label>
 
             <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
@@ -205,7 +206,7 @@
             }
 
             if (!agreeTerms) {
-                alert('Please check the box to agree to the Terms & Conditions before submitting.');
+                alert('Please check the box to agree to the Terms & Refund Policy before submitting.');
                 return;
             }
 
@@ -217,7 +218,7 @@
                             `🔢 *Quantity:* ${encodeURIComponent(quantity)} units%0A` +
                             `💰 *Total Price:* ${encodeURIComponent(totalPrice)}%0A` +
                             `🔗 *Target Link:* ${encodeURIComponent(link)}%0A` +
-                            `✅ *Terms Accepted:* Yes`;
+                            `✅ *Terms & Refund Policy Accepted:* Yes`;
 
             window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
         };
