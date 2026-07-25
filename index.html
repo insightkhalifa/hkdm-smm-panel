@@ -81,6 +81,7 @@
     .btn-primary:active { transform: scale(0.98); }
     .btn-secondary { background-color: #222d45; color: #ffffff; margin-top: 10px; }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; }
 
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
@@ -164,12 +165,32 @@
       color: #ffffff;
       box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
     }
+    .nav-link.admin-link {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .nav-link.admin-link:hover, .nav-link.admin-link.active {
+      background: #f59e0b;
+      color: #000000;
+    }
+    .nav-link.logout-link {
+      color: #ef4444;
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      border-radius: 0;
+      padding-top: 16px;
+    }
+    .nav-link.logout-link:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+    }
 
     /* MAIN CONTENT */
     .main-content {
       flex: 1;
       padding: 28px;
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
       width: 100%;
     }
@@ -180,6 +201,7 @@
       padding: 24px;
       border: 1px solid var(--border-color);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
     }
     .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; font-weight: 700; }
 
@@ -210,6 +232,7 @@
     }
     .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
     .badge-processing { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-canceled { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
     /* TERMS & MODALS */
     .terms-group { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
@@ -273,7 +296,6 @@
           <span>Balance:</span>
           <span id="user-balance">₦0.00</span>
         </div>
-        <span id="logout-btn" style="color: #ef4444; font-size: 13px; cursor: pointer; font-weight: 600;">Log Out</span>
       </div>
     </header>
 
@@ -284,6 +306,11 @@
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
         <div class="nav-link" onclick="switchTab('add-funds', this)">💳 Add Funds</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
+        
+        <!-- ADMIN SECRET TAB (HIDDEN BY DEFAULT) -->
+        <div id="admin-tab-link" class="nav-link admin-link hidden" onclick="switchTab('admin', this)">👑 Admin Panel</div>
+
+        <div id="logout-btn" class="nav-link logout-link">🚪 Log Out</div>
       </aside>
 
       <!-- MAIN PAGE CONTENT -->
@@ -353,7 +380,6 @@
                   </tr>
                 </thead>
                 <tbody id="order-history-body">
-                  <!-- Populated dynamically by JavaScript -->
                   <tr>
                     <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
                       No orders found.
@@ -403,6 +429,54 @@
           </div>
         </section>
 
+        <!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
+        <section id="tab-admin" class="tab-panel hidden">
+          
+          <!-- TOP UP USER BALANCE -->
+          <div class="panel-card">
+            <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
+            <form id="admin-topup-form">
+              <div class="form-group">
+                <label for="admin-user-email">Customer Email / ID</label>
+                <input type="text" id="admin-user-email" placeholder="e.g. customer@gmail.com or 'me'" required />
+              </div>
+              <div class="form-group">
+                <label for="admin-amount">Amount to Credit (₦)</label>
+                <input type="number" id="admin-amount" placeholder="5000" min="100" required />
+              </div>
+              <button type="submit" class="btn btn-success">Credit Wallet</button>
+            </form>
+          </div>
+
+          <!-- ADMIN ORDER MANAGEMENT -->
+          <div class="panel-card">
+            <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Link</th>
+                    <th>Qty</th>
+                    <th>Charge</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-orders-body">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                      No pending orders to manage.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
       </main>
     </div>
   </div>
@@ -426,21 +500,37 @@
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
+    // ADMIN EMAIL
+    const ADMIN_EMAIL = "admin.hkdm@gmail.com";
+
     const authScreen = document.getElementById("auth-screen");
     const dashboardScreen = document.getElementById("dashboard-screen");
     const sidebar = document.getElementById("sidebar");
     const termsModal = document.getElementById("terms-modal");
+    const adminTabLink = document.getElementById("admin-tab-link");
 
     // Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
 
+    // User Balance State
+    let userBalance = parseFloat(localStorage.getItem("hkdm_user_balance") || "0");
+    updateBalanceUI();
+
     if (hasCode || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
       window.history.replaceState({}, document.title, window.location.pathname);
       authScreen.classList.add("hidden");
       dashboardScreen.classList.remove("hidden");
+
+      // ENABLE ADMIN TAB
+      adminTabLink.classList.remove("hidden");
+    }
+
+    function updateBalanceUI() {
+      document.getElementById("user-balance").textContent = 
+        `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     // PKCE OAuth Helpers
@@ -572,27 +662,43 @@
     loadServices();
 
     // DYNAMIC ORDER MANAGEMENT
-    const userOrders = [];
+    const userOrders = JSON.parse(localStorage.getItem("hkdm_orders") || "[]");
 
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
+      const ratePer1000 = parseFloat(serviceSelect.value) || 0;
+      const qty = parseInt(quantityInput.value) || 0;
+      const totalCost = (qty / 1000) * ratePer1000;
+
+      // Check balance
+      if (userBalance < totalCost) {
+        alert("Insufficient balance! Please deposit funds on the 'Add Funds' tab before ordering.");
+        return;
+      }
+
+      // Deduct balance
+      userBalance -= totalCost;
+      localStorage.setItem("hkdm_user_balance", userBalance.toString());
+      updateBalanceUI();
+
       const selectedServiceText = serviceSelect.options[serviceSelect.selectedIndex].text.split(" — ")[0];
       const link = document.getElementById("link").value;
-      const quantity = document.getElementById("quantity").value;
-      const totalPrice = document.getElementById("total-price").textContent;
 
       const newOrder = {
         id: "#" + Math.floor(1000 + Math.random() * 9000),
         service: selectedServiceText,
         link: link,
-        qty: parseInt(quantity).toLocaleString(),
-        charge: totalPrice,
+        qty: parseInt(qty).toLocaleString(),
+        charge: `₦${totalCost.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
         status: "Processing"
       };
 
       userOrders.unshift(newOrder);
+      localStorage.setItem("hkdm_orders", JSON.stringify(userOrders));
+
       renderOrderHistory();
+      renderAdminOrders();
 
       alert("Order submitted successfully!");
       document.getElementById("order-form").reset();
@@ -619,12 +725,61 @@
           <td>${order.link}</td>
           <td>${order.qty}</td>
           <td>${order.charge}</td>
-          <td><span class="badge badge-processing">${order.status}</span></td>
+          <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
         </tr>
       `).join("");
     }
 
+    // ADMIN FUNCTIONS
+    document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById("admin-amount").value) || 0;
+      
+      userBalance += amount;
+      localStorage.setItem("hkdm_user_balance", userBalance.toString());
+      updateBalanceUI();
+
+      alert(`Successfully added ₦${amount.toLocaleString()} to wallet!`);
+      document.getElementById("admin-topup-form").reset();
+    });
+
+    function renderAdminOrders() {
+      const tbody = document.getElementById("admin-orders-body");
+
+      if (userOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No pending orders to manage.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = userOrders.map((order, idx) => `
+        <tr>
+          <td>${order.id}</td>
+          <td>${order.service}</td>
+          <td>${order.link}</td>
+          <td>${order.qty}</td>
+          <td>${order.charge}</td>
+          <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
+          <td>
+            <button class="btn btn-success btn-sm" onclick="markOrderCompleted(${idx})">Complete</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function markOrderCompleted(idx) {
+      userOrders[idx].status = "Completed";
+      localStorage.setItem("hkdm_orders", JSON.stringify(userOrders));
+      renderOrderHistory();
+      renderAdminOrders();
+    }
+
     renderOrderHistory();
+    renderAdminOrders();
   </script>
 
 </body>
