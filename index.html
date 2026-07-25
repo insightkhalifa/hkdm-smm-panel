@@ -149,19 +149,16 @@
       <div class="form-group">
         <label for="category">Category</label>
         <select id="category">
-          <option>TikTok Services</option>
-          <option>Instagram Services</option>
-          <option>YouTube Services</option>
+          <option value="tiktok">TikTok Services</option>
+          <option value="instagram">Instagram Services</option>
+          <option value="youtube">YouTube Services</option>
+          <option value="facebook">Facebook Services</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="service">Service</label>
-        <select id="service">
-          <option value="10">TikTok Followers — $10 per 1,000</option>
-          <option value="5">TikTok Likes — $5 per 1,000</option>
-          <option value="15">Instagram Followers — $15 per 1,000</option>
-        </select>
+        <select id="service"></select>
       </div>
 
       <div class="form-group">
@@ -176,7 +173,7 @@
 
       <div class="price-box">
         <span>Total Charge:</span>
-        <span id="total-price" style="color:#38bdf8;">$10.00</span>
+        <span id="total-price" style="color:#38bdf8;">$0.00</span>
       </div>
 
       <button type="submit" class="btn btn-primary">Submit Order</button>
@@ -191,17 +188,14 @@
     const authCard = document.getElementById("auth-card");
     const dashboardCard = document.getElementById("dashboard-card");
 
-    // 1. Check if user is returning from authentication
+    // 1. Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
 
     if (hasCode || isLoggedIn) {
-      // Save login state
       localStorage.setItem("hkdm_logged_in", "true");
-      // Clean URL bar
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Display dashboard
       authCard.classList.add("hidden");
       dashboardCard.classList.remove("hidden");
     }
@@ -253,26 +247,64 @@
     document.getElementById("login-btn").addEventListener("click", () => startAuthFlow("login"));
     document.getElementById("register-btn").addEventListener("click", () => startAuthFlow("registration"));
 
-    // 3. Logout handler
     document.getElementById("logout-btn").addEventListener("click", () => {
       localStorage.removeItem("hkdm_logged_in");
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 4. Dynamic Order Calculator
+    // 3. Dynamic Services List (Rates per 1,000)
+    const servicesData = {
+      tiktok: [
+        { name: "TikTok Followers [Real & Active]", rate: 8.00 },
+        { name: "TikTok Likes [Fast Delivery]", rate: 3.50 },
+        { name: "TikTok Video Views", rate: 0.80 },
+        { name: "TikTok Shares & Saves", rate: 1.50 }
+      ],
+      instagram: [
+        { name: "Instagram Followers [High Quality]", rate: 6.50 },
+        { name: "Instagram Post Likes", rate: 2.20 },
+        { name: "Instagram Reel Views", rate: 0.90 }
+      ],
+      youtube: [
+        { name: "YouTube Subscribers", rate: 25.00 },
+        { name: "YouTube Video Likes", rate: 7.00 },
+        { name: "YouTube Views [Non-Drop]", rate: 4.50 }
+      ],
+      facebook: [
+        { name: "Facebook Page Likes & Followers", rate: 10.00 },
+        { name: "Facebook Post Reactions", rate: 4.00 }
+      ]
+    };
+
+    const categorySelect = document.getElementById("category");
     const serviceSelect = document.getElementById("service");
     const quantityInput = document.getElementById("quantity");
     const totalPriceEl = document.getElementById("total-price");
 
+    function loadServices() {
+      const selectedCat = categorySelect.value;
+      const options = servicesData[selectedCat] || [];
+      
+      serviceSelect.innerHTML = options.map(s => 
+        `<option value="${s.rate}">${s.name} — $${s.rate.toFixed(2)} / 1k</option>`
+      ).join("");
+
+      updatePrice();
+    }
+
     function updatePrice() {
-      const ratePer1000 = parseFloat(serviceSelect.value);
+      const ratePer1000 = parseFloat(serviceSelect.value) || 0;
       const qty = parseInt(quantityInput.value) || 0;
       const total = (qty / 1000) * ratePer1000;
       totalPriceEl.textContent = `$${total.toFixed(2)}`;
     }
 
+    categorySelect.addEventListener("change", loadServices);
     serviceSelect.addEventListener("change", updatePrice);
     quantityInput.addEventListener("input", updatePrice);
+
+    // Initial load
+    loadServices();
 
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
