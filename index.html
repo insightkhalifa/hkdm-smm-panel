@@ -307,7 +307,7 @@
         <div class="nav-link" onclick="switchTab('add-funds', this)">💳 Add Funds</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
-        <!-- ADMIN SECRET TAB (HIDDEN BY DEFAULT) -->
+        <!-- ADMIN SECRET TAB (RESTRICTED ACCESS) -->
         <div id="admin-tab-link" class="nav-link admin-link hidden" onclick="switchTab('admin', this)">👑 Admin Panel</div>
 
         <div id="logout-btn" class="nav-link logout-link">🚪 Log Out</div>
@@ -500,7 +500,7 @@
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
-    // ADMIN EMAIL
+    // STRICT ADMIN EMAIL REQUIREMENT
     const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
     const authScreen = document.getElementById("auth-screen");
@@ -513,8 +513,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
+    const currentUserEmail = localStorage.getItem("hkdm_user_email") || "";
 
-    // User Balance State
+    // Balance State
     let userBalance = parseFloat(localStorage.getItem("hkdm_user_balance") || "0");
     updateBalanceUI();
 
@@ -524,8 +525,16 @@
       authScreen.classList.add("hidden");
       dashboardScreen.classList.remove("hidden");
 
-      // ENABLE ADMIN TAB
-      adminTabLink.classList.remove("hidden");
+      // Verify if the logged-in email matches the admin address
+      checkAdminAccess(currentUserEmail);
+    }
+
+    function checkAdminAccess(email) {
+      if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        adminTabLink.classList.remove("hidden");
+      } else {
+        adminTabLink.classList.add("hidden");
+      }
     }
 
     function updateBalanceUI() {
@@ -580,15 +589,16 @@
 
     document.getElementById("logout-btn").addEventListener("click", () => {
       localStorage.removeItem("hkdm_logged_in");
+      localStorage.removeItem("hkdm_user_email");
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // Mobile Hamburger Menu
+    // Mobile Navigation Toggle
     document.getElementById("menu-btn").addEventListener("click", () => {
       sidebar.classList.toggle("open");
     });
 
-    // Tab Switcher
+    // Tab Navigation Switcher
     function switchTab(tabName, element) {
       document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
       document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
@@ -598,7 +608,7 @@
       sidebar.classList.remove("open");
     }
 
-    // Modal
+    // Modal Events
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 
@@ -661,7 +671,7 @@
 
     loadServices();
 
-    // DYNAMIC ORDER MANAGEMENT
+    // Order Handling
     const userOrders = JSON.parse(localStorage.getItem("hkdm_orders") || "[]");
 
     document.getElementById("order-form").addEventListener("submit", (e) => {
@@ -671,13 +681,11 @@
       const qty = parseInt(quantityInput.value) || 0;
       const totalCost = (qty / 1000) * ratePer1000;
 
-      // Check balance
       if (userBalance < totalCost) {
         alert("Insufficient balance! Please deposit funds on the 'Add Funds' tab before ordering.");
         return;
       }
 
-      // Deduct balance
       userBalance -= totalCost;
       localStorage.setItem("hkdm_user_balance", userBalance.toString());
       updateBalanceUI();
@@ -707,17 +715,10 @@
 
     function renderOrderHistory() {
       const tbody = document.getElementById("order-history-body");
-
       if (userOrders.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
-              No orders found.
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No orders found.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = userOrders.map(order => `
         <tr>
           <td>${order.id}</td>
@@ -730,7 +731,7 @@
       `).join("");
     }
 
-    // ADMIN FUNCTIONS
+    // Admin Wallet Top-up
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const amount = parseFloat(document.getElementById("admin-amount").value) || 0;
@@ -745,17 +746,10 @@
 
     function renderAdminOrders() {
       const tbody = document.getElementById("admin-orders-body");
-
       if (userOrders.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
-              No pending orders to manage.
-            </td>
-          </tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No pending orders to manage.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = userOrders.map((order, idx) => `
         <tr>
           <td>${order.id}</td>
