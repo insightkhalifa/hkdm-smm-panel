@@ -149,8 +149,8 @@
       <div class="form-group">
         <label for="category">Category</label>
         <select id="category">
-          <option value="tiktok">TikTok Services</option>
           <option value="instagram">Instagram Services</option>
+          <option value="tiktok">TikTok Services</option>
           <option value="youtube">YouTube Services</option>
           <option value="facebook">Facebook Services</option>
         </select>
@@ -252,27 +252,33 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 3. Dynamic Services List (Rates per 1,000 in Naira ₦)
+    // 3. Custom HKDM Services List (Exact Price Sheet)
     const servicesData = {
-      tiktok: [
-        { name: "TikTok Followers [Real & Active]", rate: 5000 },
-        { name: "TikTok Likes [Instant]", rate: 2000 },
-        { name: "TikTok Video Views", rate: 500 },
-        { name: "TikTok Shares & Saves", rate: 1000 }
-      ],
       instagram: [
-        { name: "Instagram Followers [High Quality]", rate: 4500 },
-        { name: "Instagram Post Likes", rate: 1500 },
-        { name: "Instagram Reel Views", rate: 600 }
+        { name: "Instagram Followers", rate: 5000 },
+        { name: "Instagram Likes", rate: 2000 },
+        { name: "Instagram Views", rate: 2000 },
+        { name: "Instagram Comments", rate: 10000 }
+      ],
+      tiktok: [
+        { name: "TikTok Followers", rate: 6000 },
+        { name: "TikTok Likes", rate: 2500 },
+        { name: "TikTok Views", rate: 2000 },
+        { name: "TikTok Shares", rate: 2000 },
+        { name: "TikTok Saves", rate: 1500 },
+        { name: "TikTok Comments", rate: 10000 }
       ],
       youtube: [
-        { name: "YouTube Subscribers", rate: 15000 },
-        { name: "YouTube Video Likes", rate: 4000 },
-        { name: "YouTube Views [Non-Drop]", rate: 3000 }
+        { name: "YouTube Subscribers", rate: 25000 },
+        { name: "YouTube Views", rate: 2000 },
+        { name: "YouTube Likes", rate: 2000 }
       ],
       facebook: [
-        { name: "Facebook Page Likes & Followers", rate: 6000 },
-        { name: "Facebook Post Reactions", rate: 2500 }
+        { name: "Facebook Followers", rate: 5000 },
+        { name: "Facebook Likes", rate: 2500 },
+        { name: "Facebook Views", rate: 2000 },
+        { name: "Facebook Shares", rate: 2000 },
+        { name: "Facebook Comments", rate: 10000 }
       ]
     };
 
