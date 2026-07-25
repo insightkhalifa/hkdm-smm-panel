@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HKDM Digital SMM Panel</title>
+  <title>HKDM Digital — SMM Panel Dashboard</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,77 +14,60 @@
     body {
       background-color: #0f172a;
       color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* AUTH SCREEN */
+    .auth-container {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 100%;
       min-height: 100vh;
       padding: 20px;
     }
-    .card {
+    .auth-card {
       background-color: #1e293b;
       padding: 32px 24px;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
       width: 100%;
-      max-width: 450px;
+      max-width: 420px;
       border: 1px solid #334155;
+      text-align: center;
     }
     .logo-text {
       font-size: 24px;
       font-weight: 700;
       color: #38bdf8;
       margin-bottom: 8px;
-      text-align: center;
     }
     .subtitle {
       font-size: 14px;
       color: #94a3b8;
       margin-bottom: 24px;
-      text-align: center;
     }
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+
+    /* BUTTONS & FORMS */
     .btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px 16px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .btn-primary {
-      background-color: #0284c7;
-      color: #ffffff;
-    }
-    .btn-primary:active {
-      background-color: #0369a1;
-    }
-    .btn-secondary {
-      background-color: #334155;
-      color: #ffffff;
-    }
-
-    /* Main Dashboard Styles */
-    .hidden {
-      display: none !important;
-    }
-    .form-group {
-      margin-bottom: 16px;
-      text-align: left;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    select, input {
+    .btn-primary { background-color: #0284c7; color: #ffffff; }
+    .btn-primary:hover { background-color: #0369a1; }
+    .btn-secondary { background-color: #334155; color: #ffffff; margin-top: 10px; }
+    .btn-success { background-color: #10b981; color: #ffffff; }
+    
+    .form-group { margin-bottom: 16px; text-align: left; }
+    label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+    select, input, textarea {
       width: 100%;
       padding: 12px;
       border-radius: 8px;
@@ -94,12 +77,88 @@
       font-size: 14px;
       outline: none;
     }
-    select:focus, input:focus {
-      border-color: #0284c7;
+    select:focus, input:focus, textarea:focus { border-color: #0284c7; }
+
+    /* DASHBOARD LAYOUT */
+    .dashboard-layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
     }
+    
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background-color: #1e293b;
+      border-right: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .sidebar-brand {
+      font-size: 20px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 30px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background-color: #0284c7;
+      color: #ffffff;
+    }
+
+    /* MAIN CONTENT AREA */
+    .main-content {
+      flex: 1;
+      padding: 24px 32px;
+      background-color: #0f172a;
+      overflow-y: auto;
+    }
+
+    /* TOP HEADER BAR */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #334155;
+    }
+    .wallet-card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      padding: 10px 18px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .balance-amount { font-size: 18px; font-weight: 700; color: #38bdf8; }
+    .logout-btn { color: #ef4444; font-size: 13px; cursor: pointer; text-decoration: underline; }
+
+    /* CONTENT PANELS */
+    .panel-card {
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #334155;
+      max-width: 600px;
+    }
+    .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; }
+
+    /* ORDER SUMMARY BOX */
     .price-box {
       background-color: #0f172a;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
       margin-bottom: 16px;
       display: flex;
@@ -107,170 +166,239 @@
       font-weight: 600;
       border: 1px dashed #334155;
     }
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #334155;
-    }
-    .logout-link {
-      color: #ef4444;
-      font-size: 13px;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .terms-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #94a3b8;
-      margin-bottom: 20px;
-    }
-    .terms-group input {
-      width: auto;
-      cursor: pointer;
-    }
-    .terms-link {
-      color: #38bdf8;
-      cursor: pointer;
-      text-decoration: underline;
-    }
 
-    /* Modal Styles */
+    /* TABLES (ORDER HISTORY) */
+    .table-container { overflow-x: auto; max-width: 100%; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+    th, td { padding: 12px 16px; border-bottom: 1px solid #334155; }
+    th { color: #94a3b8; font-size: 12px; text-transform: uppercase; }
+    
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .badge-processing { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+
+    /* TERMS & MODAL */
+    .terms-group { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+    .terms-group input { width: auto; cursor: pointer; }
+    .terms-link { color: #38bdf8; cursor: pointer; text-decoration: underline; }
+    
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      z-index: 1000;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;
+      padding: 20px; z-index: 1000;
     }
     .modal-content {
-      background-color: #1e293b;
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 500px;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      font-size: 13px;
-      line-height: 1.6;
+      background-color: #1e293b; padding: 24px; border-radius: 12px;
+      max-width: 480px; max-height: 80vh; overflow-y: auto; border: 1px solid #334155; color: #cbd5e1; font-size: 13px; line-height: 1.6;
     }
-    .modal-content h3 {
-      color: #ffffff;
-      margin-bottom: 12px;
-      font-size: 18px;
-    }
-    .modal-content h4 {
-      color: #38bdf8;
-      margin-top: 12px;
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-    .close-btn {
-      margin-top: 16px;
-      padding: 10px;
-      background: #334155;
-      border: none;
-      color: #fff;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: 600;
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      .dashboard-layout { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #334155; }
+      .main-content { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN / SIGN UP CARD -->
-  <div id="auth-card" class="card">
-    <div class="logo-text">HKDM Digital</div>
-    <div class="subtitle">Welcome to your SMM Panel</div>
-
-    <div class="btn-group">
+  <!-- 1. AUTHENTICATION PAGE -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="logo-text">HKDM Digital</div>
+      <div class="subtitle">Social Media Growth Panel</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
     </div>
   </div>
 
-  <!-- MAIN SMM ORDERING DASHBOARD -->
-  <div id="dashboard-card" class="card hidden">
-    <div class="header-bar">
-      <div style="font-weight:700; color:#38bdf8;">HKDM Digital</div>
-      <span id="logout-btn" class="logout-link">Log Out</span>
-    </div>
+  <!-- 2. MAIN CUSTOMER DASHBOARD -->
+  <div id="dashboard-screen" class="dashboard-layout hidden">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">HKDM Digital</div>
+      <ul class="nav-list">
+        <li class="nav-item active" onclick="switchTab('new-order')">🛒 New Order</li>
+        <li class="nav-item" onclick="switchTab('order-history')">📋 Order History</li>
+        <li class="nav-item" onclick="switchTab('add-funds')">💳 Add Funds</li>
+        <li class="nav-item" onclick="switchTab('support')">💬 Support</li>
+      </ul>
+    </aside>
 
-    <h2 style="font-size: 18px; margin-bottom: 16px;">Place New Order</h2>
+    <!-- MAIN VIEW -->
+    <main class="main-content">
+      
+      <!-- TOP USER BAR -->
+      <header class="top-header">
+        <div>
+          <h2 style="font-size: 20px;">Welcome Back!</h2>
+          <span style="font-size: 13px; color: #94a3b8;">Client Dashboard</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="wallet-card">
+            <span style="font-size: 12px; color: #94a3b8;">Balance:</span>
+            <span id="user-balance" class="balance-amount">₦0.00</span>
+          </div>
+          <span id="logout-btn" class="logout-link">Log Out</span>
+        </div>
+      </header>
 
-    <form id="order-form">
-      <div class="form-group">
-        <label for="category">Category</label>
-        <select id="category">
-          <option value="instagram">Instagram Services</option>
-          <option value="tiktok">TikTok Services</option>
-          <option value="youtube">YouTube Services</option>
-          <option value="facebook">Facebook Services</option>
-        </select>
-      </div>
+      <!-- TAB 1: NEW ORDER PANEL -->
+      <section id="tab-new-order" class="tab-panel">
+        <div class="panel-card">
+          <h3 class="panel-title">Place New Order</h3>
+          <form id="order-form">
+            
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category">
+                <option value="instagram">Instagram Services</option>
+                <option value="tiktok">TikTok Services</option>
+                <option value="youtube">YouTube Services</option>
+                <option value="facebook">Facebook Services</option>
+              </select>
+            </div>
 
-      <div class="form-group">
-        <label for="service">Service</label>
-        <select id="service"></select>
-      </div>
+            <div class="form-group">
+              <label for="service">Service</label>
+              <select id="service"></select>
+            </div>
 
-      <div class="form-group">
-        <label for="link">Target Link / URL</label>
-        <input type="url" id="link" placeholder="https://..." required />
-      </div>
+            <div class="form-group">
+              <label for="link">Target Link / URL</label>
+              <input type="url" id="link" placeholder="https://..." required />
+            </div>
 
-      <div class="form-group">
-        <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
-      </div>
+            <div class="form-group">
+              <label for="quantity">Quantity</label>
+              <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
+            </div>
 
-      <div class="price-box">
-        <span>Total Charge:</span>
-        <span id="total-price" style="color:#38bdf8;">₦0.00</span>
-      </div>
+            <div class="price-box">
+              <span>Total Charge:</span>
+              <span id="total-price" style="color:#38bdf8;">₦0.00</span>
+            </div>
 
-      <div class="terms-group">
-        <input type="checkbox" id="agree-terms" required />
-        <label for="agree-terms" style="margin-bottom:0; font-weight:normal;">
-          I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span>
-        </label>
-      </div>
+            <div class="terms-group">
+              <input type="checkbox" id="agree-terms" required />
+              <label for="agree-terms" style="margin-bottom:0; font-weight:normal;">
+                I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span>
+              </label>
+            </div>
 
-      <button type="submit" class="btn btn-primary">Submit Order</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 2: ORDER HISTORY -->
+      <section id="tab-order-history" class="tab-panel hidden">
+        <div class="panel-card" style="max-width: 100%;">
+          <h3 class="panel-title">Your Order History</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Service</th>
+                  <th>Link</th>
+                  <th>Quantity</th>
+                  <th>Charge</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body">
+                <tr>
+                  <td>#HKD-1021</td>
+                  <td>TikTok Followers</td>
+                  <td>tiktok.com/@hkdm_digital</td>
+                  <td>1,000</td>
+                  <td>₦6,000.00</td>
+                  <td><span class="badge badge-completed">Completed</span></td>
+                </tr>
+                <tr>
+                  <td>#HKD-1022</td>
+                  <td>Instagram Likes</td>
+                  <td>instagram.com/p/Cxy12...</td>
+                  <td>500</td>
+                  <td>₦1,000.00</td>
+                  <td><span class="badge badge-processing">Processing</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: ADD FUNDS -->
+      <section id="tab-add-funds" class="tab-panel hidden">
+        <div class="panel-card">
+          <h3 class="panel-title">Deposit Funds</h3>
+          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 20px;">
+            Add money to your account balance to place automated orders seamlessly.
+          </p>
+
+          <div style="background-color: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
+            <h4 style="color: #38bdf8; font-size: 14px; margin-bottom: 8px;">Direct Bank Transfer</h4>
+            <p style="font-size: 13px; line-height: 1.6;">
+              <strong>Bank:</strong> OPay / Moniepoint<br>
+              <strong>Account Number:</strong> 8135349371<br>
+              <strong>Account Name:</strong> Sadiq Abdulrauf / HKDM Digital
+            </p>
+          </div>
+
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+            After making payment, click below to send your receipt on WhatsApp for instant wallet funding:
+          </p>
+          <a href="https://wa.me/2348135349371?text=Hello%20HKDM,%20I%20just%20made%20a%20deposit%20for%20my%20SMM%20panel" target="_blank" style="text-decoration: none;">
+            <button class="btn btn-success" type="button">Confirm Payment via WhatsApp</button>
+          </a>
+        </div>
+      </section>
+
+      <!-- TAB 4: SUPPORT -->
+      <section id="tab-support" class="tab-panel hidden">
+        <div class="panel-card">
+          <h3 class="panel-title">Customer Support</h3>
+          <form id="support-form">
+            <div class="form-group">
+              <label for="subject">Subject / Order ID</label>
+              <input type="text" id="subject" placeholder="e.g. Refill Request for Order #HKD-1021" required />
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" rows="4" placeholder="Describe your inquiry or order issue..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+          </form>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- TERMS AND CONDITIONS MODAL -->
+  <!-- TERMS & CONDITIONS MODAL -->
   <div id="terms-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3>Terms & Conditions</h3>
-      
-      <h4>1. Service Usage</h4>
-      <p>HKDM Digital Marketing provides social media promotional services. By placing an order, you agree that your target account/profile must be set to public during delivery.</p>
-
-      <h4>2. Link Accuracy</h4>
-      <p>Please double-check your target URL. We are not responsible for orders submitted with wrong or broken links once processing has started.</p>
-
-      <h4>3. Account Safety</h4>
-      <p>You agree not to submit private accounts, age-restricted content, or material that violates platform guidelines.</p>
-
-      <h4>4. Refunds & Cancellations</h4>
-      <p>Orders cannot be canceled or refunded once they are actively processing. Refunds or order refills apply only if delivery fails on our end.</p>
-
-      <button id="close-terms" class="close-btn" type="button">Close</button>
+      <h3 style="color:#fff; margin-bottom:12px;">Terms & Conditions</h3>
+      <h4 style="color:#38bdf8;">1. Service Delivery</h4>
+      <p>Target accounts must remain public throughout the entire delivery process.</p>
+      <h4 style="color:#38bdf8;">2. Link Accuracy</h4>
+      <p>Verify link parameters carefully before submission; active orders with invalid links cannot be edited or refunded once submitted.</p>
+      <h4 style="color:#38bdf8;">3. Cancellations & Refunds</h4>
+      <p>System refunds are applied automatically if delivery fails on our backend. Manual cancellations are not supported once orders enter processing status.</p>
+      <button id="close-terms" class="btn btn-secondary" style="margin-top:20px;" type="button">Close</button>
     </div>
   </div>
 
@@ -279,11 +407,11 @@
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
-    const authCard = document.getElementById("auth-card");
-    const dashboardCard = document.getElementById("dashboard-card");
+    const authScreen = document.getElementById("auth-screen");
+    const dashboardScreen = document.getElementById("dashboard-screen");
     const termsModal = document.getElementById("terms-modal");
 
-    // 1. Session Check
+    // 1. Session Detection
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
@@ -291,11 +419,11 @@
     if (hasCode || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
       window.history.replaceState({}, document.title, window.location.pathname);
-      authCard.classList.add("hidden");
-      dashboardCard.classList.remove("hidden");
+      authScreen.classList.add("hidden");
+      dashboardScreen.classList.remove("hidden");
     }
 
-    // 2. PKCE OAuth Helpers
+    // 2. PKCE OAuth Handlers
     function generateRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -312,9 +440,7 @@
       const data = encoder.encode(codeVerifier);
       const digest = await window.crypto.subtle.digest("SHA-256", data);
       return btoa(String.fromCharCode(...new Uint8Array(digest)))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
+        .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     }
 
     async function startAuthFlow(startPage) {
@@ -347,11 +473,20 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 3. Modal Toggles
+    // 3. Navigation Tab Switcher
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
+      document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+
+      document.getElementById(`tab-${tabName}`).classList.remove("hidden");
+      event.target.classList.add("active");
+    }
+
+    // 4. Modal Handlers
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 
-    // 4. Exact Services & Rates per 1,000 (₦)
+    // 5. Dynamic Pricing & Services Catalog
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000 },
@@ -410,9 +545,16 @@
 
     loadServices();
 
+    // Submit Order Simulation
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Order submitted successfully!");
+      alert("Order submitted successfully! You can track progress in Order History.");
+    });
+
+    // Support Form Simulation
+    document.getElementById("support-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Support ticket submitted! Our team will respond shortly.");
     });
   </script>
 
