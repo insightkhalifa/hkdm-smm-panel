@@ -81,9 +81,8 @@
     <div class="subtitle">Welcome to your SMM Panel</div>
 
     <div class="btn-group">
-      <!-- Direct Kinde OAuth Endpoints -->
-      <a id="login-btn" class="btn btn-primary" href="#">Log In</a>
-      <a id="register-btn" class="btn btn-secondary" href="#">Sign Up</a>
+      <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
+      <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
     </div>
   </div>
 
@@ -92,13 +91,33 @@
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = encodeURIComponent("https://hkdm-smm-panel.vercel.app");
 
-    // Construct standard OAuth URLs for Kinde
-    const loginUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=login`;
-    const registerUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=registration`;
+    // Function to generate a secure random state string (16 chars)
+    function generateRandomState() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let state = "";
+      for (let i = 0; i < 16; i++) {
+        state += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return state;
+    }
 
-    // Assign URLs to the buttons
-    document.getElementById("login-btn").href = loginUrl;
-    document.getElementById("register-btn").href = registerUrl;
+    function redirectToKinde(startPage) {
+      const state = generateRandomState();
+      // Store state in localStorage for session verification
+      localStorage.setItem("kinde_auth_state", state);
+
+      const targetUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=${startPage}&state=${state}`;
+      
+      window.location.href = targetUrl;
+    }
+
+    document.getElementById("login-btn").addEventListener("click", () => {
+      redirectToKinde("login");
+    });
+
+    document.getElementById("register-btn").addEventListener("click", () => {
+      redirectToKinde("registration");
+    });
   </script>
 
 </body>
