@@ -273,6 +273,18 @@
       border: 1px dashed var(--border-color);
     }
 
+    /* NOTE BANNER */
+    .note-banner {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 14px 16px;
+      border-radius: 10px;
+      color: #fcd34d;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
     /* TABLE LAYOUT */
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
@@ -384,7 +396,7 @@
       <aside id="sidebar" class="sidebar">
         <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
-        <div class="nav-link" onclick="switchTab('add-funds', this)">💳 Add Funds</div>
+        <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
@@ -472,21 +484,33 @@
           </div>
         </section>
 
-        <!-- ADD FUNDS TAB -->
-        <section id="tab-add-funds" class="tab-panel hidden">
+        <!-- TOP UP ACCOUNT TAB -->
+        <section id="tab-top-up" class="tab-panel hidden">
           <div class="panel-card">
-            <h3 class="panel-title">Deposit Funds</h3>
+            <h3 class="panel-title">Top Up Account</h3>
+            
+            <!-- NOTE BANNER -->
+            <div class="note-banner">
+              <strong>Important Note:</strong> Please attach your sender's name to the WhatsApp message and include your HKDM Username. Ensure you add the narration <strong>"For social media marketing"</strong> to your payment transfer.
+            </div>
+
             <div style="background-color: #0b0f19; padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
               <h4 style="color: var(--accent-glow); font-size: 14px; margin-bottom: 10px;">Bank Transfer Details</h4>
               <p style="font-size: 13px; line-height: 1.8; color: #cbd5e1;">
                 <strong>Bank:</strong> OPay / Moniepoint<br>
                 <strong>Account Number:</strong> 8135349371<br>
-                <strong>Account Name:</strong> Sadiq Abdulrauf / HKDM Digital
+                <strong>Account Name:</strong> Sadiq Abdulrauf / HKDM Digital<br>
+                <strong>Narration:</strong> For social media marketing
               </p>
             </div>
-            <a href="https://wa.me/2348135349371?text=Hello%20HKDM,%20I%20just%20made%20a%20deposit%20for%20my%20SMM%20panel" target="_blank" style="text-decoration: none;">
-              <button class="btn btn-success" type="button">Confirm Payment on WhatsApp</button>
-            </a>
+
+            <form id="top-up-form">
+              <div class="form-group">
+                <label for="deposit-amount">Amount You Wish to Deposit (₦)</label>
+                <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
+              </div>
+              <button type="submit" class="btn btn-success">Confirm Payment</button>
+            </form>
           </div>
         </section>
 
@@ -933,7 +957,7 @@
       const totalCost = (qty / 1000) * ratePer1000;
 
       if (userBalance < totalCost) {
-        alert("Insufficient balance! Please deposit funds on the 'Add Funds' tab before ordering.");
+        alert("Insufficient balance! Please top up your account before ordering.");
         return;
       }
 
@@ -967,6 +991,27 @@
       document.getElementById("order-form").reset();
       updateServiceLimits();
       updatePrice();
+    });
+
+    // Top Up Account Form Handler with Custom WhatsApp Prompt
+    document.getElementById("top-up-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const depositAmountInput = document.getElementById("deposit-amount").value;
+      const amount = parseFloat(depositAmountInput);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid deposit amount.");
+        return;
+      }
+
+      const email = localStorage.getItem("hkdm_user_email") || "";
+      const username = email ? email.split('@')[0] : "user";
+      
+      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}`);
+      const whatsappUrl = `https://wa.me/2348135349371?text=${whatsappMessage}`;
+
+      // Open WhatsApp link in a new tab/window
+      window.open(whatsappUrl, '_blank');
     });
 
     function renderOrderHistory() {
@@ -1082,7 +1127,6 @@
 
         let refundAmount = orderData.rawCost;
         if (!refundAmount) {
-          // Fallback parsing if rawCost wasn't stored
           refundAmount = parseFloat(orderData.charge.replace(/[^\d.]/g, '')) || 0;
         }
 
@@ -1091,7 +1135,6 @@
           const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
           const newBal = currentBal + refundAmount;
 
-          // Update balance and mark order as Refunded in both user path and global orders path
           userBalanceRef.set(newBal);
           db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
           db.ref("orders/" + firebaseKey + "/status").set("Refunded");
