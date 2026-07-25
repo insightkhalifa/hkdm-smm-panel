@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HKDM Digital Panel</title>
+  <title>HKDM Digital SMM Panel</title>
   <style>
     * {
       box-sizing: border-box;
@@ -26,8 +26,7 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
       width: 100%;
-      max-width: 400px;
-      text-align: center;
+      max-width: 450px;
       border: 1px solid #334155;
     }
     .logo-text {
@@ -35,11 +34,13 @@
       font-weight: 700;
       color: #38bdf8;
       margin-bottom: 8px;
+      text-align: center;
     }
     .subtitle {
       font-size: 14px;
       color: #94a3b8;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      text-align: center;
     }
     .btn-group {
       display: flex;
@@ -67,14 +68,65 @@
       background-color: #334155;
       color: #ffffff;
     }
-    .btn-secondary:active {
-      background-color: #475569;
+
+    /* Main Dashboard Styles */
+    .hidden {
+      display: none !important;
+    }
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+    select:focus, input:focus {
+      border-color: #0284c7;
+    }
+    .price-box {
+      background-color: #0f172a;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      border: 1px dashed #334155;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #334155;
+    }
+    .logout-link {
+      color: #ef4444;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
+  <!-- LOGIN / SIGN UP CARD -->
+  <div id="auth-card" class="card">
     <div class="logo-text">HKDM Digital</div>
     <div class="subtitle">Welcome to your SMM Panel</div>
 
@@ -84,12 +136,77 @@
     </div>
   </div>
 
+  <!-- MAIN SMM ORDERING DASHBOARD -->
+  <div id="dashboard-card" class="card hidden">
+    <div class="header-bar">
+      <div style="font-weight:700; color:#38bdf8;">HKDM Digital</div>
+      <span id="logout-btn" class="logout-link">Log Out</span>
+    </div>
+
+    <h2 style="font-size: 18px; margin-bottom: 16px;">Place New Order</h2>
+
+    <form id="order-form">
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category">
+          <option>TikTok Services</option>
+          <option>Instagram Services</option>
+          <option>YouTube Services</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="service">Service</label>
+        <select id="service">
+          <option value="10">TikTok Followers — $10 per 1,000</option>
+          <option value="5">TikTok Likes — $5 per 1,000</option>
+          <option value="15">Instagram Followers — $15 per 1,000</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="link">Target Link / URL</label>
+        <input type="url" id="link" placeholder="https://..." required />
+      </div>
+
+      <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
+      </div>
+
+      <div class="price-box">
+        <span>Total Charge:</span>
+        <span id="total-price" style="color:#38bdf8;">$10.00</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit Order</button>
+    </form>
+  </div>
+
   <script>
     const KINDE_DOMAIN = "https://hkdm.kinde.com";
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
-    // Helper functions for OAuth2 PKCE
+    const authCard = document.getElementById("auth-card");
+    const dashboardCard = document.getElementById("dashboard-card");
+
+    // 1. Check if user is returning from authentication
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasCode = urlParams.get("code");
+    const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
+
+    if (hasCode || isLoggedIn) {
+      // Save login state
+      localStorage.setItem("hkdm_logged_in", "true");
+      // Clean URL bar
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Display dashboard
+      authCard.classList.add("hidden");
+      dashboardCard.classList.remove("hidden");
+    }
+
+    // 2. PKCE OAuth Helpers
     function generateRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -133,12 +250,33 @@
       window.location.href = `${KINDE_DOMAIN}/oauth2/auth?${params.toString()}`;
     }
 
-    document.getElementById("login-btn").addEventListener("click", () => {
-      startAuthFlow("login");
+    document.getElementById("login-btn").addEventListener("click", () => startAuthFlow("login"));
+    document.getElementById("register-btn").addEventListener("click", () => startAuthFlow("registration"));
+
+    // 3. Logout handler
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("hkdm_logged_in");
+      window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    document.getElementById("register-btn").addEventListener("click", () => {
-      startAuthFlow("registration");
+    // 4. Dynamic Order Calculator
+    const serviceSelect = document.getElementById("service");
+    const quantityInput = document.getElementById("quantity");
+    const totalPriceEl = document.getElementById("total-price");
+
+    function updatePrice() {
+      const ratePer1000 = parseFloat(serviceSelect.value);
+      const qty = parseInt(quantityInput.value) || 0;
+      const total = (qty / 1000) * ratePer1000;
+      totalPriceEl.textContent = `$${total.toFixed(2)}`;
+    }
+
+    serviceSelect.addEventListener("change", updatePrice);
+    quantityInput.addEventListener("input", updatePrice);
+
+    document.getElementById("order-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Order submitted successfully!");
     });
   </script>
 
