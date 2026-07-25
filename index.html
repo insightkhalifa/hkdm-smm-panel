@@ -55,6 +55,8 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
     }
     .btn-primary {
       background-color: #0284c7;
@@ -71,9 +73,6 @@
       background-color: #475569;
     }
   </style>
-
-  <!-- Kinde SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@kinde-oss/kinde-typescript-sdk@2/dist/kinde-sdk.js"></script>
 </head>
 <body>
 
@@ -81,57 +80,25 @@
     <div class="logo-text">HKDM Digital</div>
     <div class="subtitle">Welcome to your SMM Panel</div>
 
-    <!-- LOGGED OUT VIEW -->
-    <div id="logged_out_view" class="btn-group">
-      <button id="login" class="btn btn-primary" type="button">Log In</button>
-      <button id="register" class="btn btn-secondary" type="button">Sign Up</button>
-    </div>
-
-    <!-- LOGGED IN VIEW -->
-    <div id="logged_in_view" style="display: none;">
-      <p style="margin-bottom: 12px; color: #4ade80; font-weight: 600;">Welcome back!</p>
-      <div id="user-details" class="subtitle"></div>
-      <button id="logout" class="btn btn-secondary" type="button">Log Out</button>
+    <div class="btn-group">
+      <!-- Direct Kinde OAuth Endpoints -->
+      <a id="login-btn" class="btn btn-primary" href="#">Log In</a>
+      <a id="register-btn" class="btn btn-secondary" href="#">Sign Up</a>
     </div>
   </div>
 
   <script>
-    let kinde;
+    const KINDE_DOMAIN = "https://hkdm.kinde.com";
+    const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
+    const REDIRECT_URI = encodeURIComponent("https://hkdm-smm-panel.vercel.app");
 
-    async function initKinde() {
-      try {
-        kinde = await createKindeClient({
-          client_id: "3ce3ed295cfe47988291f19d1c157a1f",
-          domain: "https://hkdm.kinde.com",
-          redirect_uri: window.location.origin
-        });
+    // Construct standard OAuth URLs for Kinde
+    const loginUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=login`;
+    const registerUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=registration`;
 
-        const isAuthenticated = await kinde.isAuthenticated();
-
-        if (isAuthenticated) {
-          const user = await kinde.getUser();
-          document.getElementById("logged_out_view").style.display = "none";
-          document.getElementById("logged_in_view").style.display = "block";
-          document.getElementById("user-details").textContent = `Logged in as: ${user.email || user.given_name || "User"}`;
-        }
-
-        document.getElementById("login").addEventListener("click", async () => {
-          await kinde.login();
-        });
-
-        document.getElementById("register").addEventListener("click", async () => {
-          await kinde.register();
-        });
-
-        document.getElementById("logout").addEventListener("click", async () => {
-          await kinde.logout();
-        });
-      } catch (err) {
-        console.error("Kinde Init Error:", err);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", initKinde);
+    // Assign URLs to the buttons
+    document.getElementById("login-btn").href = loginUrl;
+    document.getElementById("register-btn").href = registerUrl;
   </script>
 
 </body>
