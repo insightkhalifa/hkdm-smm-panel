@@ -233,13 +233,6 @@
       font-weight: 800;
       color: #ffffff;
       box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
     .profile-details {
       display: flex;
@@ -327,6 +320,7 @@
       color: #cbd5e1; font-size: 13px; line-height: 1.6;
     }
 
+    /* CUSTOM SUCCESS MODAL BOX */
     .success-modal-box {
       background-color: var(--card-bg);
       padding: 28px 24px;
@@ -351,6 +345,7 @@
 
     .hidden { display: none !important; }
 
+    /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
       .menu-toggle { display: block; }
       .sidebar {
@@ -376,15 +371,13 @@
       <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
-      
-      <!-- QUICKBYPASS FOR TESTING/ADMIN -->
-      <button id="quick-dev-login" class="btn btn-sm btn-warning" style="margin-top: 15px; width: 100%;">⚡ Quick Access (Test Mode)</button>
     </div>
   </div>
 
   <!-- 2. MAIN CUSTOMER PANEL -->
   <div id="dashboard-screen" class="hidden" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column;">
     
+    <!-- TOP NAVIGATION BAR -->
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
@@ -399,6 +392,7 @@
     </header>
 
     <div class="dashboard-layout">
+      <!-- SIDEBAR NAV MENU -->
       <aside id="sidebar" class="sidebar">
         <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
@@ -406,11 +400,13 @@
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
+        <!-- ADMIN SECRET TAB (RESTRICTED ACCESS) -->
         <div id="admin-tab-link" class="nav-link admin-link hidden" onclick="switchTab('admin', this)">👑 Admin Panel</div>
 
         <div id="logout-btn" class="nav-link logout-link">🚪 Log Out</div>
       </aside>
 
+      <!-- MAIN PAGE CONTENT -->
       <main class="main-content">
         
         <!-- NEW ORDER TAB -->
@@ -493,6 +489,7 @@
           <div class="panel-card">
             <h3 class="panel-title">Top Up Account</h3>
             
+            <!-- NOTE BANNER -->
             <div class="note-banner">
               Please include your sender's name in the WhatsApp message along with your HKDM Username. Ensure you add the narration <strong>"For social media marketing"</strong> to your payment transfer.
             </div>
@@ -524,23 +521,12 @@
             <h3 class="panel-title">Account Profile</h3>
             
             <div class="profile-header">
-              <div id="profile-avatar-container" class="profile-avatar">
-                <span id="profile-initial">U</span>
-              </div>
+              <div id="profile-initial" class="profile-avatar">U</div>
               <div>
                 <h4 id="profile-name" style="font-size: 18px; color: #fff;">User</h4>
                 <span id="profile-role-badge" class="badge badge-completed" style="margin-top: 4px; display: inline-block;">Client</span>
               </div>
             </div>
-
-            <!-- Profile Picture File Upload Form -->
-            <form id="profile-pic-form" style="margin-bottom: 24px; background-color: #0b0f19; padding: 16px; border-radius: 12px; border: 1px solid var(--border-color);">
-              <div class="form-group" style="margin-bottom: 12px;">
-                <label for="avatar-file-input">Upload Profile Picture from Device</label>
-                <input type="file" id="avatar-file-input" accept="image/*" required style="padding: 10px; cursor: pointer;" />
-              </div>
-              <button type="submit" class="btn btn-primary btn-sm">Upload & Save Picture</button>
-            </form>
 
             <div class="profile-details">
               <div class="detail-row">
@@ -583,8 +569,10 @@
           </div>
         </section>
 
-        <!-- ADMIN TAB -->
+        <!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
         <section id="tab-admin" class="tab-panel hidden">
+          
+          <!-- TOP UP USER BALANCE -->
           <div class="panel-card">
             <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
             <form id="admin-topup-form">
@@ -600,6 +588,7 @@
             </form>
           </div>
 
+          <!-- ADMIN ORDER MANAGEMENT -->
           <div class="panel-card">
             <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
             <div class="table-container">
@@ -625,6 +614,7 @@
               </table>
             </div>
           </div>
+
         </section>
 
       </main>
@@ -671,6 +661,8 @@
     const KINDE_DOMAIN = "https://hkdm.kinde.com";
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
+
+    // STRICT ADMIN EMAIL REQUIREMENT
     const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
     const authScreen = document.getElementById("auth-screen");
@@ -680,6 +672,7 @@
     const successModal = document.getElementById("success-modal");
     const adminTabLink = document.getElementById("admin-tab-link");
 
+    // Helper to decode JWT payload from Kinde
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -693,6 +686,7 @@
       }
     }
 
+    // Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const idToken = urlParams.get("id_token");
@@ -722,17 +716,13 @@
       initRealtimeSync(currentUserEmail);
     }
 
-    // Quick Bypass Button for Instant Testing
-    document.getElementById("quick-dev-login").addEventListener("click", () => {
-      localStorage.setItem("hkdm_logged_in", "true");
-      localStorage.setItem("hkdm_user_email", ADMIN_EMAIL);
-      window.location.reload();
-    });
-
     function checkAdminAccess(email) {
       if (!email && localStorage.getItem("hkdm_logged_in") === "true") {
-        email = ADMIN_EMAIL;
-        localStorage.setItem("hkdm_user_email", email);
+        const inputEmail = prompt("Enter your account email to verify access permissions:");
+        if (inputEmail) {
+          email = inputEmail.trim();
+          localStorage.setItem("hkdm_user_email", email);
+        }
       }
 
       if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
@@ -745,7 +735,11 @@
 
     function updateUserProfileUI(email) {
       if (!email) return;
+      
       const username = email.split('@')[0];
+      const initial = username.charAt(0).toUpperCase();
+
+      document.getElementById("profile-initial").textContent = initial;
       document.getElementById("profile-name").textContent = username;
       document.getElementById("profile-username").textContent = `@${username}`;
       document.getElementById("profile-email").textContent = email;
@@ -758,29 +752,17 @@
       }
     }
 
-    function updateAvatarUI(avatarData) {
-      const avatarContainers = [document.getElementById("profile-avatar-container")];
-      avatarContainers.forEach(avatarContainer => {
-        if (!avatarContainer) return;
-        if (avatarData) {
-          avatarContainer.innerHTML = `<img src="${avatarData}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.parentNode.innerHTML='U';">`;
-        } else {
-          const email = localStorage.getItem("hkdm_user_email") || "";
-          const username = email ? email.split('@')[0] : "U";
-          avatarContainer.innerHTML = `<span id="profile-initial">${username.charAt(0).toUpperCase()}</span>`;
-        }
-      });
-    }
-
     function updateBalanceUI() {
       document.getElementById("user-balance").textContent = 
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    // FIREBASE REALTIME SYNC FOR USERS & ORDERS
     function initRealtimeSync(email) {
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
+      // Listen for live balance changes from Firebase
       db.ref("users/" + cleanKey + "/balance").on("value", (snapshot) => {
         const val = snapshot.val();
         if (val !== null) {
@@ -792,13 +774,7 @@
         updateBalanceUI();
       });
 
-      db.ref("users/" + cleanKey + "/avatarUrl").on("value", (snapshot) => {
-        const avatarData = snapshot.val();
-        if (avatarData) {
-          updateAvatarUI(avatarData);
-        }
-      });
-
+      // Listen for live order history updates
       db.ref("users/" + cleanKey + "/orders").on("value", (snapshot) => {
         const data = snapshot.val();
         userOrders = data ? Object.values(data) : [];
@@ -814,34 +790,7 @@
       });
     }
 
-    // Direct Profile Picture File Upload Handler
-    document.getElementById("profile-pic-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const fileInput = document.getElementById("avatar-file-input");
-      const email = localStorage.getItem("hkdm_user_email") || "";
-      
-      if (!email || fileInput.files.length === 0) return;
-
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-
-      reader.onload = function(uploadEvent) {
-        const base64ImageString = uploadEvent.target.result;
-        const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-
-        db.ref("users/" + cleanKey + "/avatarUrl").set(base64ImageString)
-          .then(() => {
-            alert("Profile picture uploaded successfully!");
-            fileInput.value = "";
-          })
-          .catch((err) => {
-            alert("Failed to upload profile picture: " + err.message);
-          });
-      };
-
-      reader.readAsDataURL(file);
-    });
-
+    // PKCE OAuth Helpers
     function generateRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -892,10 +841,12 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
+    // Mobile Navigation Toggle
     document.getElementById("menu-btn").addEventListener("click", () => {
       sidebar.classList.toggle("open");
     });
 
+    // Tab Navigation Switcher
     function switchTab(tabName, element) {
       document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
       document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
@@ -905,10 +856,12 @@
       sidebar.classList.remove("open");
     }
 
+    // Modal Events
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
+    // Services Catalog
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000 },
@@ -987,6 +940,7 @@
 
     loadServices();
 
+    // Order Submission Handling (Defaults to "Pending")
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -1018,6 +972,7 @@
       const link = document.getElementById("link").value;
 
       const orderIdKey = "ord_" + Date.now();
+      const rawCostValue = totalCost;
       const newOrder = {
         firebaseKey: orderIdKey,
         userEmail: email,
@@ -1025,7 +980,7 @@
         service: selectedServiceText,
         link: link,
         qty: parseInt(qty).toLocaleString(),
-        rawCost: totalCost,
+        rawCost: rawCostValue,
         charge: `₦${totalCost.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
         status: "Pending"
       };
@@ -1039,9 +994,11 @@
       updatePrice();
     });
 
+    // Top Up Account Form Handler (Includes Sender's Name prompt directly inside the WhatsApp message text)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      const amount = parseFloat(document.getElementById("deposit-amount").value);
+      const depositAmountInput = document.getElementById("deposit-amount").value;
+      const amount = parseFloat(depositAmountInput);
 
       if (isNaN(amount) || amount <= 0) {
         alert("Please enter a valid deposit amount.");
@@ -1050,8 +1007,12 @@
 
       const email = localStorage.getItem("hkdm_user_email") || "";
       const username = email ? email.split('@')[0] : "user";
+      
+      const whatsappNumber = "18253635037";
       const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}\n\nSender's Name: [Type your sender name here]`);
-      window.open(`https://wa.me/18253635037?text=${whatsappMessage}`, '_blank');
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+      window.open(whatsappUrl, '_blank');
     });
 
     function renderOrderHistory() {
@@ -1072,24 +1033,40 @@
       `).join("");
     }
 
+    // Admin Wallet Top-up
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
+      
       let targetInput = document.getElementById("admin-user-email").value.trim().toLowerCase();
-      const amount = parseFloat(document.getElementById("admin-amount").value);
+      const amountInput = document.getElementById("admin-amount").value;
+      const amount = parseFloat(amountInput);
 
-      if (!targetInput || isNaN(amount)) return;
-      if (!targetInput.includes("@")) targetInput += "@gmail.com";
+      if (!targetInput || isNaN(amount)) {
+        alert("Please enter a valid customer identifier and amount.");
+        return;
+      }
+
+      if (!targetInput.includes("@")) {
+        targetInput = targetInput + "@gmail.com";
+      }
 
       const targetCleanKey = targetInput.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
       const userBalanceRef = db.ref("users/" + targetCleanKey + "/balance");
 
-      userBalanceRef.once("value").then((snapshot) => {
-        let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
-        return userBalanceRef.set(currentBal + amount);
-      }).then(() => {
-        alert(`Successfully added ₦${amount.toLocaleString()} to wallet!`);
-        document.getElementById("admin-topup-form").reset();
-      });
+      userBalanceRef.once("value")
+        .then((snapshot) => {
+          let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
+          let newBalance = currentBal + amount;
+
+          return userBalanceRef.set(newBalance);
+        })
+        .then(() => {
+          alert(`Successfully added ₦${amount.toLocaleString()} to wallet for '${targetInput}'!`);
+          document.getElementById("admin-topup-form").reset();
+        })
+        .catch((err) => {
+          alert("Error updating wallet: " + err.message);
+        });
     });
 
     function renderAdminOrders(allOrders) {
@@ -1135,6 +1112,7 @@
     function updateOrderStatus(firebaseKey, userEmail, newStatus) {
       if (!firebaseKey || !userEmail) return;
       const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+
       db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set(newStatus);
       db.ref("orders/" + firebaseKey + "/status").set(newStatus);
     }
@@ -1143,19 +1121,26 @@
       if (!firebaseKey || !userEmail) return;
       const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      db.ref("orders/" + firebaseKey).once("value").then((snapshot) => {
+      const orderRef = db.ref("orders/" + firebaseKey);
+      orderRef.once("value").then((snapshot) => {
         const orderData = snapshot.val();
         if (!orderData) return;
 
-        let refundAmount = orderData.rawCost || parseFloat(orderData.charge.replace(/[^\d.]/g, '')) || 0;
-        const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
+        let refundAmount = orderData.rawCost;
+        if (!refundAmount) {
+          refundAmount = parseFloat(orderData.charge.replace(/[^\d.]/g, '')) || 0;
+        }
 
+        const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
         userBalanceRef.once("value").then((balSnap) => {
           const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
-          userBalanceRef.set(currentBal + refundAmount);
+          const newBal = currentBal + refundAmount;
+
+          userBalanceRef.set(newBal);
           db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
           db.ref("orders/" + firebaseKey + "/status").set("Refunded");
-          alert(`Successfully refunded ₦${refundAmount.toLocaleString()}!`);
+
+          alert(`Successfully refunded ₦${refundAmount.toLocaleString()} to ${userEmail}!`);
         });
       });
     }
