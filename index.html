@@ -510,6 +510,11 @@
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
               </div>
 
+              <div class="form-group">
+                <label for="sender-name">Sender's Name (Account Name)</label>
+                <input type="text" id="sender-name" placeholder="e.g. John Doe" required />
+              </div>
+
               <button type="submit" class="btn btn-success">Confirm Payment</button>
             </form>
           </div>
@@ -994,10 +999,11 @@
       updatePrice();
     });
 
-    // Top Up Account Form Handler with Fixed WhatsApp Number (+18253635037)
+    // Top Up Account Form Handler with Sender Name input and Fixed WhatsApp Number (+18253635037)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
+      const senderNameInput = document.getElementById("sender-name").value.trim();
       const amount = parseFloat(depositAmountInput);
 
       if (isNaN(amount) || amount <= 0) {
@@ -1005,11 +1011,16 @@
         return;
       }
 
+      if (!senderNameInput) {
+        alert("Please enter the sender's name.");
+        return;
+      }
+
       const email = localStorage.getItem("hkdm_user_email") || "";
       const username = email ? email.split('@')[0] : "user";
       
       const whatsappNumber = "18253635037";
-      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}`);
+      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}, Sender Name: ${senderNameInput}`);
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
       window.open(whatsappUrl, '_blank');
