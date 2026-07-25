@@ -1,264 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKDM SMM Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HKDM Digital Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background-color: #1e293b;
+      padding: 32px 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 28px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background-color: #0284c7;
+      color: #ffffff;
+    }
+    .btn-primary:active {
+      background-color: #0369a1;
+    }
+    .btn-secondary {
+      background-color: #334155;
+      color: #ffffff;
+    }
+    .btn-secondary:active {
+      background-color: #475569;
+    }
+  </style>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-    <script>
-        // Your HKDM Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyDwD0sn2FbssLiDfqvzsutnyzd0KvDUCME",
-            authDomain: "hkdm-37f18.firebaseapp.com",
-            projectId: "hkdm-37f18",
-            storageBucket: "hkdm-37f18.firebasestorage.app",
-            messagingSenderId: "656175997139",
-            appId: "1:656175997139:web:83e544fce6f4cc0f957426"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-        // Check if user is logged in
-        firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "login.html";
-            }
-        });
-
-        // Logout function
-        function logoutUser() {
-            firebase.auth().signOut().then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => {
-                alert("Logout error: " + error.message);
-            });
-        }
-    </script>
-
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
-        .container { max-width: 600px; margin: 0 auto; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h1 { font-size: 1.8rem; color: #38bdf8; text-align: left; }
-        .logout-btn { background: #ef4444; color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: background 0.2s ease; }
-        .logout-btn:hover { background: #dc2626; }
-
-        .subtitle { font-size: 0.95rem; color: #94a3b8; margin-bottom: 25px; text-align: left; }
-
-        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 20px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
-        input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
-        
-        /* Price Display Box */
-        .price-box { background: #0f172a; border: 1px solid #38bdf8; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
-        .price-label { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
-        .price-value { font-size: 1.8rem; font-weight: bold; color: #38bdf8; margin-top: 2px; }
-        .rate-hint { font-size: 0.8rem; color: #64748b; margin-top: 3px; }
-
-        /* Terms & Conditions Section */
-        .tc-card { background: #0f172a; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
-        .tc-card details summary { cursor: pointer; color: #38bdf8; font-weight: bold; font-size: 0.85rem; outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        .tc-card details summary::-webkit-details-marker { display: none; }
-        .tc-card ul { margin-top: 10px; padding-left: 18px; text-align: left; }
-        .tc-card li { margin-bottom: 6px; }
-
-        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 0.85rem; color: #f8fafc; cursor: pointer; }
-        .checkbox-group input { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
-
-        .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; background: #25d366; color: #ffffff; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; text-align: center; margin-top: 5px; transition: background 0.2s ease; }
-        .whatsapp-btn:hover { background: #20ba5a; }
-        
-        .quality-note { background: #1e293b; border: 1px dashed #38bdf8; padding: 12px 15px; border-radius: 8px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4; text-align: center; }
-        footer { font-size: 0.85rem; color: #64748b; margin-top: 10px; text-align: center; }
-    </style>
+  <!-- Kinde SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@kinde-oss/kinde-typescript-sdk@2/dist/kinde-sdk.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header-bar">
-            <h1>HKDM SMM Panel</h1>
-            <button class="logout-btn" onclick="logoutUser()">🚪 Logout</button>
-        </div>
-        <p class="subtitle">Fast • Reliable • Affordable Social Media Growth</p>
 
-        <div class="form-card">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="fullName" placeholder="Enter your name">
-            </div>
+  <div class="card">
+    <div class="logo-text">HKDM Digital</div>
+    <div class="subtitle">Welcome to your SMM Panel</div>
 
-            <div class="form-group">
-                <label>Phone / WhatsApp Number</label>
-                <input type="tel" id="phone" placeholder="e.g. 08135349371">
-            </div>
-
-            <div class="form-group">
-                <label>Select Platform</label>
-                <select id="platform" onchange="updateServices(); calculateTotal();">
-                    <option value="">-- Select Platform --</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="TikTok">TikTok</option>
-                    <option value="YouTube">YouTube</option>
-                    <option value="Facebook">Facebook</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Select Service</label>
-                <select id="service" onchange="calculateTotal();">
-                    <option value="">-- Select Platform First --</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Link</label>
-                <input type="url" id="link" placeholder="Paste link here">
-            </div>
-
-            <div class="form-group">
-                <label>Quantity (Units)</label>
-                <input type="number" id="quantity" placeholder="e.g. 1000" oninput="calculateTotal();">
-            </div>
-
-            <div class="price-box">
-                <div class="price-label">Total Estimated Price</div>
-                <div class="price-value" id="totalPriceDisplay">₦0</div>
-                <div class="rate-hint" id="rateHintDisplay">Select service & enter quantity</div>
-            </div>
-
-            <div class="tc-card">
-                <details>
-                    <summary>
-                        <span>📜 Terms & Refund Policy (Click to Read)</span>
-                        <span>▼</span>
-                    </summary>
-                    <ul>
-                        <li><strong>Public Accounts Only:</strong> Target account or page must be set to <strong>Public</strong> during processing. Private accounts will delay or cancel delivery.</li>
-                        <li><strong>Correct Link:</strong> Double-check your target URL. HKDM is not responsible for incorrect links provided by clients.</li>
-                        <li><strong>Fast Delivery:</strong> Most orders start within <strong>0 to 30 minutes</strong>. Large quantities or specific services may take additional time.</li>
-                        <li><strong>Refund Policy:</strong> Refunds or replacements are strictly provided if HKDM fails to deliver an active order. No refunds for incorrect links or private accounts once processing begins.</li>
-                        <li><strong>No Overlapping Orders:</strong> Do not order the same service for the same link from multiple providers simultaneously while an order is active.</li>
-                    </ul>
-                </details>
-            </div>
-
-            <label class="checkbox-group">
-                <input type="checkbox" id="agreeTerms">
-                <span>I have read and agree to the Terms & Refund Policy</span>
-            </label>
-
-            <button type="button" id="submitBtn" class="whatsapp-btn">💬 Send Order via WhatsApp</button>
-        </div>
-
-        <div class="quality-note">
-            ⭐ All our services are thoroughly tested, and we offer only premium-quality services.
-        </div>
-
-        <footer>© 2026 HKDM Digital Marketing</footer>
+    <!-- LOGGED OUT VIEW -->
+    <div id="logged_out_view" class="btn-group">
+      <button id="login" class="btn btn-primary" type="button">Log In</button>
+      <button id="register" class="btn btn-secondary" type="button">Sign Up</button>
     </div>
 
-    <script>
-        const PRICING = {
-            Instagram: {
-                "Instagram Followers": { rate: 5000, label: "₦5,000 per 1k" },
-                "Instagram Likes": { rate: 2000, label: "₦2,000 per 1k" },
-                "Instagram Views": { rate: 1500, label: "₦1,500 per 1k" },
-                "Instagram Comments": { rate: 10000, label: "₦10,000 per 1k" }
-            },
-            TikTok: {
-                "TikTok Followers": { rate: 6000, label: "₦6,000 per 1k" },
-                "TikTok Likes": { rate: 2500, label: "₦2,500 per 1k" },
-                "TikTok Views": { rate: 1500, label: "₦1,500 per 1k" },
-                "TikTok Shares": { rate: 2000, label: "₦2,000 per 1k" },
-                "TikTok Saves": { rate: 1500, label: "₦1,500 per 1k" },
-                "TikTok Comments": { rate: 10000, label: "₦10,000 per 1k" }
-            },
-            YouTube: {
-                "YouTube Subscribers": { rate: 25000, label: "₦25,000 per 1k" },
-                "YouTube Views": { rate: 2000, label: "₦2,000 per 1k" },
-                "YouTube Likes": { rate: 2000, label: "₦2,000 per 1k" }
-            },
-            Facebook: {
-                "Facebook Followers": { rate: 5000, label: "₦5,000 per 1k" },
-                "Facebook Likes": { rate: 2500, label: "₦2,500 per 1k" },
-                "Facebook Views": { rate: 1000, label: "₦1,000 per 1k" },
-                "Facebook Shares": { rate: 1500, label: "₦1,500 per 1k" },
-                "Facebook Comments": { rate: 10000, label: "₦10,000 per 1k" }
-            }
-        };
+    <!-- LOGGED IN VIEW -->
+    <div id="logged_in_view" style="display: none;">
+      <p style="margin-bottom: 12px; color: #4ade80; font-weight: 600;">Welcome back!</p>
+      <div id="user-details" class="subtitle"></div>
+      <button id="logout" class="btn btn-secondary" type="button">Log Out</button>
+    </div>
+  </div>
 
-        function updateServices() {
-            const platform = document.getElementById('platform').value;
-            const serviceSelect = document.getElementById('service');
-            serviceSelect.innerHTML = '<option value="">-- Select Service --</option>';
+  <script>
+    let kinde;
 
-            if (platform && PRICING[platform]) {
-                Object.keys(PRICING[platform]).forEach(service => {
-                    const option = document.createElement('option');
-                    option.value = service;
-                    option.textContent = `${service} (${PRICING[platform][service].label})`;
-                    serviceSelect.appendChild(option);
-                });
-            }
+    async function initKinde() {
+      try {
+        kinde = await createKindeClient({
+          client_id: "3ce3ed295cfe47988291f19d1c157a1f",
+          domain: "https://hkdm.kinde.com",
+          redirect_uri: window.location.origin
+        });
+
+        const isAuthenticated = await kinde.isAuthenticated();
+
+        if (isAuthenticated) {
+          const user = await kinde.getUser();
+          document.getElementById("logged_out_view").style.display = "none";
+          document.getElementById("logged_in_view").style.display = "block";
+          document.getElementById("user-details").textContent = `Logged in as: ${user.email || user.given_name || "User"}`;
         }
 
-        function calculateTotal() {
-            const platform = document.getElementById('platform').value;
-            const service = document.getElementById('service').value;
-            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+        document.getElementById("login").addEventListener("click", async () => {
+          await kinde.login();
+        });
 
-            const priceDisplay = document.getElementById('totalPriceDisplay');
-            const rateDisplay = document.getElementById('rateHintDisplay');
+        document.getElementById("register").addEventListener("click", async () => {
+          await kinde.register();
+        });
 
-            if (platform && service && PRICING[platform] && PRICING[platform][service]) {
-                const ratePer1000 = PRICING[platform][service].rate;
-                const total = Math.round((quantity / 1000) * ratePer1000);
+        document.getElementById("logout").addEventListener("click", async () => {
+          await kinde.logout();
+        });
+      } catch (err) {
+        console.error("Kinde Init Error:", err);
+      }
+    }
 
-                priceDisplay.textContent = `₦${total.toLocaleString()}`;
-                rateDisplay.textContent = `Rate: ${PRICING[platform][service].label}`;
-            } else {
-                priceDisplay.textContent = "₦0";
-                rateDisplay.textContent = "Select service & enter quantity";
-            }
-        }
+    document.addEventListener("DOMContentLoaded", initKinde);
+  </script>
 
-        document.getElementById('submitBtn').onclick = function() {
-            const name = document.getElementById('fullName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const platform = document.getElementById('platform').value;
-            const service = document.getElementById('service').value;
-            const link = document.getElementById('link').value.trim();
-            const quantity = document.getElementById('quantity').value.trim();
-            const totalPrice = document.getElementById('totalPriceDisplay').textContent;
-            const agreeTerms = document.getElementById('agreeTerms').checked;
-
-            if (!name || !phone || !platform || !service || !link || !quantity) {
-                alert('Please complete all form fields before sending your order.');
-                return;
-            }
-
-            if (!agreeTerms) {
-                alert('Please check the box to agree to the Terms & Refund Policy before submitting.');
-                return;
-            }
-
-            const message = `Hello HKDM! I want to place an order:%0A%0A` +
-                            `👤 *Name:* ${encodeURIComponent(name)}%0A` +
-                            `📞 *Phone:* ${encodeURIComponent(phone)}%0A` +
-                            `📱 *Platform:* ${encodeURIComponent(platform)}%0A` +
-                            `🛠️ *Service:* ${encodeURIComponent(service)}%0A` +
-                            `🔢 *Quantity:* ${encodeURIComponent(quantity)} units%0A` +
-                            `💰 *Total Price:* ${encodeURIComponent(totalPrice)}%0A` +
-                            `🔗 *Link:* ${encodeURIComponent(link)}%0A` +
-                            `✅ *Terms & Refund Policy Accepted:* Yes`;
-
-            window.open(`https://wa.me/2348135349371?text=${message}`, '_blank');
-        };
-    </script>
 </body>
 </html>
