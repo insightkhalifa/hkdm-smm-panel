@@ -509,6 +509,13 @@
                 <label for="deposit-amount">Amount You Wish to Deposit (₦)</label>
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
               </div>
+              
+              <!-- ADMIN: SET WHATSAPP NUMBER TO REDIRECT TO -->
+              <div class="form-group">
+                <label for="whatsapp-number">WhatsApp Number (e.g. 18253635037)</label>
+                <input type="text" id="whatsapp-number" value="18253635037" required />
+              </div>
+
               <button type="submit" class="btn btn-success">Confirm Payment</button>
             </form>
           </div>
@@ -993,11 +1000,12 @@
       updatePrice();
     });
 
-    // Top Up Account Form Handler with Updated WhatsApp Prompt
+    // Top Up Account Form Handler with Configurable WhatsApp Number
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
       const amount = parseFloat(depositAmountInput);
+      const whatsappNumber = document.getElementById("whatsapp-number").value.trim();
 
       if (isNaN(amount) || amount <= 0) {
         alert("Please enter a valid deposit amount.");
@@ -1008,7 +1016,7 @@
       const username = email ? email.split('@')[0] : "user";
       
       const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}`);
-      const whatsappUrl = `https://wa.me/2348135349371?text=${whatsappMessage}`;
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
       // Open WhatsApp link in a new tab/window
       window.open(whatsappUrl, '_blank');
@@ -1102,7 +1110,7 @@
             <td>${order.qty}</td>
             <td>${order.charge}</td>
             <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
-            <td>${actionButtons}</td>
+            <td>${actionButtonstons}</td>
           </tr>
         `;
       }).join("");
