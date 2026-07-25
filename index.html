@@ -925,7 +925,7 @@
       db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
       db.ref("orders/" + orderIdKey).set(newOrder);
 
-      alert("Order submitted successfully and set to Pending!");
+      alert("Order submitted successfully!");
       document.getElementById("order-form").reset();
       updateServiceLimits();
       updatePrice();
