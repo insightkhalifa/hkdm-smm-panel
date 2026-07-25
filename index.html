@@ -352,22 +352,12 @@
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="order-history-body">
+                  <!-- Populated dynamically by JavaScript -->
                   <tr>
-                    <td>#1021</td>
-                    <td>TikTok Followers</td>
-                    <td>tiktok.com/@hkdm</td>
-                    <td>1,000</td>
-                    <td>₦6,000.00</td>
-                    <td><span class="badge badge-completed">Completed</span></td>
-                  </tr>
-                  <tr>
-                    <td>#1022</td>
-                    <td>Instagram Likes</td>
-                    <td>instagram.com/p/...</td>
-                    <td>500</td>
-                    <td>₦1,000.00</td>
-                    <td><span class="badge badge-processing">Processing</span></td>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                      No orders found.
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -581,10 +571,60 @@
 
     loadServices();
 
+    // DYNAMIC ORDER MANAGEMENT
+    const userOrders = [];
+
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
+
+      const selectedServiceText = serviceSelect.options[serviceSelect.selectedIndex].text.split(" — ")[0];
+      const link = document.getElementById("link").value;
+      const quantity = document.getElementById("quantity").value;
+      const totalPrice = document.getElementById("total-price").textContent;
+
+      const newOrder = {
+        id: "#" + Math.floor(1000 + Math.random() * 9000),
+        service: selectedServiceText,
+        link: link,
+        qty: parseInt(quantity).toLocaleString(),
+        charge: totalPrice,
+        status: "Processing"
+      };
+
+      userOrders.unshift(newOrder);
+      renderOrderHistory();
+
       alert("Order submitted successfully!");
+      document.getElementById("order-form").reset();
+      updatePrice();
     });
+
+    function renderOrderHistory() {
+      const tbody = document.getElementById("order-history-body");
+
+      if (userOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No orders found.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = userOrders.map(order => `
+        <tr>
+          <td>${order.id}</td>
+          <td>${order.service}</td>
+          <td>${order.link}</td>
+          <td>${order.qty}</td>
+          <td>${order.charge}</td>
+          <td><span class="badge badge-processing">${order.status}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    renderOrderHistory();
   </script>
 
 </body>
