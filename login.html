@@ -1,72 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKDM - Sign In</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
-        .container { max-width: 500px; margin: 0 auto; }
-        h1 { font-size: 1.8rem; color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { font-size: 0.9rem; color: #94a3b8; margin-bottom: 25px; }
-        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 20px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
-        .submit-btn { width: 100%; padding: 15px; background: #38bdf8; color: #0f172a; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; margin-top: 10px; }
-        .login-link { text-align: center; margin-top: 15px; font-size: 0.85rem; color: #94a3b8; }
-        .login-link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
-    </style>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome Back</h1>
-        <p class="subtitle">Sign in to place orders</p>
+<!-- 1. Include Kinde SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@kinde-oss/kinde-typescript-sdk@2/dist/kinde-sdk.js"></script>
 
-        <form class="form-card" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="loginEmail" required>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPass" required>
-            </div>
-            <button type="submit" class="submit-btn">🔑 Sign In</button>
-            <div class="login-link">
-                Need an account? <a href="register.html">Register Here</a>
-            </div>
-        </form>
-    </div>
+<!-- 2. UI Buttons -->
+<div id="logged_out_view">
+  <button id="login" type="button">Log In</button>
+  <button id="register" type="button">Sign Up</button>
+</div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDwD0sn2FbssLiDfqvzsutnyzd0KvDUCME",
-            authDomain: "hkdm-37f18.firebaseapp.com",
-            projectId: "hkdm-37f18",
-            storageBucket: "hkdm-37f18.firebasestorage.app",
-            messagingSenderId: "656175997139",
-            appId: "1:656175997139:web:83e544fce6f4cc0f957426"
-        };
-        firebase.initializeApp(firebaseConfig);
+<!-- 3. Kinde Initialization Script -->
+<script>
+  let kinde;
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const pass = document.getElementById('loginPass').value;
+  async function initKinde() {
+    // Create Kinde Instance
+    kinde = await createKindeClient({
+      client_id: "3ce3ed295c1", // Your Client ID from image 11
+      domain: "https://hkdm.kinde.com",
+      redirect_uri: window.location.origin
+    });
 
-            firebase.auth().signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    window.location.href = "index.html";
-                })
-                .catch((error) => {
-                    alert("Login failed: " + error.message);
-                });
-        }
-    </script>
-</body>
-</html>
+    // Check if user is already logged in
+    const isAuthenticated = await kinde.isAuthenticated();
+    if (isAuthenticated) {
+      const user = await kinde.getUser();
+      console.log("Logged in user:", user);
+      // Redirect to dashboard or hide login buttons here
+    }
+
+    // Attach Event Listeners to Buttons
+    document.getElementById("login").addEventListener("click", async () => {
+      await kinde.login();
+    });
+
+    document.getElementById("register").addEventListener("click", async () => {
+      await kinde.register();
+    });
+  }
+
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", initKinde);
+</script>
