@@ -1,73 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKDM - Register</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding: 30px 15px; line-height: 1.6; }
-        .container { max-width: 500px; margin: 0 auto; }
-        h1 { font-size: 1.8rem; color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { font-size: 0.9rem; color: #94a3b8; margin-bottom: 25px; }
-        .form-card { background: #1e293b; padding: 25px 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; margin-bottom: 20px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-size: 0.85rem; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 0.95rem; outline: none; }
-        .submit-btn { width: 100%; padding: 15px; background: #38bdf8; color: #0f172a; font-weight: bold; border-radius: 8px; font-size: 1.05rem; border: none; cursor: pointer; margin-top: 10px; }
-        .login-link { text-align: center; margin-top: 15px; font-size: 0.85rem; color: #94a3b8; }
-        .login-link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
-    </style>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HKDM SMM Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background-color: #1e293b;
+      padding: 32px 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 28px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background-color: #0284c7;
+      color: #ffffff;
+    }
+    .btn-primary:active {
+      background-color: #0369a1;
+    }
+    .btn-secondary {
+      background-color: #334155;
+      color: #ffffff;
+    }
+    .btn-secondary:active {
+      background-color: #475569;
+    }
+    #user-info {
+      display: none;
+      margin-top: 16px;
+      word-break: break-all;
+    }
+  </style>
+
+  <!-- Kinde SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@kinde-oss/kinde-typescript-sdk@2/dist/kinde-sdk.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Create HKDM Account</h1>
-        <p class="subtitle">Register to access growth services</p>
 
-        <form id="regForm" class="form-card" onsubmit="handleRegister(event)">
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="regEmail" placeholder="client@gmail.com" required>
-            </div>
-            <div class="form-group">
-                <label>Password (min. 6 chars)</label>
-                <input type="password" id="regPass" placeholder="••••••••" required minlength="6">
-            </div>
-            <button type="submit" class="submit-btn">📝 Register Account</button>
-            <div class="login-link">
-                Already have an account? <a href="login.html">Sign In Here</a>
-            </div>
-        </form>
+  <div class="card">
+    <div class="logo-text">HKDM Digital</div>
+    <div class="subtitle">Welcome to your SMM Panel</div>
+
+    <div id="logged_out_view" class="btn-group">
+      <button id="login" class="btn btn-primary" type="button">Log In</button>
+      <button id="register" class="btn btn-secondary" type="button">Sign Up</button>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDwD0sn2FbssLiDfqvzsutnyzd0KvDUCME",
-            authDomain: "hkdm-37f18.firebaseapp.com",
-            projectId: "hkdm-37f18",
-            storageBucket: "hkdm-37f18.firebasestorage.app",
-            messagingSenderId: "656175997139",
-            appId: "1:656175997139:web:83e544fce6f4cc0f957426"
-        };
-        firebase.initializeApp(firebaseConfig);
+    <div id="logged_in_view" style="display: none;">
+      <p style="margin-bottom: 16px; color: #4ade80;">Successfully Logged In!</p>
+      <div id="user-details" class="subtitle"></div>
+      <button id="logout" class="btn btn-secondary" type="button">Log Out</button>
+    </div>
+  </div>
 
-        function handleRegister(e) {
-            e.preventDefault();
-            const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPass').value;
+  <script>
+    let kinde;
 
-            firebase.auth().createUserWithEmailAndPassword(email, pass)
-                .then(() => {
-                    alert("Account created successfully!");
-                    window.location.href = "index.html";
-                })
-                .catch((error) => {
-                    alert("Error: " + error.message);
-                });
+    async function initKinde() {
+      try {
+        kinde = await createKindeClient({
+          client_id: "3ce3ed295c1",
+          domain: "https://hkdm.kinde.com",
+          redirect_uri: window.location.origin
+        });
+
+        const isAuthenticated = await kinde.isAuthenticated();
+
+        if (isAuthenticated) {
+          const user = await kinde.getUser();
+          document.getElementById("logged_out_view").style.display = "none";
+          document.getElementById("logged_in_view").style.display = "block";
+          document.getElementById("user-details").textContent = `Logged in as: ${user.email || user.given_name || "User"}`;
         }
-    </script>
+
+        document.getElementById("login").addEventListener("click", async () => {
+          await kinde.login();
+        });
+
+        document.getElementById("register").addEventListener("click", async () => {
+          await kinde.register();
+        });
+
+        const logoutBtn = document.getElementById("logout");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", async () => {
+            await kinde.logout();
+          });
+        }
+      } catch (err) {
+        console.error("Kinde Init Error:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", initKinde);
+  </script>
+
 </body>
 </html>
