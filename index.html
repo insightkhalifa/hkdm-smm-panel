@@ -491,7 +491,7 @@
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Please attach sender's name to the WhatsApp message and include your HKDM Username. Ensure you add the narration <strong>"For social media marketing"</strong> to your payment transfer.
+              Please include your sender's name in the WhatsApp message along with your HKDM Username. Ensure you add the narration <strong>"For social media marketing"</strong> to your payment transfer.
             </div>
 
             <div style="background-color: #0b0f19; padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
@@ -508,11 +508,6 @@
               <div class="form-group">
                 <label for="deposit-amount">Amount You Wish to Deposit (₦)</label>
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
-              </div>
-
-              <div class="form-group">
-                <label for="sender-name">Sender's Name (Account Name)</label>
-                <input type="text" id="sender-name" placeholder="e.g. John Doe" required />
               </div>
 
               <button type="submit" class="btn btn-success">Confirm Payment</button>
@@ -999,11 +994,10 @@
       updatePrice();
     });
 
-    // Top Up Account Form Handler with Sender Name input and Fixed WhatsApp Number (+18253635037)
+    // Top Up Account Form Handler (Includes Sender's Name prompt directly inside the WhatsApp message text)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
-      const senderNameInput = document.getElementById("sender-name").value.trim();
       const amount = parseFloat(depositAmountInput);
 
       if (isNaN(amount) || amount <= 0) {
@@ -1011,16 +1005,11 @@
         return;
       }
 
-      if (!senderNameInput) {
-        alert("Please enter the sender's name.");
-        return;
-      }
-
       const email = localStorage.getItem("hkdm_user_email") || "";
       const username = email ? email.split('@')[0] : "user";
       
       const whatsappNumber = "18253635037";
-      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}, Sender Name: ${senderNameInput}`);
+      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}\n\nSender's Name: [Type your sender name here]`);
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
       window.open(whatsappUrl, '_blank');
