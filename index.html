@@ -252,18 +252,18 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 3. Custom HKDM Services List (Exact Price Sheet)
+    // 3. Exact Services & Rates per 1,000 (₦)
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000 },
         { name: "Instagram Likes", rate: 2000 },
-        { name: "Instagram Views", rate: 2000 },
+        { name: "Instagram Views", rate: 1500 },
         { name: "Instagram Comments", rate: 10000 }
       ],
       tiktok: [
         { name: "TikTok Followers", rate: 6000 },
-        { name: "TikTok Likes", rate: 2500 },
-        { name: "TikTok Views", rate: 2000 },
+        { name: "TikTok Likes", rate: 2000 },
+        { name: "TikTok Views", rate: 1000 },
         { name: "TikTok Shares", rate: 2000 },
         { name: "TikTok Saves", rate: 1500 },
         { name: "TikTok Comments", rate: 10000 }
@@ -276,7 +276,7 @@
       facebook: [
         { name: "Facebook Followers", rate: 5000 },
         { name: "Facebook Likes", rate: 2500 },
-        { name: "Facebook Views", rate: 2000 },
+        { name: "Facebook Views", rate: 1500 },
         { name: "Facebook Shares", rate: 2000 },
         { name: "Facebook Comments", rate: 10000 }
       ]
