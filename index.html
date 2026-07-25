@@ -706,7 +706,6 @@
         if (val !== null) {
           userBalance = parseFloat(val);
         } else {
-          // Initialize user balance to 0 if not set
           db.ref("users/" + cleanKey + "/balance").set(0);
           userBalance = 0;
         }
@@ -875,7 +874,6 @@
       const email = localStorage.getItem("hkdm_user_email") || "";
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // Update balance in Firebase
       db.ref("users/" + cleanKey + "/balance").set(userBalance);
 
       const selectedServiceText = serviceSelect.options[serviceSelect.selectedIndex].text.split(" — ")[0];
@@ -893,7 +891,6 @@
         status: "Processing"
       };
 
-      // Save order to user profile and global system orders
       db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
       db.ref("orders/" + orderIdKey).set(newOrder);
 
@@ -920,32 +917,40 @@
       `).join("");
     }
 
-    // Admin Wallet Top-up (FIREBASE CLOUD SYNC)
+    // Admin Wallet Top-up (FIXED WITH ERROR HANDLING)
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
       
       let targetInput = document.getElementById("admin-user-email").value.trim().toLowerCase();
-      const amount = parseFloat(document.getElementById("admin-amount").value) / 1 || 0;
+      const amountInput = document.getElementById("admin-amount").value;
+      const amount = parseFloat(amountInput);
 
-      // If user typed username instead of full email, normalize it (e.g. "hipqhalifa" -> search or append domain prefix)
+      if (!targetInput || isNaN(amount)) {
+        alert("Please enter a valid customer identifier and amount.");
+        return;
+      }
+
       if (!targetInput.includes("@")) {
         targetInput = targetInput + "@gmail.com";
       }
 
       const targetCleanKey = targetInput.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+      const userBalanceRef = db.ref("users/" + targetCleanKey + "/balance");
 
-      // Check current target balance in database first, then add credit
-      db.ref("users/" + targetCleanKey + "/balance").once("value", (snapshot) => {
-        let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
-        let newBalance = currentBal + amount;
+      userBalanceRef.once("value")
+        .then((snapshot) => {
+          let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
+          let newBalance = currentBal + amount;
 
-        db.ref("users/" + targetCleanKey + "/balance").set(newBalance).then(() => {
+          return userBalanceRef.set(newBalance);
+        })
+        .then(() => {
           alert(`Successfully added ₦${amount.toLocaleString()} to wallet for '${targetInput}'!`);
           document.getElementById("admin-topup-form").reset();
-        }).catch((err) => {
-          alert("Failed to credit wallet: " + err.message);
+        })
+        .catch((err) => {
+          alert("Error updating wallet: " + err.message);
         });
-      });
     });
 
     function renderAdminOrders(allOrders) {
@@ -973,7 +978,6 @@
       if (!firebaseKey || !userEmail) return;
       const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // Update both user's profile order list and global orders list
       db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Completed");
       db.ref("orders/" + firebaseKey + "/status").set("Completed");
     }
