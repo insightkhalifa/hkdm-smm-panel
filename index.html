@@ -173,7 +173,7 @@
 
       <div class="price-box">
         <span>Total Charge:</span>
-        <span id="total-price" style="color:#38bdf8;">$0.00</span>
+        <span id="total-price" style="color:#38bdf8;">₦0.00</span>
       </div>
 
       <button type="submit" class="btn btn-primary">Submit Order</button>
@@ -252,27 +252,27 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 3. Dynamic Services List (Rates per 1,000)
+    // 3. Dynamic Services List (Rates per 1,000 in Naira ₦)
     const servicesData = {
       tiktok: [
-        { name: "TikTok Followers [Real & Active]", rate: 8.00 },
-        { name: "TikTok Likes [Fast Delivery]", rate: 3.50 },
-        { name: "TikTok Video Views", rate: 0.80 },
-        { name: "TikTok Shares & Saves", rate: 1.50 }
+        { name: "TikTok Followers [Real & Active]", rate: 5000 },
+        { name: "TikTok Likes [Instant]", rate: 2000 },
+        { name: "TikTok Video Views", rate: 500 },
+        { name: "TikTok Shares & Saves", rate: 1000 }
       ],
       instagram: [
-        { name: "Instagram Followers [High Quality]", rate: 6.50 },
-        { name: "Instagram Post Likes", rate: 2.20 },
-        { name: "Instagram Reel Views", rate: 0.90 }
+        { name: "Instagram Followers [High Quality]", rate: 4500 },
+        { name: "Instagram Post Likes", rate: 1500 },
+        { name: "Instagram Reel Views", rate: 600 }
       ],
       youtube: [
-        { name: "YouTube Subscribers", rate: 25.00 },
-        { name: "YouTube Video Likes", rate: 7.00 },
-        { name: "YouTube Views [Non-Drop]", rate: 4.50 }
+        { name: "YouTube Subscribers", rate: 15000 },
+        { name: "YouTube Video Likes", rate: 4000 },
+        { name: "YouTube Views [Non-Drop]", rate: 3000 }
       ],
       facebook: [
-        { name: "Facebook Page Likes & Followers", rate: 10.00 },
-        { name: "Facebook Post Reactions", rate: 4.00 }
+        { name: "Facebook Page Likes & Followers", rate: 6000 },
+        { name: "Facebook Post Reactions", rate: 2500 }
       ]
     };
 
@@ -286,7 +286,7 @@
       const options = servicesData[selectedCat] || [];
       
       serviceSelect.innerHTML = options.map(s => 
-        `<option value="${s.rate}">${s.name} — $${s.rate.toFixed(2)} / 1k</option>`
+        `<option value="${s.rate}">${s.name} — ₦${s.rate.toLocaleString()} / 1k</option>`
       ).join("");
 
       updatePrice();
@@ -296,7 +296,7 @@
       const ratePer1000 = parseFloat(serviceSelect.value) || 0;
       const qty = parseInt(quantityInput.value) || 0;
       const total = (qty / 1000) * ratePer1000;
-      totalPriceEl.textContent = `$${total.toFixed(2)}`;
+      totalPriceEl.textContent = `₦${total.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     categorySelect.addEventListener("change", loadServices);
