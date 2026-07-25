@@ -3,22 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HKDM Digital — SMM Panel Dashboard</title>
+  <title>HKDM Digital — Modern SMM Panel</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: #151c2c;
+      --accent-blue: #0284c7;
+      --accent-glow: #38bdf8;
+      --border-color: #222d45;
+      --text-muted: #94a3b8;
+    }
+
     body {
-      background-color: #0f172a;
+      background-color: var(--bg-dark);
       color: #ffffff;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
     }
 
-    /* AUTH SCREEN */
+    /* AUTHENTICATION SCREEN */
     .auth-container {
       display: flex;
       justify-content: center;
@@ -28,376 +39,394 @@
       padding: 20px;
     }
     .auth-card {
-      background-color: #1e293b;
-      padding: 32px 24px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      background-color: var(--card-bg);
+      padding: 36px 28px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
       width: 100%;
-      max-width: 420px;
-      border: 1px solid #334155;
+      max-width: 400px;
+      border: 1px solid var(--border-color);
       text-align: center;
     }
-    .logo-text {
-      font-size: 24px;
-      font-weight: 700;
-      color: #38bdf8;
-      margin-bottom: 8px;
+    .logo-brand {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
     }
     .subtitle {
       font-size: 14px;
-      color: #94a3b8;
-      margin-bottom: 24px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
     }
 
-    /* BUTTONS & FORMS */
+    /* BUTTONS & INPUTS */
     .btn {
       width: 100%;
-      padding: 12px 16px;
+      padding: 13px 18px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .btn-primary { background-color: #0284c7; color: #ffffff; }
-    .btn-primary:hover { background-color: #0369a1; }
-    .btn-secondary { background-color: #334155; color: #ffffff; margin-top: 10px; }
-    .btn-success { background-color: #10b981; color: #ffffff; }
-    
-    .form-group { margin-bottom: 16px; text-align: left; }
-    label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-secondary { background-color: #222d45; color: #ffffff; margin-top: 10px; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; }
+
+    .form-group { margin-bottom: 18px; text-align: left; }
+    label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
     select, input, textarea {
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      background-color: #0f172a;
-      border: 1px solid #334155;
+      padding: 13px 14px;
+      border-radius: 10px;
+      background-color: #0b0f19;
+      border: 1px solid var(--border-color);
       color: #ffffff;
       font-size: 14px;
       outline: none;
+      transition: border-color 0.2s;
     }
-    select:focus, input:focus, textarea:focus { border-color: #0284c7; }
+    select:focus, input:focus, textarea:focus { border-color: var(--accent-glow); }
 
-    /* DASHBOARD LAYOUT */
-    .dashboard-layout {
-      display: flex;
-      width: 100%;
-      min-height: 100vh;
-    }
-    
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
-      background-color: #1e293b;
-      border-right: 1px solid #334155;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-    .sidebar-brand {
-      font-size: 20px;
-      font-weight: 700;
-      color: #38bdf8;
-      margin-bottom: 30px;
-    }
-    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .nav-item {
-      padding: 12px 16px;
-      border-radius: 8px;
-      color: #94a3b8;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-    .nav-item:hover, .nav-item.active {
-      background-color: #0284c7;
-      color: #ffffff;
-    }
-
-    /* MAIN CONTENT AREA */
-    .main-content {
-      flex: 1;
-      padding: 24px 32px;
-      background-color: #0f172a;
-      overflow-y: auto;
-    }
-
-    /* TOP HEADER BAR */
-    .top-header {
+    /* DASHBOARD TOP NAVBAR */
+    .navbar {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .wallet-card {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      padding: 10px 18px;
-      border-radius: 10px;
+    .nav-left { display: flex; align-items: center; gap: 12px; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    
+    .wallet-badge {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* DASHBOARD BODY LAYOUT */
+    .dashboard-layout { display: flex; flex: 1; }
+    
+    /* SIDEBAR (DESKTOP) */
+    .sidebar {
+      width: 240px;
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .nav-link {
       display: flex;
       align-items: center;
       gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .balance-amount { font-size: 18px; font-weight: 700; color: #38bdf8; }
-    .logout-btn { color: #ef4444; font-size: 13px; cursor: pointer; text-decoration: underline; }
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
 
-    /* CONTENT PANELS */
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      padding: 28px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
     .panel-card {
-      background-color: #1e293b;
-      border-radius: 12px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
       padding: 24px;
-      border: 1px solid #334155;
-      max-width: 600px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
-    .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; }
+    .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; font-weight: 700; }
 
-    /* ORDER SUMMARY BOX */
+    /* PRICE DISPLAY BOX */
     .price-box {
-      background-color: #0f172a;
-      padding: 14px;
-      border-radius: 8px;
-      margin-bottom: 16px;
+      background-color: #0b0f19;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
       display: flex;
       justify-content: space-between;
-      font-weight: 600;
-      border: 1px dashed #334155;
+      align-items: center;
+      font-weight: 700;
+      border: 1px dashed var(--border-color);
     }
 
-    /* TABLES (ORDER HISTORY) */
-    .table-container { overflow-x: auto; max-width: 100%; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-    th, td { padding: 12px 16px; border-bottom: 1px solid #334155; }
-    th { color: #94a3b8; font-size: 12px; text-transform: uppercase; }
-    
+    /* TABLE LAYOUT */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+    th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
     .badge {
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
-      text-transform: uppercase;
     }
-    .badge-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-    .badge-processing { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-processing { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-    /* TERMS & MODAL */
-    .terms-group { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+    /* TERMS & MODALS */
+    .terms-group { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
     .terms-group input { width: auto; cursor: pointer; }
-    .terms-link { color: #38bdf8; cursor: pointer; text-decoration: underline; }
-    
+    .terms-link { color: var(--accent-glow); cursor: pointer; text-decoration: underline; }
+
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px);
+      display: flex; justify-content: center; align-items: center;
       padding: 20px; z-index: 1000;
     }
     .modal-content {
-      background-color: #1e293b; padding: 24px; border-radius: 12px;
-      max-width: 480px; max-height: 80vh; overflow-y: auto; border: 1px solid #334155; color: #cbd5e1; font-size: 13px; line-height: 1.6;
+      background-color: var(--card-bg); padding: 24px; border-radius: 16px;
+      max-width: 480px; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-color);
+      color: #cbd5e1; font-size: 13px; line-height: 1.6;
     }
 
     .hidden { display: none !important; }
 
+    /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
-      .dashboard-layout { flex-direction: column; }
-      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #334155; }
+      .menu-toggle { display: block; }
+      .sidebar {
+        position: fixed;
+        top: 59px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 59px);
+        z-index: 90;
+        background-color: var(--card-bg);
+      }
+      .sidebar.open { left: 0; }
       .main-content { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. AUTHENTICATION PAGE -->
+  <!-- 1. LOGIN / SIGNUP PAGE -->
   <div id="auth-screen" class="auth-container">
     <div class="auth-card">
-      <div class="logo-text">HKDM Digital</div>
-      <div class="subtitle">Social Media Growth Panel</div>
+      <div class="logo-brand">HKDM Digital</div>
+      <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
     </div>
   </div>
 
-  <!-- 2. MAIN CUSTOMER DASHBOARD -->
-  <div id="dashboard-screen" class="dashboard-layout hidden">
+  <!-- 2. MAIN CUSTOMER PANEL -->
+  <div id="dashboard-screen" class="hidden" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column;">
     
-    <!-- SIDEBAR NAVIGATION -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">HKDM Digital</div>
-      <ul class="nav-list">
-        <li class="nav-item active" onclick="switchTab('new-order')">🛒 New Order</li>
-        <li class="nav-item" onclick="switchTab('order-history')">📋 Order History</li>
-        <li class="nav-item" onclick="switchTab('add-funds')">💳 Add Funds</li>
-        <li class="nav-item" onclick="switchTab('support')">💬 Support</li>
-      </ul>
-    </aside>
-
-    <!-- MAIN VIEW -->
-    <main class="main-content">
-      
-      <!-- TOP USER BAR -->
-      <header class="top-header">
-        <div>
-          <h2 style="font-size: 20px;">Welcome Back!</h2>
-          <span style="font-size: 13px; color: #94a3b8;">Client Dashboard</span>
+    <!-- TOP NAVIGATION BAR -->
+    <header class="navbar">
+      <div class="nav-left">
+        <button id="menu-btn" class="menu-toggle">☰</button>
+        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
+      </div>
+      <div class="nav-right">
+        <div class="wallet-badge">
+          <span>Balance:</span>
+          <span id="user-balance">₦0.00</span>
         </div>
+        <span id="logout-btn" style="color: #ef4444; font-size: 13px; cursor: pointer; font-weight: 600;">Log Out</span>
+      </div>
+    </header>
+
+    <div class="dashboard-layout">
+      <!-- SIDEBAR NAV MENU -->
+      <aside id="sidebar" class="sidebar">
+        <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
+        <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
+        <div class="nav-link" onclick="switchTab('add-funds', this)">💳 Add Funds</div>
+        <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
+      </aside>
+
+      <!-- MAIN PAGE CONTENT -->
+      <main class="main-content">
         
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <div class="wallet-card">
-            <span style="font-size: 12px; color: #94a3b8;">Balance:</span>
-            <span id="user-balance" class="balance-amount">₦0.00</span>
+        <!-- NEW ORDER TAB -->
+        <section id="tab-new-order" class="tab-panel">
+          <div class="panel-card">
+            <h3 class="panel-title">Place New Order</h3>
+            <form id="order-form">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category">
+                  <option value="instagram">Instagram Services</option>
+                  <option value="tiktok">TikTok Services</option>
+                  <option value="youtube">YouTube Services</option>
+                  <option value="facebook">Facebook Services</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="service">Service</label>
+                <select id="service"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="link">Target Link / URL</label>
+                <input type="url" id="link" placeholder="https://..." required />
+              </div>
+
+              <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
+              </div>
+
+              <div class="price-box">
+                <span style="color: var(--text-muted); font-size: 13px;">Total Charge:</span>
+                <span id="total-price" style="color: var(--accent-glow); font-size: 18px;">₦0.00</span>
+              </div>
+
+              <div class="terms-group">
+                <input type="checkbox" id="agree-terms" required />
+                <label for="agree-terms" style="margin-bottom:0; text-transform:none; font-weight:normal;">
+                  I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Submit Order</button>
+            </form>
           </div>
-          <span id="logout-btn" class="logout-link">Log Out</span>
-        </div>
-      </header>
+        </section>
 
-      <!-- TAB 1: NEW ORDER PANEL -->
-      <section id="tab-new-order" class="tab-panel">
-        <div class="panel-card">
-          <h3 class="panel-title">Place New Order</h3>
-          <form id="order-form">
-            
-            <div class="form-group">
-              <label for="category">Category</label>
-              <select id="category">
-                <option value="instagram">Instagram Services</option>
-                <option value="tiktok">TikTok Services</option>
-                <option value="youtube">YouTube Services</option>
-                <option value="facebook">Facebook Services</option>
-              </select>
+        <!-- ORDER HISTORY TAB -->
+        <section id="tab-order-history" class="tab-panel hidden">
+          <div class="panel-card">
+            <h3 class="panel-title">Order History</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Link</th>
+                    <th>Qty</th>
+                    <th>Charge</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#1021</td>
+                    <td>TikTok Followers</td>
+                    <td>tiktok.com/@hkdm</td>
+                    <td>1,000</td>
+                    <td>₦6,000.00</td>
+                    <td><span class="badge badge-completed">Completed</span></td>
+                  </tr>
+                  <tr>
+                    <td>#1022</td>
+                    <td>Instagram Likes</td>
+                    <td>instagram.com/p/...</td>
+                    <td>500</td>
+                    <td>₦1,000.00</td>
+                    <td><span class="badge badge-processing">Processing</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-
-            <div class="form-group">
-              <label for="service">Service</label>
-              <select id="service"></select>
-            </div>
-
-            <div class="form-group">
-              <label for="link">Target Link / URL</label>
-              <input type="url" id="link" placeholder="https://..." required />
-            </div>
-
-            <div class="form-group">
-              <label for="quantity">Quantity</label>
-              <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
-            </div>
-
-            <div class="price-box">
-              <span>Total Charge:</span>
-              <span id="total-price" style="color:#38bdf8;">₦0.00</span>
-            </div>
-
-            <div class="terms-group">
-              <input type="checkbox" id="agree-terms" required />
-              <label for="agree-terms" style="margin-bottom:0; font-weight:normal;">
-                I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span>
-              </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Submit Order</button>
-          </form>
-        </div>
-      </section>
-
-      <!-- TAB 2: ORDER HISTORY -->
-      <section id="tab-order-history" class="tab-panel hidden">
-        <div class="panel-card" style="max-width: 100%;">
-          <h3 class="panel-title">Your Order History</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Service</th>
-                  <th>Link</th>
-                  <th>Quantity</th>
-                  <th>Charge</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="orders-table-body">
-                <tr>
-                  <td>#HKD-1021</td>
-                  <td>TikTok Followers</td>
-                  <td>tiktok.com/@hkdm_digital</td>
-                  <td>1,000</td>
-                  <td>₦6,000.00</td>
-                  <td><span class="badge badge-completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td>#HKD-1022</td>
-                  <td>Instagram Likes</td>
-                  <td>instagram.com/p/Cxy12...</td>
-                  <td>500</td>
-                  <td>₦1,000.00</td>
-                  <td><span class="badge badge-processing">Processing</span></td>
-                </tr>
-              </tbody>
-            </table>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- TAB 3: ADD FUNDS -->
-      <section id="tab-add-funds" class="tab-panel hidden">
-        <div class="panel-card">
-          <h3 class="panel-title">Deposit Funds</h3>
-          <p style="font-size: 14px; color: #94a3b8; margin-bottom: 20px;">
-            Add money to your account balance to place automated orders seamlessly.
-          </p>
-
-          <div style="background-color: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
-            <h4 style="color: #38bdf8; font-size: 14px; margin-bottom: 8px;">Direct Bank Transfer</h4>
-            <p style="font-size: 13px; line-height: 1.6;">
-              <strong>Bank:</strong> OPay / Moniepoint<br>
-              <strong>Account Number:</strong> 8135349371<br>
-              <strong>Account Name:</strong> Sadiq Abdulrauf / HKDM Digital
-            </p>
+        <!-- ADD FUNDS TAB -->
+        <section id="tab-add-funds" class="tab-panel hidden">
+          <div class="panel-card">
+            <h3 class="panel-title">Deposit Funds</h3>
+            <div style="background-color: #0b0f19; padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+              <h4 style="color: var(--accent-glow); font-size: 14px; margin-bottom: 10px;">Bank Transfer Details</h4>
+              <p style="font-size: 13px; line-height: 1.8; color: #cbd5e1;">
+                <strong>Bank:</strong> OPay / Moniepoint<br>
+                <strong>Account Number:</strong> 8135349371<br>
+                <strong>Account Name:</strong> Sadiq Abdulrauf / HKDM Digital
+              </p>
+            </div>
+            <a href="https://wa.me/2348135349371?text=Hello%20HKDM,%20I%20just%20made%20a%20deposit%20for%20my%20SMM%20panel" target="_blank" style="text-decoration: none;">
+              <button class="btn btn-success" type="button">Confirm Payment on WhatsApp</button>
+            </a>
           </div>
+        </section>
 
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
-            After making payment, click below to send your receipt on WhatsApp for instant wallet funding:
-          </p>
-          <a href="https://wa.me/2348135349371?text=Hello%20HKDM,%20I%20just%20made%20a%20deposit%20for%20my%20SMM%20panel" target="_blank" style="text-decoration: none;">
-            <button class="btn btn-success" type="button">Confirm Payment via WhatsApp</button>
-          </a>
-        </div>
-      </section>
+        <!-- SUPPORT TAB -->
+        <section id="tab-support" class="tab-panel hidden">
+          <div class="panel-card">
+            <h3 class="panel-title">Support Ticket</h3>
+            <form id="support-form">
+              <div class="form-group">
+                <label for="subject">Subject / Order ID</label>
+                <input type="text" id="subject" placeholder="e.g. Refill Order #1021" required />
+              </div>
 
-      <!-- TAB 4: SUPPORT -->
-      <section id="tab-support" class="tab-panel hidden">
-        <div class="panel-card">
-          <h3 class="panel-title">Customer Support</h3>
-          <form id="support-form">
-            <div class="form-group">
-              <label for="subject">Subject / Order ID</label>
-              <input type="text" id="subject" placeholder="e.g. Refill Request for Order #HKD-1021" required />
-            </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" rows="4" placeholder="How can we help you?" required></textarea>
+              </div>
 
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea id="message" rows="4" placeholder="Describe your inquiry or order issue..." required></textarea>
-            </div>
+              <button type="submit" class="btn btn-primary">Submit Ticket</button>
+            </form>
+          </div>
+        </section>
 
-            <button type="submit" class="btn btn-primary">Submit Ticket</button>
-          </form>
-        </div>
-      </section>
-
-    </main>
+      </main>
+    </div>
   </div>
 
-  <!-- TERMS & CONDITIONS MODAL -->
+  <!-- TERMS MODAL -->
   <div id="terms-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 style="color:#fff; margin-bottom:12px;">Terms & Conditions</h3>
-      <h4 style="color:#38bdf8;">1. Service Delivery</h4>
-      <p>Target accounts must remain public throughout the entire delivery process.</p>
-      <h4 style="color:#38bdf8;">2. Link Accuracy</h4>
-      <p>Verify link parameters carefully before submission; active orders with invalid links cannot be edited or refunded once submitted.</p>
-      <h4 style="color:#38bdf8;">3. Cancellations & Refunds</h4>
-      <p>System refunds are applied automatically if delivery fails on our backend. Manual cancellations are not supported once orders enter processing status.</p>
+      <h3 style="color:#fff; margin-bottom:12px; font-size: 18px;">Terms & Conditions</h3>
+      <h4 style="color:var(--accent-glow); margin-top:10px;">1. Service Delivery</h4>
+      <p>Target accounts must remain set to public throughout processing.</p>
+      <h4 style="color:var(--accent-glow); margin-top:10px;">2. Link Accuracy</h4>
+      <p>Double-check your links. Active orders placed with invalid links cannot be edited once processing begins.</p>
+      <h4 style="color:var(--accent-glow); margin-top:10px;">3. Refunds</h4>
+      <p>Automatic balance refunds are issued if delivery fails on our end.</p>
       <button id="close-terms" class="btn btn-secondary" style="margin-top:20px;" type="button">Close</button>
     </div>
   </div>
@@ -409,9 +438,10 @@
 
     const authScreen = document.getElementById("auth-screen");
     const dashboardScreen = document.getElementById("dashboard-screen");
+    const sidebar = document.getElementById("sidebar");
     const termsModal = document.getElementById("terms-modal");
 
-    // 1. Session Detection
+    // Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
@@ -423,7 +453,7 @@
       dashboardScreen.classList.remove("hidden");
     }
 
-    // 2. PKCE OAuth Handlers
+    // PKCE OAuth Helpers
     function generateRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -473,20 +503,26 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // 3. Navigation Tab Switcher
-    function switchTab(tabName) {
+    // Mobile Hamburger Menu
+    document.getElementById("menu-btn").addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // Tab Switcher
+    function switchTab(tabName, element) {
       document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
-      document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+      document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
 
       document.getElementById(`tab-${tabName}`).classList.remove("hidden");
-      event.target.classList.add("active");
+      element.classList.add("active");
+      sidebar.classList.remove("open");
     }
 
-    // 4. Modal Handlers
+    // Modal
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 
-    // 5. Dynamic Pricing & Services Catalog
+    // Services Catalog
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000 },
@@ -545,16 +581,9 @@
 
     loadServices();
 
-    // Submit Order Simulation
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Order submitted successfully! You can track progress in Order History.");
-    });
-
-    // Support Form Simulation
-    document.getElementById("support-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      alert("Support ticket submitted! Our team will respond shortly.");
+      alert("Order submitted successfully!");
     });
   </script>
 
