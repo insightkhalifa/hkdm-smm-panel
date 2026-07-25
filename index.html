@@ -91,33 +91,45 @@
     let kindeClient;
 
     async function initKinde() {
-      // Initialize Kinde client securely using official Web SDK
-      kindeClient = await createKindeClient({
-        client_id: "3ce3ed295cfe47988291f19d1c157a1f",
-        domain: "https://hkdm.kinde.com",
-        redirect_uri: "https://hkdm-smm-panel.vercel.app",
-        logout_redirect_uri: "https://hkdm-smm-panel.vercel.app"
-      });
+      try {
+        kindeClient = await createKindeClient({
+          client_id: "3ce3ed295cfe47988291f19d1c157a1f",
+          domain: "https://hkdm.kinde.com",
+          redirect_uri: "https://hkdm-smm-panel.vercel.app",
+          logout_redirect_uri: "https://hkdm-smm-panel.vercel.app"
+        });
 
-      // Handle authorization callback response from Kinde
-      if (window.location.search.includes("code=")) {
-        await kindeClient.handleRedirectCallback();
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Handle OAuth callback redirect back to site
+        if (window.location.search.includes("code=")) {
+          await kindeClient.handleRedirectCallback();
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (err) {
+        console.error("Kinde SDK initialization error:", err);
       }
     }
 
-    initKinde();
+    // Run initialization on page load
+    window.addEventListener("DOMContentLoaded", async () => {
+      await initKinde();
 
-    document.getElementById("login-btn").addEventListener("click", async () => {
-      if (kindeClient) {
-        await kindeClient.login();
-      }
-    });
+      document.getElementById("login-btn").addEventListener("click", async () => {
+        if (kindeClient) {
+          await kindeClient.login();
+        } else {
+          // Fallback redirect if SDK load delayed
+          window.location.href = "https://hkdm.kinde.com/login";
+        }
+      });
 
-    document.getElementById("register-btn").addEventListener("click", async () => {
-      if (kindeClient) {
-        await kindeClient.register();
-      }
+      document.getElementById("register-btn").addEventListener("click", async () => {
+        if (kindeClient) {
+          await kindeClient.register();
+        } else {
+          // Fallback redirect if SDK load delayed
+          window.location.href = "https://hkdm.kinde.com/register";
+        }
+      });
     });
   </script>
 
