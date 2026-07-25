@@ -55,7 +55,6 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-decoration: none;
       display: inline-block;
     }
     .btn-primary {
@@ -73,6 +72,8 @@
       background-color: #475569;
     }
   </style>
+  <!-- Load official Kinde Web SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@kinde-oss/kinde-auth-web-sdk@2.1.2/dist/kinde-auth-web-sdk.min.js"></script>
 </head>
 <body>
 
@@ -87,36 +88,36 @@
   </div>
 
   <script>
-    const KINDE_DOMAIN = "https://hkdm.kinde.com";
-    const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
-    const REDIRECT_URI = encodeURIComponent("https://hkdm-smm-panel.vercel.app");
+    let kindeClient;
 
-    // Function to generate a secure random state string (16 chars)
-    function generateRandomState() {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      let state = "";
-      for (let i = 0; i < 16; i++) {
-        state += chars.charAt(Math.floor(Math.random() * chars.length));
+    async function initKinde() {
+      // Initialize Kinde client securely using official Web SDK
+      kindeClient = await createKindeClient({
+        client_id: "3ce3ed295cfe47988291f19d1c157a1f",
+        domain: "https://hkdm.kinde.com",
+        redirect_uri: "https://hkdm-smm-panel.vercel.app",
+        logout_redirect_uri: "https://hkdm-smm-panel.vercel.app"
+      });
+
+      // Handle authorization callback response from Kinde
+      if (window.location.search.includes("code=")) {
+        await kindeClient.handleRedirectCallback();
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
-      return state;
     }
 
-    function redirectToKinde(startPage) {
-      const state = generateRandomState();
-      // Store state in localStorage for session verification
-      localStorage.setItem("kinde_auth_state", state);
+    initKinde();
 
-      const targetUrl = `${KINDE_DOMAIN}/oauth2/auth?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=openid%20profile%20email&start_page=${startPage}&state=${state}`;
-      
-      window.location.href = targetUrl;
-    }
-
-    document.getElementById("login-btn").addEventListener("click", () => {
-      redirectToKinde("login");
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      if (kindeClient) {
+        await kindeClient.login();
+      }
     });
 
-    document.getElementById("register-btn").addEventListener("click", () => {
-      redirectToKinde("registration");
+    document.getElementById("register-btn").addEventListener("click", async () => {
+      if (kindeClient) {
+        await kindeClient.register();
+      }
     });
   </script>
 
