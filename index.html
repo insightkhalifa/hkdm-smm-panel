@@ -306,6 +306,29 @@
       color: #cbd5e1; font-size: 13px; line-height: 1.6;
     }
 
+    /* CUSTOM SUCCESS MODAL BOX */
+    .success-modal-box {
+      background-color: var(--card-bg);
+      padding: 28px 24px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+    .success-modal-box h3 {
+      color: #ffffff;
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .success-modal-box p {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
     .hidden { display: none !important; }
 
     /* RESPONSIVE MOBILE STYLES */
@@ -585,6 +608,15 @@
     </div>
   </div>
 
+  <!-- CUSTOM SUCCESS MODAL -->
+  <div id="success-modal" class="modal-overlay hidden">
+    <div class="success-modal-box">
+      <h3>Success</h3>
+      <p>Order submitted successfully</p>
+      <button id="close-success-modal" class="btn btn-primary" type="button">OK</button>
+    </div>
+  </div>
+
   <script>
     // FIREBASE CONFIGURATION
     const firebaseConfig = {
@@ -610,6 +642,7 @@
     const dashboardScreen = document.getElementById("dashboard-screen");
     const sidebar = document.getElementById("sidebar");
     const termsModal = document.getElementById("terms-modal");
+    const successModal = document.getElementById("success-modal");
     const adminTabLink = document.getElementById("admin-tab-link");
 
     // Helper to decode JWT payload from Kinde
@@ -799,6 +832,7 @@
     // Modal Events
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
+    document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
     // Services Catalog
     const servicesData = {
@@ -925,7 +959,7 @@
       db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
       db.ref("orders/" + orderIdKey).set(newOrder);
 
-      alert("Order submitted successfully!");
+      successModal.classList.remove("hidden");
       document.getElementById("order-form").reset();
       updateServiceLimits();
       updatePrice();
