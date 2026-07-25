@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HKDM Digital — Modern SMM Panel</title>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -579,6 +584,19 @@
   </div>
 
   <script>
+    // FIREBASE CONFIGURATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwD0sn2FbssLiDfqvzsutnyzd0KvDUCME",
+      authDomain: "hkdm-37f18.firebaseapp.com",
+      projectId: "hkdm-37f18",
+      storageBucket: "hkdm-37f18.firebasestorage.app",
+      messagingSenderId: "656175997139",
+      appId: "1:656175997139:web:83e544fce6f4cc0f957426"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const KINDE_DOMAIN = "https://hkdm.kinde.com";
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
@@ -612,7 +630,6 @@
     const idToken = urlParams.get("id_token");
     let currentUserEmail = localStorage.getItem("hkdm_user_email") || "";
 
-    // Extract email if Kinde returns an ID token
     if (idToken) {
       const decoded = parseJwt(idToken);
       if (decoded && decoded.email) {
@@ -623,9 +640,8 @@
 
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
 
-    // Balance State
-    let userBalance = parseFloat(localStorage.getItem("hkdm_user_balance") || "0");
-    updateBalanceUI();
+    let userBalance = 0;
+    let userOrders = [];
 
     if (hasCode || idToken || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
@@ -633,15 +649,12 @@
       authScreen.classList.add("hidden");
       dashboardScreen.classList.remove("hidden");
 
-      // Verify if the logged-in email matches the admin address
       checkAdminAccess(currentUserEmail);
-      
-      // Update User Profile UI
       updateUserProfileUI(currentUserEmail);
+      initRealtimeSync(currentUserEmail);
     }
 
     function checkAdminAccess(email) {
-      // Prompt manually once if email isn't detected automatically
       if (!email && localStorage.getItem("hkdm_logged_in") === "true") {
         const inputEmail = prompt("Enter your account email to verify access permissions:");
         if (inputEmail) {
@@ -652,6 +665,7 @@
 
       if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
         adminTabLink.classList.remove("hidden");
+        loadAllSystemOrders();
       } else {
         adminTabLink.classList.add("hidden");
       }
@@ -668,14 +682,6 @@
       document.getElementById("profile-username").textContent = `@${username}`;
       document.getElementById("profile-email").textContent = email;
 
-      // Check if user has a targeted balance stored in user store
-      const userStore = JSON.parse(localStorage.getItem("hkdm_all_users") || "{}");
-      if (userStore[username.toLowerCase()] !== undefined) {
-        userBalance = userStore[username.toLowerCase()];
-        localStorage.setItem("hkdm_user_balance", userBalance.toString());
-        updateBalanceUI();
-      }
-
       if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
         document.getElementById("profile-role-badge").textContent = "Administrator";
         document.getElementById("profile-role-badge").style.background = "rgba(245, 158, 11, 0.15)";
@@ -687,6 +693,40 @@
     function updateBalanceUI() {
       document.getElementById("user-balance").textContent = 
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // FIREBASE REALTIME SYNC FOR USERS & ORDERS
+    function initRealtimeSync(email) {
+      if (!email) return;
+      const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+
+      // Listen for live balance changes from Firebase
+      db.ref("users/" + cleanKey + "/balance").on("value", (snapshot) => {
+        const val = snapshot.val();
+        if (val !== null) {
+          userBalance = parseFloat(val);
+        } else {
+          // Initialize user balance to 0 if not set
+          db.ref("users/" + cleanKey + "/balance").set(0);
+          userBalance = 0;
+        }
+        updateBalanceUI();
+      });
+
+      // Listen for live order history updates
+      db.ref("users/" + cleanKey + "/orders").on("value", (snapshot) => {
+        const data = snapshot.val();
+        userOrders = data ? Object.values(data) : [];
+        renderOrderHistory();
+      });
+    }
+
+    function loadAllSystemOrders() {
+      db.ref("orders").on("value", (snapshot) => {
+        const data = snapshot.val();
+        const allOrders = data ? Object.values(data) : [];
+        renderAdminOrders(allOrders);
+      });
     }
 
     // PKCE OAuth Helpers
@@ -818,9 +858,7 @@
 
     loadServices();
 
-    // Order Handling
-    const userOrders = JSON.parse(localStorage.getItem("hkdm_orders") || "[]");
-
+    // Order Submission Handling
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -834,22 +872,19 @@
       }
 
       userBalance -= totalCost;
-      localStorage.setItem("hkdm_user_balance", userBalance.toString());
-      
-      // Update individual user store balance as well
-      const currentUser = (localStorage.getItem("hkdm_user_email") || "").split('@')[0].toLowerCase();
-      if (currentUser) {
-        let userStore = JSON.parse(localStorage.getItem("hkdm_all_users") || "{}");
-        userStore[currentUser] = userBalance;
-        localStorage.setItem("hkdm_all_users", JSON.stringify(userStore));
-      }
+      const email = localStorage.getItem("hkdm_user_email") || "";
+      const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      updateBalanceUI();
+      // Update balance in Firebase
+      db.ref("users/" + cleanKey + "/balance").set(userBalance);
 
       const selectedServiceText = serviceSelect.options[serviceSelect.selectedIndex].text.split(" — ")[0];
       const link = document.getElementById("link").value;
 
+      const orderIdKey = "ord_" + Date.now();
       const newOrder = {
+        firebaseKey: orderIdKey,
+        userEmail: email,
         id: "#" + Math.floor(1000 + Math.random() * 9000),
         service: selectedServiceText,
         link: link,
@@ -858,11 +893,9 @@
         status: "Processing"
       };
 
-      userOrders.unshift(newOrder);
-      localStorage.setItem("hkdm_orders", JSON.stringify(userOrders));
-
-      renderOrderHistory();
-      renderAdminOrders();
+      // Save order to user profile and global system orders
+      db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
+      db.ref("orders/" + orderIdKey).set(newOrder);
 
       alert("Order submitted successfully!");
       document.getElementById("order-form").reset();
@@ -871,11 +904,11 @@
 
     function renderOrderHistory() {
       const tbody = document.getElementById("order-history-body");
-      if (userOrders.length === 0) {
+      if (!userOrders || userOrders.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No orders found.</td></tr>`;
         return;
       }
-      tbody.innerHTML = userOrders.map(order => `
+      tbody.innerHTML = userOrders.slice().reverse().map(order => `
         <tr>
           <td>${order.id}</td>
           <td>${order.service}</td>
@@ -887,46 +920,41 @@
       `).join("");
     }
 
-    // Admin Wallet Top-up (UPDATED MULTI-USER LOGIC)
+    // Admin Wallet Top-up (FIREBASE CLOUD SYNC)
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
       
-      const targetUser = document.getElementById("admin-user-email").value.trim().toLowerCase();
-      const amount = parseFloat(document.getElementById("admin-amount").value) || 0;
-      
-      // Retrieve stored user balances object (or create one if empty)
-      let userStore = JSON.parse(localStorage.getItem("hkdm_all_users") || "{}");
+      let targetInput = document.getElementById("admin-user-email").value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById("admin-amount").value) / 1 || 0;
 
-      // If user doesn't exist yet, initialize them
-      if (!userStore[targetUser]) {
-        userStore[targetUser] = 0;
+      // If user typed username instead of full email, normalize it (e.g. "hipqhalifa" -> search or append domain prefix)
+      if (!targetInput.includes("@")) {
+        targetInput = targetInput + "@gmail.com";
       }
 
-      // Add credit to target user
-      userStore[targetUser] += amount;
-      localStorage.setItem("hkdm_all_users", JSON.stringify(userStore));
+      const targetCleanKey = targetInput.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // If top-up is for current active account, update current UI balance immediately
-      const currentUserEmail = (localStorage.getItem("hkdm_user_email") || "").toLowerCase();
-      const currentUsername = currentUserEmail.split('@')[0];
+      // Check current target balance in database first, then add credit
+      db.ref("users/" + targetCleanKey + "/balance").once("value", (snapshot) => {
+        let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
+        let newBalance = currentBal + amount;
 
-      if (targetUser === currentUserEmail || targetUser === currentUsername || targetUser === "me") {
-        userBalance += amount;
-        localStorage.setItem("hkdm_user_balance", userBalance.toString());
-        updateBalanceUI();
-      }
-
-      alert(`Successfully added ₦${amount.toLocaleString()} to wallet for '${targetUser}'!`);
-      document.getElementById("admin-topup-form").reset();
+        db.ref("users/" + targetCleanKey + "/balance").set(newBalance).then(() => {
+          alert(`Successfully added ₦${amount.toLocaleString()} to wallet for '${targetInput}'!`);
+          document.getElementById("admin-topup-form").reset();
+        }).catch((err) => {
+          alert("Failed to credit wallet: " + err.message);
+        });
+      });
     });
 
-    function renderAdminOrders() {
+    function renderAdminOrders(allOrders) {
       const tbody = document.getElementById("admin-orders-body");
-      if (userOrders.length === 0) {
+      if (!allOrders || allOrders.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No pending orders to manage.</td></tr>`;
         return;
       }
-      tbody.innerHTML = userOrders.map((order, idx) => `
+      tbody.innerHTML = allOrders.slice().reverse().map((order) => `
         <tr>
           <td>${order.id}</td>
           <td>${order.service}</td>
@@ -935,21 +963,20 @@
           <td>${order.charge}</td>
           <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
           <td>
-            <button class="btn btn-success btn-sm" onclick="markOrderCompleted(${idx})">Complete</button>
+            ${order.status !== "Completed" ? `<button class="btn btn-success btn-sm" onclick="markOrderCompleted('${order.firebaseKey}', '${order.userEmail}')">Complete</button>` : '<span style="color:var(--text-muted); font-size:12px;">Done</span>'}
           </td>
         </tr>
       `).join("");
     }
 
-    function markOrderCompleted(idx) {
-      userOrders[idx].status = "Completed";
-      localStorage.setItem("hkdm_orders", JSON.stringify(userOrders));
-      renderOrderHistory();
-      renderAdminOrders();
-    }
+    function markOrderCompleted(firebaseKey, userEmail) {
+      if (!firebaseKey || !userEmail) return;
+      const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-    renderOrderHistory();
-    renderAdminOrders();
+      // Update both user's profile order list and global orders list
+      db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Completed");
+      db.ref("orders/" + firebaseKey + "/status").set("Completed");
+    }
   </script>
 
 </body>
