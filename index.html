@@ -509,17 +509,42 @@
     const termsModal = document.getElementById("terms-modal");
     const adminTabLink = document.getElementById("admin-tab-link");
 
+    // Helper to decode JWT payload from Kinde
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
     // Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
+    const idToken = urlParams.get("id_token");
+    let currentUserEmail = localStorage.getItem("hkdm_user_email") || "";
+
+    // Extract email if Kinde returns an ID token
+    if (idToken) {
+      const decoded = parseJwt(idToken);
+      if (decoded && decoded.email) {
+        currentUserEmail = decoded.email;
+        localStorage.setItem("hkdm_user_email", currentUserEmail);
+      }
+    }
+
     const isLoggedIn = localStorage.getItem("hkdm_logged_in") === "true";
-    const currentUserEmail = localStorage.getItem("hkdm_user_email") || "";
 
     // Balance State
     let userBalance = parseFloat(localStorage.getItem("hkdm_user_balance") || "0");
     updateBalanceUI();
 
-    if (hasCode || isLoggedIn) {
+    if (hasCode || idToken || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
       window.history.replaceState({}, document.title, window.location.pathname);
       authScreen.classList.add("hidden");
@@ -530,6 +555,15 @@
     }
 
     function checkAdminAccess(email) {
+      // Prompt manually once if email isn't detected automatically
+      if (!email && localStorage.getItem("hkdm_logged_in") === "true") {
+        const inputEmail = prompt("Enter your account email to verify access permissions:");
+        if (inputEmail) {
+          email = inputEmail.trim();
+          localStorage.setItem("hkdm_user_email", email);
+        }
+      }
+
       if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
         adminTabLink.classList.remove("hidden");
       } else {
