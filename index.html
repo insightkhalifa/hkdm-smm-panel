@@ -235,6 +235,7 @@
       box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
       object-fit: cover;
       overflow: hidden;
+      flex-shrink: 0;
     }
     .profile-avatar img {
       width: 100%;
@@ -537,13 +538,13 @@
               </div>
             </div>
 
-            <!-- Profile Picture Update Form -->
+            <!-- Profile Picture File Upload Form -->
             <form id="profile-pic-form" style="margin-bottom: 24px; background-color: #0b0f19; padding: 16px; border-radius: 12px; border: 1px solid var(--border-color);">
               <div class="form-group" style="margin-bottom: 12px;">
-                <label for="avatar-url-input">Profile Picture URL</label>
-                <input type="url" id="avatar-url-input" placeholder="https://example.com/your-image.jpg" required />
+                <label for="avatar-file-input">Upload Profile Picture from Device</label>
+                <input type="file" id="avatar-file-input" accept="image/*" required style="padding: 10px; cursor: pointer;" />
               </div>
-              <button type="submit" class="btn btn-primary btn-sm">Update Profile Picture</button>
+              <button type="submit" class="btn btn-primary btn-sm">Upload & Save Picture</button>
             </form>
 
             <div class="profile-details">
@@ -769,15 +770,21 @@
       }
     }
 
-    function updateAvatarUI(avatarUrl) {
-      const avatarContainer = document.getElementById("profile-avatar-container");
-      if (avatarUrl) {
-        avatarContainer.innerHTML = `<img src="${avatarUrl}" alt="Profile Picture" onerror="this.onerror=null;this.parentNode.innerHTML='U';">`;
-      } else {
-        const email = localStorage.getItem("hkdm_user_email") || "";
-        const username = email ? email.split('@')[0] : "U";
-        avatarContainer.innerHTML = `<span id="profile-initial">${username.charAt(0).toUpperCase()}</span>`;
-      }
+    function updateAvatarUI(avatarData) {
+      const avatarContainers = [
+        document.getElementById("profile-avatar-container")
+      ];
+      
+      avatarContainers.forEach(avatarContainer => {
+        if (!avatarContainer) return;
+        if (avatarData) {
+          avatarContainer.innerHTML = `<img src="${avatarData}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null;this.parentNode.innerHTML='U';">`;
+        } else {
+          const email = localStorage.getItem("hkdm_user_email"] || "";
+          const username = email ? email.split('@')[0] : "U";
+          avatarContainer.innerHTML = `<span id="profile-initial">${username.charAt(0).toUpperCase()}</span>`;
+        }
+      });
     }
 
     function updateBalanceUI() {
@@ -804,10 +811,9 @@
 
       // Listen for live profile avatar updates
       db.ref("users/" + cleanKey + "/avatarUrl").on("value", (snapshot) => {
-        const avatarUrl = snapshot.val();
-        if (avatarUrl) {
-          document.getElementById("avatar-url-input").value = avatarUrl;
-          updateAvatarUI(avatarUrl);
+        const avatarData = snapshot.val();
+        if (avatarData) {
+          updateAvatarUI(avatarData);
         }
       });
 
@@ -827,22 +833,32 @@
       });
     }
 
-    // Profile Picture Form Submission Handler
+    // Profile Picture Direct File Upload Handler (Converts file to Base64)
     document.getElementById("profile-pic-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      const avatarUrl = document.getElementById("avatar-url-input").value.trim();
-      const email = localStorage.getItem("hkdm_user_email") || "";
+      const fileInput = document.getElementById("avatar-file-input");
+      const email = localStorage.getItem("hkdm_user_email"] || "";
       
-      if (!email || !avatarUrl) return;
+      if (!email || fileInput.files.length === 0) return;
 
-      const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-      db.ref("users/" + cleanKey + "/avatarUrl").set(avatarUrl)
-        .then(() => {
-          alert("Profile picture updated successfully!");
-        })
-        .catch((err) => {
-          alert("Failed to update profile picture: " + err.message);
-        });
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(uploadEvent) {
+        const base64ImageString = uploadEvent.target.result;
+        const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+
+        db.ref("users/" + cleanKey + "/avatarUrl").set(base64ImageString)
+          .then(() => {
+            alert("Profile picture uploaded successfully!");
+            fileInput.value = "";
+          })
+          .catch((err) => {
+            alert("Failed to upload profile picture: " + err.message);
+          });
+      };
+
+      reader.readAsDataURL(file);
     });
 
     // PKCE OAuth Helpers
