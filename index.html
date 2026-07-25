@@ -397,7 +397,7 @@
 
               <div class="form-group">
                 <label for="quantity">Quantity</label>
-                <input type="number" id="quantity" placeholder="1000" min="100" value="1000" required />
+                <input type="number" id="quantity" placeholder="1000" min="100" max="100000000" value="1000" required />
               </div>
 
               <div class="price-box">
@@ -798,33 +798,33 @@
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 
-    // Services Catalog
+    // Services Catalog (Views max limit set to 100,000,000)
     const servicesData = {
       instagram: [
-        { name: "Instagram Followers", rate: 5000 },
-        { name: "Instagram Likes", rate: 2000 },
-        { name: "Instagram Views", rate: 1500 },
-        { name: "Instagram Comments", rate: 10000 }
+        { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000 },
+        { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000 },
+        { name: "Instagram Views", rate: 1500, min: 100, max: 100000000 },
+        { name: "Instagram Comments", rate: 10000, min: 10, max: 1000000 }
       ],
       tiktok: [
-        { name: "TikTok Followers", rate: 6000 },
-        { name: "TikTok Likes", rate: 2000 },
-        { name: "TikTok Views", rate: 1000 },
-        { name: "TikTok Shares", rate: 2000 },
-        { name: "TikTok Saves", rate: 1500 },
-        { name: "TikTok Comments", rate: 10000 }
+        { name: "TikTok Followers", rate: 6000, min: 100, max: 1000000 },
+        { name: "TikTok Likes", rate: 2000, min: 100, max: 1000000 },
+        { name: "TikTok Views", rate: 1000, min: 500, max: 100000000 },
+        { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000 },
+        { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000 },
+        { name: "TikTok Comments", rate: 10000, min: 10, max: 1000000 }
       ],
       youtube: [
-        { name: "YouTube Subscribers", rate: 25000 },
-        { name: "YouTube Views", rate: 2000 },
-        { name: "YouTube Likes", rate: 2000 }
+        { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000 },
+        { name: "YouTube Views", rate: 2000, min: 100, max: 100000000 },
+        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000 }
       ],
       facebook: [
-        { name: "Facebook Followers", rate: 5000 },
-        { name: "Facebook Likes", rate: 2500 },
-        { name: "Facebook Views", rate: 1500 },
-        { name: "Facebook Shares", rate: 2000 },
-        { name: "Facebook Comments", rate: 10000 }
+        { name: "Facebook Followers", rate: 5000, min: 100, max: 1000000 },
+        { name: "Facebook Likes", rate: 2500, min: 50, max: 1000000 },
+        { name: "Facebook Views", rate: 1500, min: 100, max: 100000000 },
+        { name: "Facebook Shares", rate: 2000, min: 50, max: 1000000 },
+        { name: "Facebook Comments", rate: 10000, min: 10, max: 1000000 }
       ]
     };
 
@@ -838,10 +838,27 @@
       const options = servicesData[selectedCat] || [];
       
       serviceSelect.innerHTML = options.map(s => 
-        `<option value="${s.rate}">${s.name} — ₦${s.rate.toLocaleString()} / 1k</option>`
+        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}">${s.name} — ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()}, Max: ${s.max.toLocaleString()})</option>`
       ).join("");
 
+      updateServiceLimits();
       updatePrice();
+    }
+
+    function updateServiceLimits() {
+      const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      if (!selectedOption) return;
+
+      const min = selectedOption.getAttribute("data-min") || 100;
+      const max = selectedOption.getAttribute("data-max") || 100000000;
+
+      quantityInput.min = min;
+      quantityInput.max = max;
+      quantityInput.placeholder = `Min: ${parseInt(min).toLocaleString()}, Max: ${parseInt(max).toLocaleString()}`;
+      
+      if (parseInt(quantityInput.value) < parseInt(min)) {
+        quantityInput.value = min;
+      }
     }
 
     function updatePrice() {
@@ -852,17 +869,29 @@
     }
 
     categorySelect.addEventListener("change", loadServices);
-    serviceSelect.addEventListener("change", updatePrice);
+    serviceSelect.addEventListener("change", () => {
+      updateServiceLimits();
+      updatePrice();
+    });
     quantityInput.addEventListener("input", updatePrice);
 
     loadServices();
 
-    // Order Submission Handling
+    // Order Submission Handling with Min/Max Validation
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const ratePer1000 = parseFloat(serviceSelect.value) || 0;
+      const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      const min = parseInt(selectedOption.getAttribute("data-min")) || 100;
+      const max = parseInt(selectedOption.getAttribute("data-max")) || 100000000;
       const qty = parseInt(quantityInput.value) || 0;
+
+      if (qty < min || qty > max) {
+        alert(`Quantity for this service must be between ${min.toLocaleString()} and ${max.toLocaleString()}.`);
+        return;
+      }
+
+      const ratePer1000 = parseFloat(serviceSelect.value) || 0;
       const totalCost = (qty / 1000) * ratePer1000;
 
       if (userBalance < totalCost) {
@@ -876,7 +905,7 @@
 
       db.ref("users/" + cleanKey + "/balance").set(userBalance);
 
-      const selectedServiceText = serviceSelect.options[serviceSelect.selectedIndex].text.split(" — ")[0];
+      const selectedServiceText = selectedOption.text.split(" — ")[0];
       const link = document.getElementById("link").value;
 
       const orderIdKey = "ord_" + Date.now();
@@ -896,6 +925,7 @@
 
       alert("Order submitted successfully!");
       document.getElementById("order-form").reset();
+      updateServiceLimits();
       updatePrice();
     });
 
@@ -917,7 +947,7 @@
       `).join("");
     }
 
-    // Admin Wallet Top-up (FIXED WITH ERROR HANDLING)
+    // Admin Wallet Top-up
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
       
