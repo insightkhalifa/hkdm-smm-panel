@@ -1306,3 +1306,25 @@
 
 </body>
 </html>
+// Assuming firebase.database() is already initialized
+const dbRef = firebase.database().ref('users');
+
+dbRef.once('value', (snapshot) => {
+    const users = snapshot.val();
+    if (!users) return;
+
+    const updates = {};
+    Object.keys(users).forEach((emailKey) => {
+        // Clear the transactions node and optionally reset balance to 0
+        updates[`${emailKey}/transactions`] = null;
+        updates[`${emailKey}/balance`] = 0; // Optional: resets wallet balance to 0
+    });
+
+    dbRef.update(updates)
+        .then(() => {
+            console.log("All user transactions cleared and balances reset successfully!");
+        })
+        .catch((error) => {
+            console.error("Error clearing transactions: ", error);
+        });
+});
