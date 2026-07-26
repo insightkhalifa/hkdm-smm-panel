@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HKDM Services — Modern SMM Panel</title>
+  <title>HKDM Digital — Modern SMM Panel</title>
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -367,7 +367,7 @@
   <!-- 1. LOGIN / SIGNUP PAGE -->
   <div id="auth-screen" class="auth-container">
     <div class="auth-card">
-      <div class="logo-brand">HKDM Services</div>
+      <div class="logo-brand">HKDM Digital</div>
       <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
@@ -381,7 +381,7 @@
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
-        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Services</div>
+        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
       </div>
       <div class="nav-right">
         <div class="wallet-badge">
@@ -396,6 +396,7 @@
       <aside id="sidebar" class="sidebar">
         <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
+        <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
         <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
@@ -476,6 +477,43 @@
                   <tr>
                     <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
                       No orders found.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRANSACTIONS HISTORY TAB -->
+        <section id="tab-transactions-history" class="tab-panel hidden">
+          <div class="row mb-3" style="margin-bottom: 20px;">
+            <div class="col-md-4" style="max-width: 250px;">
+              <div class="card" style="background-color: #0b0f19; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+                <h6 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">Total Spent</h6>
+                <h4 id="totalSpentAmount" style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3 class="panel-title">Transactions History</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionsTableBody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                      No transactions found.
                     </td>
                   </tr>
                 </tbody>
@@ -780,6 +818,39 @@
         userOrders = data ? Object.values(data) : [];
         renderOrderHistory();
       });
+
+      // Listen for live transaction history updates and compute total spent
+      db.ref(`users/${cleanKey}/transactions`).on('value', (snapshot) => {
+        let totalSpent = 0;
+        const transactionsTableBody = document.getElementById('transactionsTableBody');
+        transactionsTableBody.innerHTML = '';
+
+        const txData = snapshot.val();
+        if (!txData) {
+          transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No transactions found.</td></tr>`;
+          document.getElementById('totalSpentAmount').innerText = `₦0.00`;
+          return;
+        }
+
+        const txList = Object.values(txData);
+        transactionsTableBody.innerHTML = txList.slice().reverse().map(tx => {
+          if (tx.type && tx.type.toLowerCase() === 'debit') {
+            totalSpent += parseFloat(tx.amount || 0);
+          }
+          return `
+            <tr>
+              <td>${tx.reference || ''}</td>
+              <td>${tx.type || ''}</td>
+              <td>₦${parseFloat(tx.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td>${tx.description || ''}</td>
+              <td>${tx.status || ''}</td>
+              <td>${tx.date || ''}</td>
+            </tr>
+          `;
+        }).join('');
+
+        document.getElementById('totalSpentAmount').innerText = `₦${totalSpent.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      });
     }
 
     function loadAllSystemOrders() {
@@ -988,6 +1059,18 @@
       db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
       db.ref("orders/" + orderIdKey).set(newOrder);
 
+      // Automatically log debit transaction record
+      const txRefKey = "tx_" + Date.now();
+      const newTx = {
+        reference: orderIdKey,
+        type: "Debit",
+        amount: totalCost,
+        description: `Order placement for ${selectedServiceText}`,
+        status: "Completed",
+        date: new Date().toLocaleString()
+      };
+      db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
+
       successModal.classList.remove("hidden");
       document.getElementById("order-form").reset();
       updateServiceLimits();
@@ -1057,6 +1140,18 @@
         .then((snapshot) => {
           let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
           let newBalance = currentBal + amount;
+
+          // Log credit transaction for target user
+          const txRefKey = "tx_" + Date.now();
+          const newTx = {
+            reference: txRefKey,
+            type: "Credit",
+            amount: amount,
+            description: "Admin wallet top-up",
+            status: "Completed",
+            date: new Date().toLocaleString()
+          };
+          db.ref(`users/${targetCleanKey}/transactions/${txRefKey}`).set(newTx);
 
           return userBalanceRef.set(newBalance);
         })
@@ -1139,6 +1234,18 @@
           userBalanceRef.set(newBal);
           db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
           db.ref("orders/" + firebaseKey + "/status").set("Refunded");
+
+          // Log refund transaction record
+          const txRefKey = "tx_" + Date.now();
+          const newTx = {
+            reference: firebaseKey,
+            type: "Credit",
+            amount: refundAmount,
+            description: `Refund for failed order ${orderData.id || ''}`,
+            status: "Completed",
+            date: new Date().toLocaleString()
+          };
+          db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
 
           alert(`Successfully refunded ₦${refundAmount.toLocaleString()} to ${userEmail}!`);
         });
