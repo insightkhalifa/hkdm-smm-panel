@@ -9,6 +9,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
+  <!-- Paystack SDK -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -275,11 +278,11 @@
 
     /* NOTE BANNER */
     .note-banner {
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
       padding: 14px 16px;
       border-radius: 10px;
-      color: #fcd34d;
+      color: #34d399;
       font-size: 13px;
       line-height: 1.5;
       margin-bottom: 20px;
@@ -528,24 +531,14 @@
           </div>
         </section>
 
-        <!-- TOP UP ACCOUNT TAB -->
+        <!-- TOP UP ACCOUNT TAB (PAYSTACK INTEGRATION) -->
         <section id="tab-top-up" class="tab-panel hidden">
           <div class="panel-card">
-            <h3 class="panel-title">Top Up Account</h3>
+            <h3 class="panel-title">Fund Your Wallet</h3>
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Please include your sender's name in the WhatsApp message along with your HKDM Username. Ensure you add the narration <strong>"For social media marketing"</strong> to your payment transfer.
-            </div>
-
-            <div style="background-color: #0b0f19; padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-              <h4 style="color: var(--accent-glow); font-size: 14px; margin-bottom: 10px;">Bank Transfer Details</h4>
-              <p style="font-size: 13px; line-height: 1.8; color: #cbd5e1;">
-                <strong>Bank:</strong> OPay<br>
-                <strong>Account Number:</strong> 8135349371<br>
-                <strong>Account Name:</strong> Sadiq Abdulrauf<br>
-                <strong>Narration:</strong> For social media marketing
-              </p>
+              Fund your wallet instantly using Paystack. Your balance will be credited automatically upon successful payment.
             </div>
 
             <form id="top-up-form">
@@ -554,7 +547,7 @@
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
               </div>
 
-              <button type="submit" class="btn btn-success">Confirm Payment</button>
+              <button type="submit" class="btn btn-success">Pay with Paystack</button>
             </form>
           </div>
         </section>
@@ -1122,25 +1115,56 @@
       updatePrice();
     });
 
-    // Top Up Account Form Handler
+    // Paystack Top-Up Integration Handler
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
-      const amount = parseFloat(depositAmountInput);
+      const amountInNaira = parseFloat(depositAmountInput);
 
-      if (isNaN(amount) || amount <= 0) {
+      if (isNaN(amountInNaira) || amountInNaira <= 0) {
         alert("Please enter a valid deposit amount.");
         return;
       }
 
-      const email = localStorage.getItem("hkdm_user_email") || "";
-      const username = email ? email.split('@')[0] : "user";
-      
-      const whatsappNumber = "18253635037";
-      const whatsappMessage = encodeURIComponent(`Hello HKDM I just made a deposit here’s the receipt attachment. My username is @${username}, amount: ₦${amount.toLocaleString()}\n\nSender's Name: [Type your sender name here]`);
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+      const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
+      const amountInKobo = amountInNaira * 100;
 
-      window.open(whatsappUrl, '_blank');
+      const paystack = new PaystackPop();
+      
+      paystack.newTransaction({
+        key: 'pk_live_your_actual_public_key_here', // Replace with your live Paystack Public Key
+        email: email,
+        amount: amountInKobo,
+        currency: 'NGN',
+        onSuccess: function(transaction) {
+          const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+          const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
+
+          userBalanceRef.once("value").then((snapshot) => {
+            let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
+            let newBalance = currentBal + amountInNaira;
+
+            userBalanceRef.set(newBalance);
+
+            const txRefKey = transaction.reference || ("tx_" + Date.now());
+            const newTx = {
+              reference: txRefKey,
+              type: "Credit",
+              amount: amountInNaira,
+              description: "Paystack wallet top-up",
+              status: "Completed",
+              date: new Date().toLocaleString()
+            };
+            db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
+
+            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet.`);
+            document.getElementById("top-up-form").reset();
+          });
+        },
+        onCancel: function() {
+          alert('Payment cancelled.');
+        }
+      });
     });
 
     function renderOrderHistory() {
