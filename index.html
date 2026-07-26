@@ -359,6 +359,8 @@
       font-size: 13px;
       line-height: 1.5;
       margin-bottom: 20px;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     /* TABLE LAYOUT & RESPONSIVE FIXES */
@@ -706,14 +708,14 @@
           </div>
         </section>
 
-        <!-- TOP UP ACCOUNT TAB (OPAY INTEGRATION) -->
+        <!-- TOP UP ACCOUNT TAB (PAYSTACK INTEGRATION) -->
         <section id="tab-top-up" class="tab-panel hidden">
           <div class="panel-card">
             <h3 class="panel-title">Fund Your Wallet</h3>
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Fund your wallet instantly using OPay. Your balance will be credited automatically upon successful payment.
+              Fund your wallet instantly using Paystack. Your balance will be credited automatically upon successful payment.
             </div>
 
             <form id="top-up-form">
@@ -1446,7 +1448,7 @@
       updatePrice();
     });
 
-    // OPay Top-Up Integration Handler (Restricted to OPay via Paystack channels configuration)
+    // Paystack Top-Up Integration Handler
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1467,7 +1469,6 @@
         email: email,
         amount: amountInKobo,
         currency: 'NGN',
-        channels: ['opay'],
         onSuccess: function(transaction) {
           const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
           const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
@@ -1483,13 +1484,13 @@
               reference: txRefKey,
               type: "Credit",
               amount: amountInNaira,
-              description: "OPay wallet top-up",
+              description: "Paystack wallet top-up",
               status: "Completed",
               date: new Date().toLocaleString()
             };
             db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
 
-            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet via OPay.`);
+            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet via Paystack.`);
             document.getElementById("top-up-form").reset();
           });
         },
