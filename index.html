@@ -558,7 +558,6 @@
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
         <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
         <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
-        <div class="nav-link" onclick="switchTab('api-docs', this)">🔌 API Documentation</div>
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
@@ -731,32 +730,6 @@
 
               <button type="submit" class="btn btn-success">Pay with OPay</button>
             </form>
-          </div>
-        </section>
-
-        <!-- API DOCUMENTATION PAGE TAB -->
-        <section id="tab-api-docs" class="tab-panel hidden">
-          <div class="panel-card">
-            <h3 class="panel-title">🔌 HKDM SMM Panel API V2</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
-              Integrate your own applications, scripts, or automated bots with our powerful backend platform using the specifications below.
-            </p>
-
-            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px;">1. API Endpoint</h4>
-            <div class="code-block">https://hkdm-smm-panel.vercel.app/api/v2</div>
-
-            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">2. Authentication</h4>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">Pass your unique user API key via query parameters:</p>
-            <div class="code-block">key=YOUR_SECRET_API_KEY</div>
-
-            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">3. Available Actions & Parameters</h4>
-            <ul style="color: var(--text-muted); font-size: 13px; padding-left: 20px; line-height: 1.6;">
-              <li><strong style="color: var(--text-main);">Add Order:</strong> action=add, service=SERVICE_ID, link=TARGET_URL, quantity=QTY</li>
-              <li><strong style="color: var(--text-main);">Check Status:</strong> action=status, order=ORDER_ID</li>
-              <li><strong style="color: var(--text-main);">Multi Status Check:</strong> action=status, orders=ID1,ID2,ID3</li>
-              <li><strong style="color: var(--text-main);">Services List:</strong> action=services</li>
-              <li><strong style="color: var(--text-main);">Account Balance:</strong> action=balance</li>
-            </ul>
           </div>
         </section>
 
