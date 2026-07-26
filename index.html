@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <!-- Paystack SDK -->
-  <script src="https://js.paystack.co/v2/inline.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
 
   <style>
     * {
@@ -711,11 +711,11 @@
         <!-- TOP UP ACCOUNT TAB (PAYSTACK INTEGRATION) -->
         <section id="tab-top-up" class="tab-panel hidden">
           <div class="panel-card">
-            <h3 class="panel-title">Fund Your Wallet</h3>
+            <h3 class="panel-title">Fund Your Wallet via Paystack</h3>
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Fund your wallet instantly using Paystack. Your balance and transaction record will be credited automatically upon successful payment.
+              Fund your wallet securely using any supported payment method via Paystack. Your balance and transaction record will be credited automatically upon successful payment.
             </div>
 
             <form id="top-up-form">
@@ -724,7 +724,7 @@
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
               </div>
 
-              <button type="submit" class="btn btn-success">Confirm Payment</button>
+              <button type="submit" class="btn btn-success">Confirm Payment via Paystack</button>
             </form>
           </div>
         </section>
@@ -1448,7 +1448,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler with Full Transaction Logging & Firebase Sync
+    // Paystack Top-Up Integration Handler (Standard multiple channels supported)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1460,55 +1460,52 @@
       }
 
       const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
-      const amountInKobo = amountInNaira * 100;
+      const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      const paystack = new PaystackPop();
-      
-      paystack.newTransaction({
+      var handler = PaystackPop.setup({
         key: 'pk_test_004006a167e704aeae640f67974b371f62722cbe',
         email: email,
-        amount: amountInKobo,
+        amount: amountInNaira * 100,
         currency: 'NGN',
-        onSuccess: function(transaction) {
-          const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-          const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
+        ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response){
+          const txRef = response.reference;
+          const fundedAmount = amountInNaira;
 
-          userBalanceRef.once("value").then((snapshot) => {
-            let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
-            let newBalance = currentBal + amountInNaira;
-
-            // Atomic database updates for balance and transaction log
-            const txRefKey = transaction.reference || ("tx_" + Date.now());
-            const newTx = {
-              reference: txRefKey,
-              type: "Credit",
-              amount: amountInNaira,
-              description: "Paystack wallet top-up",
-              status: "Completed",
-              date: new Date().toLocaleString()
-            };
-
-            const updates = {};
-            updates["users/" + cleanKey + "/balance"] = newBalance;
-            updates["users/" + cleanKey + "/transactions/" + txRefKey] = newTx;
-
-            db.ref().update(updates).then(() => {
-              alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet and logged to your transaction history.`);
+          db.ref('users/' + cleanKey).transaction(function(userData) {
+            if (userData) {
+              userData.balance = (userData.balance || 0) + fundedAmount;
+              
+              if (!userData.transactions) {
+                userData.transactions = {};
+              }
+              
+              userData.transactions[txRef] = {
+                reference: txRef,
+                type: 'Credit',
+                amount: fundedAmount,
+                description: 'Paystack wallet top-up',
+                status: 'Completed',
+                date: new Date().toLocaleString()
+              };
+            }
+            return userData;
+          }, function(error, committed, snapshot) {
+            if (error) {
+              console.log('Failed to update wallet and history:', error);
+            } else {
+              alert('Payment successful! Your wallet deposit has been credited.');
               document.getElementById("top-up-form").reset();
-            }).catch((err) => {
-              console.error("Firebase update error:", err);
-              // Fallback direct set
-              userBalanceRef.set(newBalance);
-              db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
-              alert(`Payment successful! ₦${amountInNaira.toLocaleString()} added to wallet.`);
-              document.getElementById("top-up-form").reset();
-            });
+              location.reload();
+            }
           });
         },
-        onCancel: function() {
-          alert('Payment cancelled.');
+        onClose: function(){
+          alert('Transaction window closed.');
         }
       });
+
+      handler.openIframe();
     });
 
     function renderOrderHistory() {
@@ -1639,7 +1636,7 @@
         }
 
         const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
-        userBalanceRef.once("value").temp?.then?.((balSnap) => {}) || userBalanceRef.once("value").then((balSnap) => {
+        userBalanceRef.once("value").then((balSnap) => {
           const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
           const newBal = currentBal + refundAmount;
 
