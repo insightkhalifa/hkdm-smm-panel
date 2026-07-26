@@ -361,12 +361,45 @@
       margin-bottom: 20px;
     }
 
-    /* TABLE LAYOUT */
-    .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
-    th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-    td { white-space: normal; word-break: break-word; max-width: 250px; }
+    /* TABLE LAYOUT & RESPONSIVE FIXES */
+    .table-container { 
+      width: 100%;
+      overflow-x: auto; 
+      -webkit-overflow-scrolling: touch;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 13px; 
+      text-align: left; 
+      table-layout: auto; 
+    }
+    th, td { 
+      padding: 12px 14px; 
+      border-bottom: 1px solid var(--border-color); 
+      color: var(--text-main); 
+      vertical-align: middle;
+    }
+    th { 
+      color: var(--text-muted); 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+      white-space: nowrap;
+    }
+
+    /* Prevent awkward text breaking for IDs, Qty, Charge, Status, and Actions */
+    td.no-wrap, th.no-wrap {
+      white-space: nowrap;
+    }
+
+    /* Handle long link URLs cleanly with truncation */
+    td.link-column {
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .badge {
       padding: 4px 10px;
@@ -617,12 +650,12 @@
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th class="no-wrap">ID</th>
                     <th>Service</th>
                     <th>Link</th>
-                    <th>Qty</th>
-                    <th>Charge</th>
-                    <th>Status</th>
+                    <th class="no-wrap">Qty</th>
+                    <th class="no-wrap">Charge</th>
+                    <th class="no-wrap">Status</th>
                   </tr>
                 </thead>
                 <tbody id="order-history-body">
@@ -660,12 +693,12 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Reference</th>
-                    <th>Type</th>
-                    <th>Amount</th>
+                    <th class="no-wrap">Reference</th>
+                    <th class="no-wrap">Type</th>
+                    <th class="no-wrap">Amount</th>
                     <th>Description</th>
-                    <th>Status</th>
-                    <th>Date</th>
+                    <th class="no-wrap">Status</th>
+                    <th class="no-wrap">Date</th>
                   </tr>
                 </thead>
                 <tbody id="transactionsTableBody">
@@ -815,13 +848,13 @@
                 <table>
                   <thead>
                     <tr>
-                      <th>ID</th>
+                      <th class="no-wrap">ID</th>
                       <th>Service</th>
                       <th>Link</th>
-                      <th>Qty</th>
-                      <th>Charge</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th class="no-wrap">Qty</th>
+                      <th class="no-wrap">Charge</th>
+                      <th class="no-wrap">Status</th>
+                      <th class="no-wrap">Action</th>
                     </tr>
                   </thead>
                   <tbody id="admin-orders-body">
@@ -1158,12 +1191,12 @@
 
           return `
             <tr>
-              <td>${tx.reference || ''}</td>
-              <td><span style="color: ${badgeColor}; font-weight: bold;">${tx.type || ''}</span></td>
-              <td>₦${amountVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td class="no-wrap">${tx.reference || ''}</td>
+              <td class="no-wrap"><span style="color: ${badgeColor}; font-weight: bold;">${tx.type || ''}</span></td>
+              <td class="no-wrap">₦${amountVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               <td>${tx.description || ''}</td>
-              <td>${tx.status || ''}</td>
-              <td>${tx.date || ''}</td>
+              <td class="no-wrap">${tx.status || ''}</td>
+              <td class="no-wrap">${tx.date || ''}</td>
             </tr>
           `;
         }).join('');
@@ -1507,12 +1540,12 @@
       }
       tbody.innerHTML = userOrders.slice().reverse().map(order => `
         <tr>
-          <td>${order.id || order.firebaseKey}</td>
+          <td class="no-wrap">${order.id || order.firebaseKey}</td>
           <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments Included)</small>' : ''}</td>
-          <td>${order.link}</td>
-          <td>${order.qty}</td>
-          <td>${order.charge}</td>
-          <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
+          <td class="link-column"><a href="${order.link}" target="_blank" style="color: var(--accent-glow); text-decoration: none;">${order.link}</a></td>
+          <td class="no-wrap">${order.qty}</td>
+          <td class="no-wrap">${order.charge}</td>
+          <td class="no-wrap"><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
         </tr>
       `).join("");
     }
@@ -1592,13 +1625,13 @@
 
         return `
           <tr>
-            <td>${order.id || order.firebaseKey}</td>
+            <td class="no-wrap">${order.id || order.firebaseKey}</td>
             <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments)</small>' : ''}</td>
-            <td>${order.link}</td>
-            <td>${order.qty}</td>
-            <td>${order.charge}</td>
-            <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
-            <td>${actionButtons}</td>
+            <td class="link-column"><a href="${order.link}" target="_blank" style="color: var(--accent-glow); text-decoration: none;">${order.link}</a></td>
+            <td class="no-wrap">${order.qty}</td>
+            <td class="no-wrap">${order.charge}</td>
+            <td class="no-wrap"><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
+            <td class="no-wrap">${actionButtons}</td>
           </tr>
         `;
       }).join("");
