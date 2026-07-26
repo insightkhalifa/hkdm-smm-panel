@@ -715,7 +715,7 @@
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Fund your wallet instantly using Paystack. Your balance will be credited automatically upon successful payment.
+              Fund your wallet instantly using Paystack. Your balance and transaction record will be credited automatically upon successful payment.
             </div>
 
             <form id="top-up-form">
@@ -1448,7 +1448,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler
+    // Paystack Top-Up Integration Handler with Full Transaction Logging & Firebase Sync
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1477,8 +1477,7 @@
             let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
             let newBalance = currentBal + amountInNaira;
 
-            userBalanceRef.set(newBalance);
-
+            // Atomic database updates for balance and transaction log
             const txRefKey = transaction.reference || ("tx_" + Date.now());
             const newTx = {
               reference: txRefKey,
@@ -1488,10 +1487,22 @@
               status: "Completed",
               date: new Date().toLocaleString()
             };
-            db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
 
-            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet via Paystack.`);
-            document.getElementById("top-up-form").reset();
+            const updates = {};
+            updates["users/" + cleanKey + "/balance"] = newBalance;
+            updates["users/" + cleanKey + "/transactions/" + txRefKey] = newTx;
+
+            db.ref().update(updates).then(() => {
+              alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet and logged to your transaction history.`);
+              document.getElementById("top-up-form").reset();
+            }).catch((err) => {
+              console.error("Firebase update error:", err);
+              // Fallback direct set
+              userBalanceRef.set(newBalance);
+              db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
+              alert(`Payment successful! ₦${amountInNaira.toLocaleString()} added to wallet.`);
+              document.getElementById("top-up-form").reset();
+            });
           });
         },
         onCancel: function() {
