@@ -795,7 +795,7 @@
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // FIREBASE REALTIME SYNC FOR USERS & ORDERS
+    // FIREBASE REALTIME SYNC FOR USERS & ORDERS (WITH BACKFILL FOR PAST ORDERS)
     function initRealtimeSync(email) {
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
@@ -812,11 +812,41 @@
         updateBalanceUI();
       });
 
-      // Listen for live order history updates
+      // Listen for live order history updates and backfill missing transaction records
       db.ref("users/" + cleanKey + "/orders").on("value", (snapshot) => {
         const data = snapshot.val();
         userOrders = data ? Object.values(data) : [];
         renderOrderHistory();
+
+        // Automatically backfill transaction records for past orders that lack a transaction entry
+        if (data) {
+          db.ref(`users/${cleanKey}/transactions`).once("value").then((txSnapshot) => {
+            const existingTxs = txSnapshot.val() || {};
+            const existingRefs = Object.values(existingTxs).map(t => t.reference);
+
+            Object.keys(data).forEach(ordKey => {
+              const order = data[ordKey];
+              const refId = order.firebaseKey || ordKey;
+              
+              if (!existingRefs.includes(refId)) {
+                let costVal = order.rawCost;
+                if (!costVal && order.charge) {
+                  costVal = parseFloat(order.charge.replace(/[^\d.]/g, '')) || 0;
+                }
+                
+                const backfillTx = {
+                  reference: refId,
+                  type: "Debit",
+                  amount: costVal || 0,
+                  description: `Order placement for ${order.service || 'Social Media Service'}`,
+                  status: "Completed",
+                  date: new Date().toLocaleString()
+                };
+                db.ref(`users/${cleanKey}/transactions/${refId}`).set(backfillTx);
+              }
+            });
+          });
+        }
       });
 
       // Listen for live transaction history updates and compute total spent
@@ -1060,7 +1090,7 @@
       db.ref("orders/" + orderIdKey).set(newOrder);
 
       // Automatically log debit transaction record
-      const txRefKey = "tx_" + Date.now();
+      const txRefKey = orderIdKey;
       const newTx = {
         reference: orderIdKey,
         type: "Debit",
@@ -1077,7 +1107,7 @@
       updatePrice();
     });
 
-    // Top Up Account Form Handler (Includes Sender's Name prompt directly inside the WhatsApp message text)
+    // Top Up Account Form Handler
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1163,6 +1193,14 @@
           alert("Error updating wallet: " + err.message);
         });
     });
+
+    function loadAllSystemOrders() {
+      db.ref("orders").on("value", (snapshot) => {
+        const data = snapshot.val();
+        const allOrders = data ? Object.values(data) : [];
+        renderAdminOrders(allOrders);
+      });
+    }
 
     function renderAdminOrders(allOrders) {
       const tbody = document.getElementById("admin-orders-body");
