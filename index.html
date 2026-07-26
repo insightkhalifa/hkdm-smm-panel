@@ -1448,7 +1448,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler (Standard multiple channels supported)
+    // Paystack Top-Up Integration Handler (Ensures transaction record is explicitly written)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1461,43 +1461,41 @@
 
       const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+      const txRef = 'psk_' + Math.floor((Math.random() * 1000000000) + 1);
 
       var handler = PaystackPop.setup({
         key: 'pk_test_004006a167e704aeae640f67974b371f62722cbe',
         email: email,
         amount: amountInNaira * 100,
         currency: 'NGN',
-        ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+        ref: txRef,
         callback: function(response){
-          const txRef = response.reference;
+          const verifiedRef = response.reference || txRef;
           const fundedAmount = amountInNaira;
 
-          db.ref('users/' + cleanKey).transaction(function(userData) {
-            if (userData) {
-              userData.balance = (userData.balance || 0) + fundedAmount;
-              
-              if (!userData.transactions) {
-                userData.transactions = {};
-              }
-              
-              userData.transactions[txRef] = {
-                reference: txRef,
-                type: 'Credit',
-                amount: fundedAmount,
-                description: 'Paystack wallet top-up',
-                status: 'Completed',
-                date: new Date().toLocaleString()
-              };
-            }
-            return userData;
-          }, function(error, committed, snapshot) {
-            if (error) {
-              console.log('Failed to update wallet and history:', error);
-            } else {
-              alert('Payment successful! Your wallet deposit has been credited.');
-              document.getElementById("top-up-form").reset();
-              location.reload();
-            }
+          // 1. Update user balance in Firebase
+          const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
+          userBalanceRef.once('value').then((snap) => {
+            const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
+            const newBal = currentBal + fundedAmount;
+            return userBalanceRef.set(newBal);
+          }).then(() => {
+            // 2. Explicitly write credit transaction record to Firebase database
+            const creditTx = {
+              reference: verifiedRef,
+              type: 'Credit',
+              amount: fundedAmount,
+              description: 'Paystack wallet top-up',
+              status: 'Completed',
+              date: new Date().toLocaleString()
+            };
+            return db.ref(`users/${cleanKey}/transactions/${verifiedRef}`).set(creditTx);
+          }).then(() => {
+            alert('Payment successful! Your wallet deposit and transaction history have been updated.');
+            document.getElementById("top-up-form").reset();
+          }).catch((error) => {
+            console.log('Failed to update wallet and history:', error);
+            alert('Payment successful, but encountered an error updating records. Please refresh.');
           });
         },
         onClose: function(){
