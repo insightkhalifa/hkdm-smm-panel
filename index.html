@@ -801,12 +801,12 @@
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // FIREBASE REALTIME SYNC FOR USERS & ORDERS (WITH BACKFILL FOR PAST DEBITS & CREDITS)
+    // FIREBASE REALTIME SYNC FOR USERS & ORDERS
     function initRealtimeSync(email) {
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // Listen for live balance changes from Firebase & handle initial Credit backfill
+      // Listen for live balance changes from Firebase
       db.ref("users/" + cleanKey + "/balance").on("value", (snapshot) => {
         const val = snapshot.val();
         if (val !== null) {
@@ -816,24 +816,6 @@
           userBalance = 0;
         }
         updateBalanceUI();
-
-        // Check if an initial Credit transaction exists; if not, backfill based on current balance
-        db.ref(`users/${cleanKey}/transactions`).once("value").then((txSnap) => {
-          const txs = txSnap.val() || {};
-          const hasCredit = Object.values(txs).some(t => t.type && t.type.toLowerCase() === 'credit');
-          if (!hasCredit && userBalance > 0) {
-            const initialCreditKey = "tx_init_" + Date.now();
-            const initTx = {
-              reference: initialCreditKey,
-              type: "Credit",
-              amount: userBalance,
-              description: "Initial wallet funding / deposit",
-              status: "Completed",
-              date: new Date().toLocaleString()
-            };
-            db.ref(`users/${cleanKey}/transactions/${initialCreditKey}`).set(initTx);
-          }
-        });
       });
 
       // Listen for live order history updates and backfill missing transaction records
