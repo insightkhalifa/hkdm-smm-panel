@@ -18,6 +18,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
     }
 
     :root {
@@ -27,11 +28,23 @@
       --accent-glow: #38bdf8;
       --border-color: #222d45;
       --text-muted: #94a3b8;
+      --text-main: #ffffff;
+    }
+
+    /* LIGHT THEME VARIABLES */
+    body.light-theme {
+      --bg-dark: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-blue: #0284c7;
+      --accent-glow: #0284c7;
+      --border-color: #e2e8f0;
+      --text-muted: #64748b;
+      --text-main: #0f172a;
     }
 
     body {
       background-color: var(--bg-dark);
-      color: #ffffff;
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -50,7 +63,7 @@
       background-color: var(--card-bg);
       padding: 36px 28px;
       border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 400px;
       border: 1px solid var(--border-color);
@@ -87,26 +100,53 @@
       box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
     }
     .btn-primary:active { transform: scale(0.98); }
-    .btn-secondary { background-color: #222d45; color: #ffffff; margin-top: 10px; }
+    .btn-secondary { background-color: var(--border-color); color: var(--text-main); margin-top: 10px; }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; }
     .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000000; }
     .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #ffffff; }
     .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; margin: 2px; }
 
-    .form-group { margin-bottom: 18px; text-align: left; }
+    .form-group { margin-bottom: 18px; text-align: left; position: relative; }
     label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
     select, input, textarea {
       width: 100%;
       padding: 13px 14px;
       border-radius: 10px;
-      background-color: #0b0f19;
+      background-color: var(--bg-dark);
       border: 1px solid var(--border-color);
-      color: #ffffff;
+      color: var(--text-main);
       font-size: 14px;
       outline: none;
       transition: border-color 0.2s;
     }
     select:focus, input:focus, textarea:focus { border-color: var(--accent-glow); }
+
+    /* TOOLTIP STYLES */
+    .info-tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      background-color: var(--text-muted);
+      color: var(--card-bg);
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 50%;
+      margin-left: 6px;
+      cursor: help;
+      position: relative;
+    }
+    .service-description-box {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
 
     /* DASHBOARD TOP NAVBAR */
     .navbar {
@@ -125,7 +165,7 @@
       display: none;
       background: none;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 22px;
       cursor: pointer;
     }
@@ -139,6 +179,21 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* THEME TOGGLE BUTTON */
+    .theme-toggle-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -210,10 +265,10 @@
       border-radius: 16px;
       padding: 24px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
       margin-bottom: 20px;
     }
-    .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; font-weight: 700; }
+    .panel-title { font-size: 18px; margin-bottom: 20px; color: var(--text-main); font-weight: 700; }
 
     /* LIVE ORDER TRACKER STYLES */
     .tracker-input-group {
@@ -225,10 +280,10 @@
       display: none;
       margin-top: 15px;
       padding: 14px;
-      background: #0b0f19;
+      background: var(--bg-dark);
       border-radius: 10px;
       font-size: 14px;
-      color: #cbd5e1;
+      color: var(--text-main);
       border: 1px solid var(--border-color);
       border-left: 4px solid var(--accent-glow);
     }
@@ -265,7 +320,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background-color: #0b0f19;
+      background-color: var(--bg-dark);
       border-radius: 10px;
       border: 1px solid var(--border-color);
     }
@@ -278,12 +333,12 @@
     .detail-value {
       font-size: 14px;
       font-weight: 600;
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     /* PRICE DISPLAY BOX */
     .price-box {
-      background-color: #0b0f19;
+      background-color: var(--bg-dark);
       padding: 14px 16px;
       border-radius: 10px;
       margin-bottom: 18px;
@@ -309,14 +364,16 @@
     /* TABLE LAYOUT */
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
     th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { white-space: normal; word-break: break-word; max-width: 250px; }
 
     .badge {
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
+      white-space: nowrap;
     }
     .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
     .badge-processing { background: rgba(2, 132, 199, 0.15); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.3); }
@@ -338,7 +395,7 @@
     .modal-content {
       background-color: var(--card-bg); padding: 24px; border-radius: 16px;
       max-width: 480px; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-color);
-      color: #cbd5e1; font-size: 13px; line-height: 1.6;
+      color: var(--text-main); font-size: 13px; line-height: 1.6;
     }
 
     /* CUSTOM SUCCESS MODAL BOX */
@@ -350,18 +407,55 @@
       max-width: 340px;
       text-align: center;
       border: 1px solid var(--border-color);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     }
     .success-modal-box h3 {
-      color: #ffffff;
+      color: var(--text-main);
       font-size: 18px;
       margin-bottom: 12px;
       font-weight: 700;
     }
     .success-modal-box p {
-      color: #cbd5e1;
+      color: var(--text-muted);
       font-size: 14px;
       margin-bottom: 22px;
+    }
+
+    /* ADMIN SUB-TABS & CODE BLOCKS */
+    .admin-subnav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+    .admin-sub-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .admin-sub-btn.active {
+      background: #f59e0b;
+      color: #000000;
+      border-color: #f59e0b;
+    }
+    .code-block {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      padding: 14px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--accent-glow);
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre-wrap;
     }
 
     .hidden { display: none !important; }
@@ -380,6 +474,15 @@
       }
       .sidebar.open { left: 0; }
       .main-content { padding: 16px; }
+      
+      /* Let dropdown text wrap completely on mobile screens */
+      select {
+        text-overflow: ellipsis;
+        white-space: normal;
+      }
+      option {
+        word-wrap: break-word;
+      }
     }
   </style>
 </head>
@@ -405,6 +508,9 @@
         <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
       </div>
       <div class="nav-right">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+          <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
+        </button>
         <div class="wallet-badge">
           <span>Balance:</span>
           <span id="user-balance">₦0.00</span>
@@ -419,6 +525,7 @@
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
         <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
         <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
+        <div class="nav-link" onclick="switchTab('api-docs', this)">🔌 API Documentation</div>
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
@@ -447,8 +554,11 @@
               </div>
 
               <div class="form-group">
-                <label for="service">Service</label>
+                <label for="service">
+                  Service <span class="info-tooltip-icon" title="Select a specific service tier tailored for your target platform growth.">?</span>
+                </label>
                 <select id="service"></select>
+                <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
               </div>
 
               <div class="form-group">
@@ -522,13 +632,13 @@
         <section id="tab-transactions-history" class="tab-panel hidden">
           <div style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-              <div class="card" style="background-color: #0b0f19; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+              <div class="card" style="background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                 <h6 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">Total Spent</h6>
-                <h4 id="totalSpentAmount" style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
+                <h4 id="totalSpentAmount" style="color: var(--text-main); font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
               </div>
             </div>
             <div style="flex: 1; min-width: 200px;">
-              <div class="card" style="background-color: #0b0f19; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+              <div class="card" style="background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                 <h6 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">Total Credited</h6>
                 <h4 id="totalCreditedAmount" style="color: #10b981; font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
               </div>
@@ -582,6 +692,32 @@
           </div>
         </section>
 
+        <!-- API DOCUMENTATION PAGE TAB -->
+        <section id="tab-api-docs" class="tab-panel hidden">
+          <div class="panel-card">
+            <h3 class="panel-title">🔌 HKDM SMM Panel API V2</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+              Integrate your own applications, scripts, or automated bots with our powerful backend platform using the specifications below.
+            </p>
+
+            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px;">1. API Endpoint</h4>
+            <div class="code-block">https://hkdm-smm-panel.vercel.app/api/v2</div>
+
+            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">2. Authentication</h4>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">Pass your unique user API key via query parameters:</p>
+            <div class="code-block">key=YOUR_SECRET_API_KEY</div>
+
+            <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">3. Available Actions & Parameters</h4>
+            <ul style="color: var(--text-muted); font-size: 13px; padding-left: 20px; line-height: 1.6;">
+              <li><strong style="color: var(--text-main);">Add Order:</strong> action=add, service=SERVICE_ID, link=TARGET_URL, quantity=QTY</li>
+              <li><strong style="color: var(--text-main);">Check Status:</strong> action=status, order=ORDER_ID</li>
+              <li><strong style="color: var(--text-main);">Multi Status Check:</strong> action=status, orders=ID1,ID2,ID3</li>
+              <li><strong style="color: var(--text-main);">Services List:</strong> action=services</li>
+              <li><strong style="color: var(--text-main);">Account Balance:</strong> action=balance</li>
+            </ul>
+          </div>
+        </section>
+
         <!-- USER PROFILE TAB -->
         <section id="tab-profile" class="tab-panel hidden">
           <div class="panel-card">
@@ -590,7 +726,7 @@
             <div class="profile-header">
               <div id="profile-initial" class="profile-avatar">U</div>
               <div>
-                <h4 id="profile-name" style="font-size: 18px; color: #fff;">User</h4>
+                <h4 id="profile-name" style="font-size: 18px; color: var(--text-main);">User</h4>
                 <span id="profile-role-badge" class="badge badge-completed" style="margin-top: 4px; display: inline-block;">Client</span>
               </div>
             </div>
@@ -639,46 +775,71 @@
         <!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
         <section id="tab-admin" class="tab-panel hidden">
           
-          <!-- TOP UP USER BALANCE -->
-          <div class="panel-card">
-            <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
-            <form id="admin-topup-form">
-              <div class="form-group">
-                <label for="admin-user-email">Customer Username / Email / ID</label>
-                <input type="text" id="admin-user-email" placeholder="e.g. Hipqhalifa or customer@gmail.com" required />
-              </div>
-              <div class="form-group">
-                <label for="admin-amount">Amount to Credit (₦)</label>
-                <input type="number" id="admin-amount" placeholder="5000" min="100" required />
-              </div>
-              <button type="submit" class="btn btn-success">Credit Wallet</button>
-            </form>
+          <!-- ADMIN SUB-NAVIGATION -->
+          <div class="admin-subnav">
+            <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
+            <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
           </div>
 
-          <!-- ADMIN ORDER MANAGEMENT -->
-          <div class="panel-card">
-            <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Service</th>
-                    <th>Link</th>
-                    <th>Qty</th>
-                    <th>Charge</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-orders-body">
-                  <tr>
-                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
-                      No orders to manage.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
+          <div id="admin-sub-orders" class="admin-sub-content">
+            <!-- TOP UP USER BALANCE -->
+            <div class="panel-card">
+              <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
+              <form id="admin-topup-form">
+                <div class="form-group">
+                  <label for="admin-user-email">Customer Username / Email / ID</label>
+                  <input type="text" id="admin-user-email" placeholder="e.g. Hipqhalifa or customer@gmail.com" required />
+                </div>
+                <div class="form-group">
+                  <label for="admin-amount">Amount to Credit (₦)</label>
+                  <input type="number" id="admin-amount" placeholder="5000" min="100" required />
+                </div>
+                <button type="submit" class="btn btn-success">Credit Wallet</button>
+              </form>
+            </div>
+
+            <!-- ADMIN ORDER MANAGEMENT -->
+            <div class="panel-card">
+              <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Service</th>
+                      <th>Link</th>
+                      <th>Qty</th>
+                      <th>Charge</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-orders-body">
+                    <tr>
+                      <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                        No orders to manage.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB 2: API DOCUMENTATION -->
+          <div id="admin-sub-api" class="admin-sub-content hidden">
+            <div class="panel-card">
+              <h3 class="panel-title" style="color: #f59e0b;">🔌 HKDM SMM Panel Admin API Management</h3>
+              <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+                Manage API endpoints and verify system access parameters for external reseller panels or integrations.
+              </p>
+
+              <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px;">1. API Endpoint Gateway</h4>
+              <div class="code-block">https://hkdm-smm-panel.vercel.app/api/v2</div>
+
+              <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">2. Authentication Security</h4>
+              <div class="code-block">key=YOUR_SECRET_API_KEY</div>
             </div>
           </div>
 
@@ -691,7 +852,7 @@
   <!-- TERMS MODAL -->
   <div id="terms-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 style="color:#fff; margin-bottom:12px; font-size: 18px;">Terms & Conditions</h3>
+      <h3 style="color:var(--text-main); margin-bottom:12px; font-size: 18px;">Terms & Conditions</h3>
       <h4 style="color:var(--accent-glow); margin-top:10px;">1. Service Delivery</h4>
       <p>Target accounts must remain set to public throughout processing.</p>
       <h4 style="color:var(--accent-glow); margin-top:10px;">2. Link Accuracy</h4>
@@ -738,6 +899,35 @@
     const termsModal = document.getElementById("terms-modal");
     const successModal = document.getElementById("success-modal");
     const adminTabLink = document.getElementById("admin-tab-link");
+
+    // THEME TOGGLE LOGIC
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+    const themeText = document.getElementById("theme-text");
+
+    function setTheme(isLight) {
+      if (isLight) {
+        document.body.classList.add("light-theme");
+        themeIcon.textContent = "☀️";
+        themeText.textContent = "Light";
+        localStorage.setItem("hkdm_theme", "light");
+      } else {
+        document.body.classList.remove("light-theme");
+        themeIcon.textContent = "🌙";
+        themeText.textContent = "Dark";
+        localStorage.setItem("hkdm_theme", "dark");
+      }
+    }
+
+    const savedTheme = localStorage.getItem("hkdm_theme");
+    if (savedTheme === "light") {
+      setTheme(true);
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      const isLight = !document.body.classList.contains("light-theme");
+      setTheme(isLight);
+    });
 
     // Helper to decode JWT payload from Kinde
     function parseJwt(token) {
@@ -837,7 +1027,6 @@
       resultBox.style.display = 'block';
       resultBox.innerHTML = "Searching database...";
 
-      // Check against current loaded user orders first
       const foundOrder = userOrders.find(ord => ord.id.toLowerCase() === queryId.toLowerCase() || ord.firebaseKey === queryId);
 
       if (foundOrder) {
@@ -850,7 +1039,6 @@
           `;
         }, 400);
       } else {
-        // Fallback: Query Firebase directly for the order ID
         const email = localStorage.getItem("hkdm_user_email") || "";
         const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
         
@@ -886,7 +1074,6 @@
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // Listen for live balance changes from Firebase
       db.ref("users/" + cleanKey + "/balance").on("value", (snapshot) => {
         const val = snapshot.val();
         if (val !== null) {
@@ -898,7 +1085,6 @@
         updateBalanceUI();
       });
 
-      // Listen for live order history updates and backfill missing transaction records
       db.ref("users/" + cleanKey + "/orders").on("value", (snapshot) => {
         const data = snapshot.val();
         userOrders = data ? Object.values(data) : [];
@@ -934,7 +1120,6 @@
         }
       });
 
-      // Listen for live transaction history updates and compute total spent & total credited
       db.ref(`users/${cleanKey}/transactions`).on('value', (snapshot) => {
         let totalSpent = 0;
         let totalCredited = 0;
@@ -1053,43 +1238,53 @@
       sidebar.classList.remove("open");
     }
 
+    // Admin Sub-Tab Switcher
+    function switchAdminSubTab(subTabName, element) {
+      document.querySelectorAll(".admin-sub-content").forEach(content => content.classList.add("hidden"));
+      document.querySelectorAll(".admin-sub-btn").forEach(btn => btn.classList.remove("active"));
+
+      document.getElementById(`admin-sub-${subTabName}`).classList.remove("hidden");
+      element.classList.add("active");
+    }
+
     // Modal Events
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-    // Services Catalog
+    // Services Catalog with Tooltips / Descriptions
     const servicesData = {
       instagram: [
-        { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000 },
-        { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000 },
-        { name: "Instagram Views", rate: 1500, min: 100, max: 100000000 },
-        { name: "Instagram Comments", rate: 10000, min: 10, max: 1000000 }
+        { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
+        { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000, desc: "Instant high-retention post likes to boost engagement metrics and explore page reach." },
+        { name: "Instagram Views", rate: 1500, min: 100, max: 100000000, desc: "Fast reel and video views package to increase overall visibility." },
+        { name: "Instagram Comments", rate: 10000, min: 10, max: 1000000, desc: "Custom or organic-looking constructive comments from real active accounts." }
       ],
       tiktok: [
-        { name: "TikTok Followers", rate: 6000, min: 100, max: 1000000 },
-        { name: "TikTok Likes", rate: 2000, min: 100, max: 1000000 },
-        { name: "TikTok Views", rate: 1000, min: 500, max: 100000000 },
-        { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000 },
-        { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000 },
-        { name: "TikTok Comments", rate: 10000, min: 10, max: 1000000 }
+        { name: "TikTok Followers", rate: 6000, min: 100, max: 1000000, desc: "Grow your TikTok audience base safely with high-retention active profiles." },
+        { name: "TikTok Likes", rate: 2000, min: 100, max: 1000000, desc: "Boost your video algorithm ranking with fast, reliable video likes." },
+        { name: "TikTok Views", rate: 1000, min: 500, max: 100000000, desc: "Super-fast views injection to push content onto the For You Page (FYP)." },
+        { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000, desc: "Increase content credibility and virality metrics with organic shares." },
+        { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000, desc: "High bookmark count to signal strong educational or entertaining value to TikTok." },
+        { name: "TikTok Comments", rate: 10000, min: 10, max: 1000000, desc: "Engaging comment interactions tailored to boost comment section activity." }
       ],
       youtube: [
-        { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000 },
-        { name: "YouTube Views", rate: 2000, min: 100, max: 100000000 },
-        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000 }
+        { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000, desc: "Permanent subscriber growth to help meet channel monetization requirements." },
+        { name: "YouTube Views", rate: 2000, min: 100, max: 100000000, desc: "High retention video views with safe traffic sources for watch time." },
+        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000, desc: "Boost video authority and search ranking with genuine-looking likes." }
       ],
       facebook: [
-        { name: "Facebook Followers", rate: 5000, min: 100, max: 1000000 },
-        { name: "Facebook Likes", rate: 2500, min: 50, max: 1000000 },
-        { name: "Facebook Views", rate: 1500, min: 100, max: 100000000 },
-        { name: "Facebook Shares", rate: 2000, min: 50, max: 1000000 },
-        { name: "Facebook Comments", rate: 10000, min: 10, max: 1000000 }
+        { name: "Facebook Followers", rate: 5000, min: 100, max: 1000000, desc: "Page and profile followers to expand your brand reach across Facebook." },
+        { name: "Facebook Likes", rate: 2500, min: 50, max: 1000000, desc: "Post and photo likes to maximize user trust and interaction metrics." },
+        { name: "Facebook Views", rate: 1500, min: 100, max: 100000000, desc: "Fast video watch completion and view counts." },
+        { name: "Facebook Shares", rate: 2000, min: 50, max: 1000000, desc: "Amplify post distribution across public feeds and groups." },
+        { name: "Facebook Comments", rate: 10000, min: 10, max: 1000000, desc: "Relevant comments to encourage community participation." }
       ]
     };
 
     const categorySelect = document.getElementById("category");
     const serviceSelect = document.getElementById("service");
+    const serviceDescBox = document.getElementById("service-desc-box");
     const quantityInput = document.getElementById("quantity");
     const totalPriceEl = document.getElementById("total-price");
 
@@ -1097,25 +1292,28 @@
       const selectedCat = categorySelect.value;
       const options = servicesData[selectedCat] || [];
       
-      serviceSelect.innerHTML = options.map(s => 
-        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}">${s.name} — ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()}, Max: ${s.max.toLocaleString()})</option>`
+      serviceSelect.innerHTML = options.map((s, idx) => 
+        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
       ).join("");
 
-      updateServiceLimits();
+      updateServiceDetails();
       updatePrice();
     }
 
-    function updateServiceLimits() {
+    function updateServiceDetails() {
       const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
       if (!selectedOption) return;
 
       const min = selectedOption.getAttribute("data-min") || 100;
       const max = selectedOption.getAttribute("data-max") || 100000000;
+      const desc = selectedOption.getAttribute("data-desc") || "Standard professional social media promotion service.";
 
       quantityInput.min = min;
       quantityInput.max = max;
       quantityInput.placeholder = `Min: ${parseInt(min).toLocaleString()}, Max: ${parseInt(max).toLocaleString()}`;
       
+      serviceDescBox.textContent = desc;
+
       if (parseInt(quantityInput.value) < parseInt(min)) {
         quantityInput.value = min;
       }
@@ -1130,7 +1328,7 @@
 
     categorySelect.addEventListener("change", loadServices);
     serviceSelect.addEventListener("change", () => {
-      updateServiceLimits();
+      updateServiceDetails();
       updatePrice();
     });
     quantityInput.addEventListener("input", updatePrice);
@@ -1165,7 +1363,7 @@
 
       db.ref("users/" + cleanKey + "/balance").set(userBalance);
 
-      const selectedServiceText = selectedOption.text.split(" — ")[0];
+      const selectedServiceText = selectedOption.text.split(" - ")[0];
       const link = document.getElementById("link").value;
 
       const orderIdKey = "ord_" + Date.now();
@@ -1198,7 +1396,7 @@
 
       successModal.classList.remove("hidden");
       document.getElementById("order-form").reset();
-      updateServiceLimits();
+      updateServiceDetails();
       updatePrice();
     });
 
@@ -1262,7 +1460,7 @@
       }
       tbody.innerHTML = userOrders.slice().reverse().map(order => `
         <tr>
-          <td>${order.id}</td>
+          <td>${order.id || order.firebaseKey}</td>
           <td>${order.service}</td>
           <td>${order.link}</td>
           <td>${order.qty}</td>
@@ -1347,7 +1545,7 @@
 
         return `
           <tr>
-            <td>${order.id}</td>
+            <td>${order.id || order.firebaseKey}</td>
             <td>${order.service}</td>
             <td>${order.link}</td>
             <td>${order.qty}</td>
@@ -1383,7 +1581,7 @@
 
         const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
         userBalanceRef.once("value").then((balSnap) => {
-          const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
+          const currentBal = balSnap.val() !== longNaN ? parseFloat(balSnap.val()) : 0;
           const newBal = currentBal + refundAmount;
 
           userBalanceRef.set(newBal);
