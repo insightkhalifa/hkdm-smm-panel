@@ -561,6 +561,15 @@
                 <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
               </div>
 
+              <!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES) -->
+              <div id="custom-comments-group" class="form-group hidden">
+                <label for="custom-comments">
+                  Custom Comments (1 per line) <span class="info-tooltip-icon" title="Enter between 100 to 1,000 custom comments (one comment per line).">?</span>
+                </label>
+                <textarea id="custom-comments" rows="5" placeholder="Enter your custom comments here (min 100, max 1000 lines)..."></textarea>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Lines entered: <span id="comment-count-display">0</span> (Min: 100, Max: 1,000)</div>
+              </div>
+
               <div class="form-group">
                 <label for="link">Target Link / URL</label>
                 <input type="url" id="link" placeholder="https://..." required />
@@ -1258,7 +1267,7 @@
         { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
         { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000, desc: "Instant high-retention post likes to boost engagement metrics and explore page reach." },
         { name: "Instagram Views", rate: 1500, min: 100, max: 100000000, desc: "Fast reel and video views package to increase overall visibility." },
-        { name: "Instagram Comments", rate: 10000, min: 10, max: 1000000, desc: "Custom or organic-looking constructive comments from real active accounts." }
+        { name: "Instagram Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
       ],
       tiktok: [
         { name: "TikTok Followers", rate: 6000, min: 100, max: 1000000, desc: "Grow your TikTok audience base safely with high-retention active profiles." },
@@ -1266,25 +1275,29 @@
         { name: "TikTok Views", rate: 1000, min: 500, max: 100000000, desc: "Super-fast views injection to push content onto the For You Page (FYP)." },
         { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000, desc: "Increase content credibility and virality metrics with organic shares." },
         { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000, desc: "High bookmark count to signal strong educational or entertaining value to TikTok." },
-        { name: "TikTok Comments", rate: 10000, min: 10, max: 1000000, desc: "Engaging comment interactions tailored to boost comment section activity." }
+        { name: "TikTok Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
       ],
       youtube: [
         { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000, desc: "Permanent subscriber growth to help meet channel monetization requirements." },
         { name: "YouTube Views", rate: 2000, min: 100, max: 100000000, desc: "High retention video views with safe traffic sources for watch time." },
-        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000, desc: "Boost video authority and search ranking with genuine-looking likes." }
+        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000, desc: "Boost video authority and search ranking with genuine-looking likes." },
+        { name: "YouTube Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
       ],
       facebook: [
         { name: "Facebook Followers", rate: 5000, min: 100, max: 1000000, desc: "Page and profile followers to expand your brand reach across Facebook." },
         { name: "Facebook Likes", rate: 2500, min: 50, max: 1000000, desc: "Post and photo likes to maximize user trust and interaction metrics." },
         { name: "Facebook Views", rate: 1500, min: 100, max: 100000000, desc: "Fast video watch completion and view counts." },
         { name: "Facebook Shares", rate: 2000, min: 50, max: 1000000, desc: "Amplify post distribution across public feeds and groups." },
-        { name: "Facebook Comments", rate: 10000, min: 10, max: 1000000, desc: "Relevant comments to encourage community participation." }
+        { name: "Facebook Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
       ]
     };
 
     const categorySelect = document.getElementById("category");
     const serviceSelect = document.getElementById("service");
     const serviceDescBox = document.getElementById("service-desc-box");
+    const customCommentsGroup = document.getElementById("custom-comments-group");
+    const customCommentsInput = document.getElementById("custom-comments");
+    const commentCountDisplay = document.getElementById("comment-count-display");
     const quantityInput = document.getElementById("quantity");
     const totalPriceEl = document.getElementById("total-price");
 
@@ -1293,7 +1306,7 @@
       const options = servicesData[selectedCat] || [];
       
       serviceSelect.innerHTML = options.map((s, idx) => 
-        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
+        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}" data-custom="${s.isCustomComments ? 'true' : 'false'}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
       ).join("");
 
       updateServiceDetails();
@@ -1307,6 +1320,17 @@
       const min = selectedOption.getAttribute("data-min") || 100;
       const max = selectedOption.getAttribute("data-max") || 100000000;
       const desc = selectedOption.getAttribute("data-desc") || "Standard professional social media promotion service.";
+      const isCustom = selectedOption.getAttribute("data-custom") === "true";
+
+      if (isCustom) {
+        customCommentsGroup.classList.remove("hidden");
+        customCommentsInput.required = true;
+        updateCommentCount();
+      } else {
+        customCommentsGroup.classList.add("hidden");
+        customCommentsInput.required = false;
+        customCommentsInput.value = "";
+      }
 
       quantityInput.min = min;
       quantityInput.max = max;
@@ -1317,6 +1341,14 @@
       if (parseInt(quantityInput.value) < parseInt(min)) {
         quantityInput.value = min;
       }
+    }
+
+    function updateCommentCount() {
+      const text = customCommentsInput.value;
+      const lines = text.split("\n").filter(line => line.trim().length > 0);
+      const count = lines.length;
+      commentCountDisplay.textContent = count;
+      return count;
     }
 
     function updatePrice() {
@@ -1332,6 +1364,7 @@
       updatePrice();
     });
     quantityInput.addEventListener("input", updatePrice);
+    customCommentsInput.addEventListener("input", updateCommentCount);
 
     loadServices();
 
@@ -1340,6 +1373,16 @@
       e.preventDefault();
 
       const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      const isCustom = selectedOption.getAttribute("data-custom") === "true";
+
+      if (isCustom) {
+        const commentCount = updateCommentCount();
+        if (commentCount < 100 || commentCount > 1000) {
+          alert(`Custom comments must be between 100 and 1,000 lines (you currently have ${commentCount} lines).`);
+          return;
+        }
+      }
+
       const min = parseInt(selectedOption.getAttribute("data-min")) || 100;
       const max = parseInt(selectedOption.getAttribute("data-max")) || 100000000;
       const qty = parseInt(quantityInput.value) || 0;
@@ -1365,6 +1408,7 @@
 
       const selectedServiceText = selectedOption.text.split(" - ")[0];
       const link = document.getElementById("link").value;
+      const customCommentsVal = isCustom ? customCommentsInput.value : null;
 
       const orderIdKey = "ord_" + Date.now();
       const rawCostValue = totalCost;
@@ -1375,6 +1419,7 @@
         service: selectedServiceText,
         link: link,
         qty: parseInt(qty).toLocaleString(),
+        customComments: customCommentsVal,
         rawCost: rawCostValue,
         charge: `₦${totalCost.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
         status: "Pending"
@@ -1461,7 +1506,7 @@
       tbody.innerHTML = userOrders.slice().reverse().map(order => `
         <tr>
           <td>${order.id || order.firebaseKey}</td>
-          <td>${order.service}</td>
+          <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments Included)</small>' : ''}</td>
           <td>${order.link}</td>
           <td>${order.qty}</td>
           <td>${order.charge}</td>
@@ -1546,7 +1591,7 @@
         return `
           <tr>
             <td>${order.id || order.firebaseKey}</td>
-            <td>${order.service}</td>
+            <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments)</small>' : ''}</td>
             <td>${order.link}</td>
             <td>${order.qty}</td>
             <td>${order.charge}</td>
@@ -1580,8 +1625,8 @@
         }
 
         const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
-        userBalanceRef.once("value").then((balSnap) => {
-          const currentBal = balSnap.val() !== longNaN ? parseFloat(balSnap.val()) : 0;
+        userBalanceRef.once("value").temp?.then?.((balSnap) => {}) || userBalanceRef.once("value").then((balSnap) => {
+          const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
           const newBal = currentBal + refundAmount;
 
           userBalanceRef.set(newBal);
