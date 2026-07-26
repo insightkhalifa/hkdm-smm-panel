@@ -487,11 +487,17 @@
 
         <!-- TRANSACTIONS HISTORY TAB -->
         <section id="tab-transactions-history" class="tab-panel hidden">
-          <div class="row mb-3" style="margin-bottom: 20px;">
-            <div class="col-md-4" style="max-width: 250px;">
+          <div style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
               <div class="card" style="background-color: #0b0f19; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                 <h6 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">Total Spent</h6>
                 <h4 id="totalSpentAmount" style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+              <div class="card" style="background-color: #0b0f19; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
+                <h6 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">Total Credited</h6>
+                <h4 id="totalCreditedAmount" style="color: #10b981; font-size: 22px; font-weight: 700; margin: 0;">₦0.00</h4>
               </div>
             </div>
           </div>
@@ -795,12 +801,12 @@
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // FIREBASE REALTIME SYNC FOR USERS & ORDERS (WITH BACKFILL FOR PAST ORDERS)
+    // FIREBASE REALTIME SYNC FOR USERS & ORDERS (WITH BACKFILL FOR PAST DEBITS & CREDITS)
     function initRealtimeSync(email) {
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-      // Listen for live balance changes from Firebase
+      // Listen for live balance changes from Firebase & handle initial Credit backfill
       db.ref("users/" + cleanKey + "/balance").on("value", (snapshot) => {
         const val = snapshot.val();
         if (val !== null) {
@@ -810,6 +816,24 @@
           userBalance = 0;
         }
         updateBalanceUI();
+
+        // Check if an initial Credit transaction exists; if not, backfill based on current balance
+        db.ref(`users/${cleanKey}/transactions`).once("value").then((txSnap) => {
+          const txs = txSnap.val() || {};
+          const hasCredit = Object.values(txs).some(t => t.type && t.type.toLowerCase() === 'credit');
+          if (!hasCredit && userBalance > 0) {
+            const initialCreditKey = "tx_init_" + Date.now();
+            const initTx = {
+              reference: initialCreditKey,
+              type: "Credit",
+              amount: userBalance,
+              description: "Initial wallet funding / deposit",
+              status: "Completed",
+              date: new Date().toLocaleString()
+            };
+            db.ref(`users/${cleanKey}/transactions/${initialCreditKey}`).set(initTx);
+          }
+        });
       });
 
       // Listen for live order history updates and backfill missing transaction records
@@ -818,7 +842,6 @@
         userOrders = data ? Object.values(data) : [];
         renderOrderHistory();
 
-        // Automatically backfill transaction records for past orders that lack a transaction entry
         if (data) {
           db.ref(`users/${cleanKey}/transactions`).once("value").then((txSnapshot) => {
             const existingTxs = txSnapshot.val() || {};
@@ -849,9 +872,10 @@
         }
       });
 
-      // Listen for live transaction history updates and compute total spent
+      // Listen for live transaction history updates and compute total spent & total credited
       db.ref(`users/${cleanKey}/transactions`).on('value', (snapshot) => {
         let totalSpent = 0;
+        let totalCredited = 0;
         const transactionsTableBody = document.getElementById('transactionsTableBody');
         transactionsTableBody.innerHTML = '';
 
@@ -859,19 +883,28 @@
         if (!txData) {
           transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No transactions found.</td></tr>`;
           document.getElementById('totalSpentAmount').innerText = `₦0.00`;
+          document.getElementById('totalCreditedAmount').innerText = `₦0.00`;
           return;
         }
 
         const txList = Object.values(txData);
         transactionsTableBody.innerHTML = txList.slice().reverse().map(tx => {
-          if (tx.type && tx.type.toLowerCase() === 'debit') {
-            totalSpent += parseFloat(tx.amount || 0);
+          const typeStr = (tx.type || '').toLowerCase();
+          const amountVal = parseFloat(tx.amount || 0);
+
+          if (typeStr === 'debit') {
+            totalSpent += amountVal;
+          } else if (typeStr === 'credit') {
+            totalCredited += amountVal;
           }
+
+          const badgeColor = typeStr === 'credit' ? '#10b981' : '#ef4444';
+
           return `
             <tr>
               <td>${tx.reference || ''}</td>
-              <td>${tx.type || ''}</td>
-              <td>₦${parseFloat(tx.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td><span style="color: ${badgeColor}; font-weight: bold;">${tx.type || ''}</span></td>
+              <td>₦${amountVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               <td>${tx.description || ''}</td>
               <td>${tx.status || ''}</td>
               <td>${tx.date || ''}</td>
@@ -880,6 +913,7 @@
         }).join('');
 
         document.getElementById('totalSpentAmount').innerText = `₦${totalSpent.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('totalCreditedAmount').innerText = `₦${totalCredited.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       });
     }
 
@@ -1041,7 +1075,7 @@
 
     loadServices();
 
-    // Order Submission Handling (Defaults to "Pending")
+    // Order Submission Handling
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -1089,7 +1123,6 @@
       db.ref("users/" + cleanKey + "/orders/" + orderIdKey).set(newOrder);
       db.ref("orders/" + orderIdKey).set(newOrder);
 
-      // Automatically log debit transaction record
       const txRefKey = orderIdKey;
       const newTx = {
         reference: orderIdKey,
@@ -1171,7 +1204,6 @@
           let currentBal = snapshot.val() !== null ? parseFloat(snapshot.val()) : 0;
           let newBalance = currentBal + amount;
 
-          // Log credit transaction for target user
           const txRefKey = "tx_" + Date.now();
           const newTx = {
             reference: txRefKey,
@@ -1273,7 +1305,6 @@
           db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
           db.ref("orders/" + firebaseKey + "/status").set("Refunded");
 
-          // Log refund transaction record
           const txRefKey = "tx_" + Date.now();
           const newTx = {
             reference: firebaseKey,
