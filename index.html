@@ -215,6 +215,24 @@
     }
     .panel-title { font-size: 18px; margin-bottom: 20px; color: #ffffff; font-weight: 700; }
 
+    /* LIVE ORDER TRACKER STYLES */
+    .tracker-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .tracker-result {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      background: #0b0f19;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #cbd5e1;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-glow);
+    }
+
     /* USER PROFILE STYLES */
     .profile-header {
       display: flex;
@@ -415,6 +433,18 @@
         
         <!-- NEW ORDER TAB -->
         <section id="tab-new-order" class="tab-panel">
+          
+          <!-- LIVE ORDER STATUS TRACKER CARD -->
+          <div class="panel-card">
+            <h3 class="panel-title">Track Your Order</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Enter your Order ID (e.g., #1234 or order reference) to check real-time progress instantly.</p>
+            <div class="tracker-input-group">
+              <input type="text" id="trackOrderId" placeholder="Enter Order ID..." />
+              <button onclick="checkOrderStatus()" class="btn btn-primary" style="width: auto; padding: 13px 20px;">Check Status</button>
+            </div>
+            <div id="trackerResult" class="tracker-result"></div>
+          </div>
+
           <div class="panel-card">
             <h3 class="panel-title">Place New Order</h3>
             <form id="order-form">
@@ -794,6 +824,63 @@
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    // LIVE ORDER TRACKER SEARCH FUNCTION
+    function checkOrderStatus() {
+      const queryId = document.getElementById('trackOrderId').value.trim();
+      const resultBox = document.getElementById('trackerResult');
+      
+      if(!queryId) {
+        alert("Please enter a valid Order ID");
+        return;
+      }
+      
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = "Searching database...";
+
+      // Check against current loaded user orders first
+      const foundOrder = userOrders.find(ord => ord.id.toLowerCase() === queryId.toLowerCase() || ord.firebaseKey === queryId);
+
+      if (foundOrder) {
+        setTimeout(() => {
+          resultBox.innerHTML = `
+            <strong>Order Found (${foundOrder.id}):</strong><br>
+            Service: ${foundOrder.service}<br>
+            Quantity: ${foundOrder.qty}<br>
+            Status: <span class="badge badge-${foundOrder.status.toLowerCase()}" style="display:inline-block; margin-top:4px;">${foundOrder.status}</span>
+          `;
+        }, 400);
+      } else {
+        // Fallback: Query Firebase directly for the order ID
+        const email = localStorage.getItem("hkdm_user_email") || "";
+        const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+        
+        db.ref("users/" + cleanKey + "/orders").once("value").then((snapshot) => {
+          const data = snapshot.val();
+          let matched = null;
+          if (data) {
+            Object.values(data).forEach(ord => {
+              if (ord.id.toLowerCase() === queryId.toLowerCase() || ord.firebaseKey === queryId) {
+                matched = ord;
+              }
+            });
+          }
+
+          if (matched) {
+            resultBox.innerHTML = `
+              <strong>Order Found (${matched.id}):</strong><br>
+              Service: ${matched.service}<br>
+              Quantity: ${matched.qty}<br>
+              Status: <span class="badge badge-${matched.status.toLowerCase()}" style="display:inline-block; margin-top:4px;">${matched.status}</span>
+            `;
+          } else {
+            resultBox.innerHTML = `<span style="color: #ef4444;">Order ID '${queryId}' not found in your history. Please check the ID and try again.</span>`;
+          }
+        }).catch(() => {
+          resultBox.innerHTML = `<span style="color: #ef4444;">Error looking up order. Please try again.</span>`;
+        });
+      }
+    }
+
     // FIREBASE REALTIME SYNC FOR USERS & ORDERS
     function initRealtimeSync(email) {
       if (!email) return;
@@ -1132,7 +1219,7 @@
       const paystack = new PaystackPop();
       
       paystack.newTransaction({
-        key: 'pk_test_004006a167e704aeae640f67974b371f62722cbe', // Updated with your Test Public Key
+        key: 'pk_test_004006a167e704aeae640f67974b371f62722cbe',
         email: email,
         amount: amountInKobo,
         currency: 'NGN',
@@ -1231,14 +1318,6 @@
           alert("Error updating wallet: " + err.message);
         });
     });
-
-    function loadAllSystemOrders() {
-      db.ref("orders").on("value", (snapshot) => {
-        const data = snapshot.val();
-        const allOrders = data ? Object.values(data) : [];
-        renderAdminOrders(allOrders);
-      });
-    }
 
     function renderAdminOrders(allOrders) {
       const tbody = document.getElementById("admin-orders-body");
