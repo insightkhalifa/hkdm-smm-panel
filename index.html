@@ -1448,7 +1448,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler (Ensures transaction record is explicitly written)
+    // Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1470,8 +1470,10 @@
         currency: 'NGN',
         ref: txRef,
         callback: function(response){
+          window.focus(); // Bring window back to active focus for iOS Safari
           const verifiedRef = response.reference || txRef;
           const fundedAmount = amountInNaira;
+          const uniqueTxKey = 'tx_topup_' + Date.now();
 
           // 1. Update user balance in Firebase
           const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
@@ -1480,7 +1482,7 @@
             const newBal = currentBal + fundedAmount;
             return userBalanceRef.set(newBal);
           }).then(() => {
-            // 2. Explicitly write credit transaction record to Firebase database
+            // 2. Explicitly write credit transaction record
             const creditTx = {
               reference: verifiedRef,
               type: 'Credit',
@@ -1489,17 +1491,21 @@
               status: 'Completed',
               date: new Date().toLocaleString()
             };
-            return db.ref(`users/${cleanKey}/transactions/${verifiedRef}`).set(creditTx);
+            return db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx);
           }).then(() => {
-            alert('Payment successful! Your wallet deposit and transaction history have been updated.');
+            alert('Payment successful! Updating your dashboard...');
             document.getElementById("top-up-form").reset();
+            // Force a quick sync reload for mobile UI state
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           }).catch((error) => {
-            console.log('Failed to update wallet and history:', error);
-            alert('Payment successful, but encountered an error updating records. Please refresh.');
+            console.error('Failed to update wallet and history:', error);
+            alert('Payment successful, but encountered an error saving record.');
           });
         },
         onClose: function(){
-          alert('Transaction window closed.');
+          window.focus();
         }
       });
 
