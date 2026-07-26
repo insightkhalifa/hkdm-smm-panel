@@ -388,12 +388,10 @@
       white-space: nowrap;
     }
 
-    /* Prevent awkward text breaking for IDs, Qty, Charge, Status, and Actions */
     td.no-wrap, th.no-wrap {
       white-space: nowrap;
     }
 
-    /* Handle long link URLs cleanly with truncation */
     td.link-column {
       max-width: 160px;
       white-space: nowrap;
@@ -431,7 +429,6 @@
       color: var(--text-main); font-size: 13px; line-height: 1.6;
     }
 
-    /* CUSTOM SUCCESS MODAL BOX */
     .success-modal-box {
       background-color: var(--card-bg);
       padding: 28px 24px;
@@ -454,7 +451,6 @@
       margin-bottom: 22px;
     }
 
-    /* ADMIN SUB-TABS & CODE BLOCKS */
     .admin-subnav {
       display: flex;
       gap: 10px;
@@ -493,7 +489,6 @@
 
     .hidden { display: none !important; }
 
-    /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
       .menu-toggle { display: block; }
       .sidebar {
@@ -508,7 +503,6 @@
       .sidebar.open { left: 0; }
       .main-content { padding: 16px; }
       
-      /* Let dropdown text wrap completely on mobile screens */
       select {
         text-overflow: ellipsis;
         white-space: normal;
