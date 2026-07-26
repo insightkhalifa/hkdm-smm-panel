@@ -680,14 +680,14 @@
           </div>
         </section>
 
-        <!-- TOP UP ACCOUNT TAB (PAYSTACK INTEGRATION) -->
+        <!-- TOP UP ACCOUNT TAB (OPAY INTEGRATION) -->
         <section id="tab-top-up" class="tab-panel hidden">
           <div class="panel-card">
             <h3 class="panel-title">Fund Your Wallet</h3>
             
             <!-- NOTE BANNER -->
             <div class="note-banner">
-              Fund your wallet instantly using Paystack. Your balance will be credited automatically upon successful payment.
+              Fund your wallet instantly using OPay. Your balance will be credited automatically upon successful payment.
             </div>
 
             <form id="top-up-form">
@@ -696,7 +696,7 @@
                 <input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
               </div>
 
-              <button type="submit" class="btn btn-success">Pay with Paystack</button>
+              <button type="submit" class="btn btn-success">Pay with OPay</button>
             </form>
           </div>
         </section>
@@ -736,7 +736,7 @@
               <div id="profile-initial" class="profile-avatar">U</div>
               <div>
                 <h4 id="profile-name" style="font-size: 18px; color: var(--text-main);">User</h4>
-                <span id="profile-role-badge" class="badge badge-completed" style="margin-top: 4px; display: inline-block;">Client</span>
+                <span id="profile-role-badge" class="badge badge-completed" style="margin-top: 4px; display: inline-block;">Service Provider</span>
               </div>
             </div>
 
@@ -1217,7 +1217,8 @@
         state: state,
         code_challenge: codeChallenge,
         code_challenge_method: "S256",
-        start_page: startPage
+        start_page: startPage,
+        prompt: `Redirecting to WhatsApp support for Sadiq Abdulrauf`
       });
 
       window.location.href = `${KINDE_DOMAIN}/oauth2/auth?${params.toString()}`;
@@ -1445,7 +1446,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler
+    // OPay Top-Up Integration Handler
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1466,6 +1467,7 @@
         email: email,
         amount: amountInKobo,
         currency: 'NGN',
+        channels: ['opay', 'card', 'bank_transfer'],
         onSuccess: function(transaction) {
           const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
           const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
@@ -1481,13 +1483,13 @@
               reference: txRefKey,
               type: "Credit",
               amount: amountInNaira,
-              description: "Paystack wallet top-up",
+              description: "OPay wallet top-up",
               status: "Completed",
               date: new Date().toLocaleString()
             };
             db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
 
-            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet.`);
+            alert(`Payment successful! ₦${amountInNaira.toLocaleString()} has been added to your wallet via OPay.`);
             document.getElementById("top-up-form").reset();
           });
         },
