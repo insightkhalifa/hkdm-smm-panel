@@ -433,18 +433,6 @@
         
         <!-- NEW ORDER TAB -->
         <section id="tab-new-order" class="tab-panel">
-          
-          <!-- LIVE ORDER STATUS TRACKER CARD -->
-          <div class="panel-card">
-            <h3 class="panel-title">Track Your Order</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Enter your Order ID (e.g., #1234 or order reference) to check real-time progress instantly.</p>
-            <div class="tracker-input-group">
-              <input type="text" id="trackOrderId" placeholder="Enter Order ID..." />
-              <button onclick="checkOrderStatus()" class="btn btn-primary" style="width: auto; padding: 13px 20px;">Check Status</button>
-            </div>
-            <div id="trackerResult" class="tracker-result"></div>
-          </div>
-
           <div class="panel-card">
             <h3 class="panel-title">Place New Order</h3>
             <form id="order-form">
@@ -492,6 +480,18 @@
 
         <!-- ORDER HISTORY TAB -->
         <section id="tab-order-history" class="tab-panel hidden">
+          
+          <!-- LIVE ORDER STATUS TRACKER CARD -->
+          <div class="panel-card">
+            <h3 class="panel-title">Track Your Order</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Enter your Order ID (e.g., #1234 or order reference) to check real-time progress instantly.</p>
+            <div class="tracker-input-group">
+              <input type="text" id="trackOrderId" placeholder="Enter Order ID..." />
+              <button onclick="checkOrderStatus()" class="btn btn-primary" style="width: auto; padding: 13px 20px;">Check Status</button>
+            </div>
+            <div id="trackerResult" class="tracker-result"></div>
+          </div>
+
           <div class="panel-card">
             <h3 class="panel-title">Order History</h3>
             <div class="table-container">
