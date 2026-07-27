@@ -897,8 +897,10 @@
     <div class="dashboard-layout">
       <!-- SIDEBAR NAV MENU -->
       <aside id="sidebar" class="sidebar">
-        <!-- DEDICATED HOMEPAGE TOGGLE BUTTON -->
-        <div class="nav-link" id="sidebar-homepage-btn" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); border: 1px solid rgba(56, 189, 248, 0.3); margin-bottom: 6px;">🏠 Homepage</div>
+        <!-- INTEGRATED HOMEPAGE LINK -->
+        <a href="homepage-url-here" class="nav-link menu-item" id="sidebar-homepage-btn" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); border: 1px solid rgba(56, 189, 248, 0.3); margin-bottom: 6px;">
+            <img src="house-icon.svg" alt="Homepage" style="width: 16px; height: 16px;"> Homepage
+        </a>
         
         <nav class="sidebar-menu">
             <a href="#home" class="nav-item active" onclick="switchTab('new-order', this)">
@@ -1421,7 +1423,6 @@
       homepageScreen.classList.remove("hidden");
     }
 
-    document.getElementById("sidebar-homepage-btn").addEventListener("click", returnToHomepage);
     document.getElementById("logo-return-home").addEventListener("click", returnToHomepage);
 
     // LIVE ORDER TRACKER SEARCH FUNCTION
