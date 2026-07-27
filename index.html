@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hipkhalifa Digital Marketing (HKDM) — Modern SMM Panel & Homepage</title>
+  <title>Hipkhalifa Digital Marketing (HKDM) — Modern SMM Panel</title>
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -48,85 +48,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-
-    /* HOMEPAGE LANDING SCREEN STYLES */
-    .homepage-container {
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .landing-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      background-color: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .landing-hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 60px 20px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .landing-hero h1 {
-      font-size: 42px;
-      font-weight: 800;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #38bdf8, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-    }
-
-    .landing-hero p {
-      font-size: 18px;
-      color: var(--text-muted);
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .feature-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 24px;
-      border-radius: 16px;
-      text-align: left;
-    }
-
-    .feature-card h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: var(--text-main);
-    }
-
-    .feature-card p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.5;
+      scroll-behavior: smooth;
     }
 
     /* AUTHENTICATION SCREEN */
@@ -287,7 +209,7 @@
     
     /* SIDEBAR (DESKTOP) */
     .sidebar {
-      width: 240px;
+      width: 250px;
       background-color: var(--card-bg);
       border-right: 1px solid var(--border-color);
       padding: 24px 16px;
@@ -446,6 +368,80 @@
       -webkit-user-select: text;
     }
 
+    /* DASHBOARD ABOUT & CATALOG STYLES */
+    .section-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .about-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      line-height: 1.7;
+      color: var(--text-main);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .about-item {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    .about-item h4 {
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: var(--accent-glow);
+    }
+
+    .about-item p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .catalog-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .catalog-cat-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .catalog-cat-btn:hover, .catalog-cat-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
     /* TABLE LAYOUT & RESPONSIVE FIXES */
     .table-container { 
       width: 100%;
@@ -575,7 +571,6 @@
     .hidden { display: none !important; }
 
     @media (max-width: 768px) {
-      .menu-toggle { display: block; }
       .sidebar {
         position: fixed;
         top: 59px;
@@ -600,51 +595,13 @@
 </head>
 <body>
 
-  <!-- 0. HOMEPAGE LANDING SCREEN -->
-  <div id="homepage-screen" class="homepage-container">
-    <header class="landing-nav">
-      <div class="logo-brand" style="margin-bottom: 0;">Hipkhalifa Digital Marketing</div>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <button id="landing-theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
-          <span id="landing-theme-icon">🌙</span> <span id="landing-theme-text">Dark</span>
-        </button>
-        <button id="goto-auth-btn" class="btn btn-primary" style="width: auto; padding: 8px 18px;">Get Started</button>
-      </div>
-    </header>
-
-    <div class="landing-hero">
-      <h1>Supercharge Your Social Media Presence with HKDM Digital</h1>
-      <p>The ultimate modern SMM panel providing fast, reliable, and automated social growth services for Instagram, TikTok, YouTube, Facebook, and more.</p>
-      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-        <button id="hero-login-btn" class="btn btn-primary" style="width: auto; padding: 12px 28px;">Log In to Dashboard</button>
-        <button id="hero-signup-btn" class="btn btn-secondary" style="width: auto; padding: 12px 28px; margin-top: 0;">Create Free Account</button>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>⚡ Instant Delivery</h3>
-          <p>Orders begin processing immediately through our high-performance backend automation.</p>
-        </div>
-        <div class="feature-card">
-          <h3>🔒 Secure Paystack Funding</h3>
-          <p>Easily top up your wallet instantly using secure localized payment gateways.</p>
-        </div>
-        <div class="feature-card">
-          <h3>📈 Multi-Platform Reach</h3>
-          <p>Comprehensive packages tailored for TikTok, Instagram, YouTube, Twitter, and Telegram growth.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- 1. LOGIN / SIGNUP AUTH SCREEN -->
-  <div id="auth-screen" class="auth-container hidden">
+  <div id="auth-screen" class="auth-container">
     <div class="auth-card">
       <div class="logo-brand">HKDM Digital</div>
       <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
-      <button id="back-to-home-btn" class="btn btn-secondary" type="button" style="background: transparent; border: 1px solid var(--border-color); margin-top: 15px;">← Back to Homepage</button>
     </div>
   </div>
 
@@ -655,7 +612,7 @@
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
-        <div class="logo-brand" id="logo-return-home" style="font-size: 20px; margin-bottom: 0;" title="Return to Homepage">HKDM Digital</div>
+        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
       </div>
       <div class="nav-right">
         <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -671,13 +628,12 @@
     <div class="dashboard-layout">
       <!-- SIDEBAR NAV MENU -->
       <aside id="sidebar" class="sidebar">
-        <!-- DEDICATED HOMEPAGE TOGGLE BUTTON -->
-        <div class="nav-link" id="sidebar-homepage-btn" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); border: 1px solid rgba(56, 189, 248, 0.3);">🏠 Homepage</div>
-        
         <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
         <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
         <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
+        <div class="nav-link" onclick="switchTab('services-catalog', this)">📊 Services & Rates</div>
+        <div class="nav-link" onclick="switchTab('about-hkdm', this)">ℹ️ About HKDM</div>
         <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
         <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
         
@@ -718,7 +674,7 @@
                 <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
               </div>
 
-              <!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES) -->
+              <!-- CUSTOM COMMENTS TEXTAREA FIELD -->
               <div id="custom-comments-group" class="form-group hidden">
                 <label for="custom-comments">
                   Custom Comments (1 per line) <span class="info-tooltip-icon" title="Enter between 100 to 1,000 custom comments (one comment per line).">?</span>
@@ -842,7 +798,6 @@
           <div class="panel-card">
             <h3 class="panel-title">Fund Your Wallet via Paystack</h3>
             
-            <!-- NOTE BANNER -->
             <div class="note-banner">
               Fund your wallet securely using any supported payment method via Paystack. Your balance and transaction record will be credited automatically upon successful payment.
             </div>
@@ -855,6 +810,81 @@
 
               <button type="submit" class="btn btn-success">Confirm Payment via Paystack</button>
             </form>
+          </div>
+        </section>
+
+        <!-- SERVICES & RATES CATALOG TAB -->
+        <section id="tab-services-catalog" class="tab-panel hidden">
+          <div class="panel-card">
+            <h2 class="section-title">Services & Rates Catalog</h2>
+            <p class="section-subtitle">Browse all available service packages, pricing per 1,000 units, and requirements.</p>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <input type="text" id="public-search" placeholder="🔍 Search service name (e.g. TikTok Views, Instagram Followers)..." />
+            </div>
+
+            <div class="catalog-controls" id="public-cat-filters">
+              <button class="catalog-cat-btn active" data-cat="all">All</button>
+              <button class="catalog-cat-btn" data-cat="instagram">Instagram</button>
+              <button class="catalog-cat-btn" data-cat="tiktok">TikTok</button>
+              <button class="catalog-cat-btn" data-cat="youtube">YouTube</button>
+              <button class="catalog-cat-btn" data-cat="facebook">Facebook</button>
+              <button class="catalog-cat-btn" data-cat="twitter">X / Twitter</button>
+              <button class="catalog-cat-btn" data-cat="telegram">Telegram</button>
+              <button class="catalog-cat-btn" data-cat="spotify">Spotify</button>
+              <button class="catalog-cat-btn" data-cat="applemusic">Apple Music</button>
+              <button class="catalog-cat-btn" data-cat="whatsapp">WhatsApp</button>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="no-wrap">Platform</th>
+                    <th>Service Name</th>
+                    <th class="no-wrap">Rate / 1k</th>
+                    <th class="no-wrap">Min / Max</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody id="public-catalog-tbody">
+                  <!-- Dynamically Populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ABOUT HKDM TAB -->
+        <section id="tab-about-hkdm" class="tab-panel hidden">
+          <div class="panel-card">
+            <h2 class="section-title">About Hipkhalifa Digital Marketing</h2>
+            <p class="section-subtitle">Empowering creators, brands, and businesses to build authentic digital authority.</p>
+            
+            <div class="about-card" style="padding: 0; background: transparent; border: none;">
+              <p style="margin-bottom: 16px;">
+                <strong>Hipkhalifa Digital Marketing (HKDM)</strong> is a premier social media growth and digital strategy provider. We deliver high-performance, automated social media solutions tailored for influencers, business owners, content creators, and agencies seeking measurable audience engagement.
+              </p>
+
+              <div class="about-grid">
+                <div class="about-item">
+                  <h4>🚀 High Speed</h4>
+                  <p>Automated order dispatch ensures your campaigns begin processing immediately after submission.</p>
+                </div>
+                <div class="about-item">
+                  <h4>💳 Secure Payments</h4>
+                  <p>Seamlessly fund your wallet using Paystack with debit cards, bank transfers, or USSD.</p>
+                </div>
+                <div class="about-item">
+                  <h4>🛡️ Safe Delivery</h4>
+                  <p>All services utilize natural delivery patterns and never require sensitive credentials.</p>
+                </div>
+                <div class="about-item">
+                  <h4>📊 Live Tracking</h4>
+                  <p>Track order progression live with transparent status logs and transaction history.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -915,7 +945,6 @@
         <!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
         <section id="tab-admin" class="tab-panel hidden">
           
-          <!-- ADMIN SUB-NAVIGATION -->
           <div class="admin-subnav">
             <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
             <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
@@ -923,7 +952,6 @@
 
           <!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
           <div id="admin-sub-orders" class="admin-sub-content">
-            <!-- TOP UP USER BALANCE -->
             <div class="panel-card">
               <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
               <form id="admin-topup-form">
@@ -939,7 +967,6 @@
               </form>
             </div>
 
-            <!-- ADMIN ORDER MANAGEMENT -->
             <div class="panel-card">
               <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
               <div class="table-container">
@@ -1033,7 +1060,6 @@
     // STRICT ADMIN EMAIL REQUIREMENT
     const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
-    const homepageScreen = document.getElementById("homepage-screen");
     const authScreen = document.getElementById("auth-screen");
     const dashboardScreen = document.getElementById("dashboard-screen");
     const sidebar = document.getElementById("sidebar");
@@ -1046,24 +1072,16 @@
     const themeIcon = document.getElementById("theme-icon");
     const themeText = document.getElementById("theme-text");
 
-    const landingThemeToggleBtn = document.getElementById("landing-theme-toggle");
-    const landingThemeIcon = document.getElementById("landing-theme-icon");
-    const landingThemeText = document.getElementById("landing-theme-text");
-
     function setTheme(isLight) {
       if (isLight) {
         document.body.classList.add("light-theme");
         themeIcon.textContent = "☀️";
         themeText.textContent = "Light";
-        landingThemeIcon.textContent = "☀️";
-        landingThemeText.textContent = "Light";
         localStorage.setItem("hkdm_theme", "light");
       } else {
         document.body.classList.remove("light-theme");
         themeIcon.textContent = "🌙";
         themeText.textContent = "Dark";
-        landingThemeIcon.textContent = "🌙";
-        landingThemeText.textContent = "Dark";
         localStorage.setItem("hkdm_theme", "dark");
       }
     }
@@ -1074,11 +1092,6 @@
     }
 
     themeToggleBtn.addEventListener("click", () => {
-      const isLight = !document.body.classList.contains("light-theme");
-      setTheme(isLight);
-    });
-
-    landingThemeToggleBtn.addEventListener("click", () => {
       const isLight = !document.body.classList.contains("light-theme");
       setTheme(isLight);
     });
@@ -1119,7 +1132,6 @@
     if (hasCode || idToken || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
       window.history.replaceState({}, document.title, window.location.pathname);
-      homepageScreen.classList.add("hidden");
       authScreen.classList.add("hidden");
       dashboardScreen.classList.remove("hidden");
 
@@ -1127,8 +1139,7 @@
       updateUserProfileUI(currentUserEmail);
       initRealtimeSync(currentUserEmail);
     } else {
-      homepageScreen.classList.remove("hidden");
-      authScreen.classList.add("hidden");
+      authScreen.classList.remove("hidden");
       dashboardScreen.classList.add("hidden");
     }
 
@@ -1172,16 +1183,6 @@
       document.getElementById("user-balance").textContent = 
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
-
-    // TOGGLE BACK TO HOMEPAGE FROM DASHBOARD
-    function returnToHomepage() {
-      dashboardScreen.classList.add("hidden");
-      authScreen.classList.add("hidden");
-      homepageScreen.classList.remove("hidden");
-    }
-
-    document.getElementById("sidebar-homepage-btn").addEventListener("click", returnToHomepage);
-    document.getElementById("logo-return-home").addEventListener("click", returnToHomepage);
 
     // LIVE ORDER TRACKER SEARCH FUNCTION
     function checkOrderStatus() {
@@ -1384,18 +1385,6 @@
       window.location.href = `${KINDE_DOMAIN}/oauth2/auth?${params.toString()}`;
     }
 
-    // Homepage navigation events
-    document.getElementById("goto-auth-btn").addEventListener("click", () => {
-      homepageScreen.classList.add("hidden");
-      authScreen.classList.remove("hidden");
-    });
-    document.getElementById("hero-login-btn").addEventListener("click", () => startAuthFlow("login"));
-    document.getElementById("hero-signup-btn").addEventListener("click", () => startAuthFlow("registration"));
-    document.getElementById("back-to-home-btn").addEventListener("click", () => {
-      authScreen.classList.add("hidden");
-      homepageScreen.classList.remove("hidden");
-    });
-
     document.getElementById("login-btn").addEventListener("click", () => startAuthFlow("login"));
     document.getElementById("register-btn").addEventListener("click", () => startAuthFlow("registration"));
 
@@ -1434,7 +1423,7 @@
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-    // Updated Services Catalog with Full Platform Coverage & Pricing
+    // Services Catalog Data
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
@@ -1494,6 +1483,66 @@
       ]
     };
 
+    // DASHBOARD SERVICES CATALOG RENDERER LOGIC
+    let currentCatFilter = "all";
+    const publicCatalogTbody = document.getElementById("public-catalog-tbody");
+    const publicSearchInput = document.getElementById("public-search");
+
+    function renderPublicCatalog(catFilter = "all", searchTerm = "") {
+      let rowsHtml = "";
+      let count = 0;
+      const lowerSearch = searchTerm.toLowerCase().trim();
+
+      const categoriesToLoop = catFilter === "all" ? Object.keys(servicesData) : [catFilter];
+
+      categoriesToLoop.forEach(catKey => {
+        const platformTitle = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+        const list = servicesData[catKey] || [];
+
+        list.forEach(service => {
+          const matchesSearch = !lowerSearch || 
+            service.name.toLowerCase().includes(lowerSearch) || 
+            platformTitle.toLowerCase().includes(lowerSearch) ||
+            service.desc.toLowerCase().includes(lowerSearch);
+
+          if (matchesSearch) {
+            count++;
+            rowsHtml += `
+              <tr>
+                <td class="no-wrap"><strong style="color: var(--accent-glow);">${platformTitle}</strong></td>
+                <td>${service.name}</td>
+                <td class="no-wrap"><strong>₦${service.rate.toLocaleString()}</strong></td>
+                <td class="no-wrap">${service.min.toLocaleString()} / ${service.max.toLocaleString()}</td>
+                <td style="font-size: 12px; color: var(--text-muted);">${service.desc}</td>
+              </tr>
+            `;
+          }
+        });
+      });
+
+      if (count === 0) {
+        publicCatalogTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No services matching your search criteria.</td></tr>`;
+      } else {
+        publicCatalogTbody.innerHTML = rowsHtml;
+      }
+    }
+
+    document.querySelectorAll("#public-cat-filters .catalog-cat-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#public-cat-filters .catalog-cat-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCatFilter = btn.getAttribute("data-cat");
+        renderPublicCatalog(currentCatFilter, publicSearchInput.value);
+      });
+    });
+
+    publicSearchInput.addEventListener("input", (e) => {
+      renderPublicCatalog(currentCatFilter, e.target.value);
+    });
+
+    renderPublicCatalog();
+
+    // DASHBOARD SERVICE SELECTOR LOGIC
     const categorySelect = document.getElementById("category");
     const serviceSelect = document.getElementById("service");
     const serviceDescBox = document.getElementById("service-desc-box");
@@ -1647,7 +1696,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
+    // Paystack Top-Up Integration Handler
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1669,19 +1718,17 @@
         currency: 'NGN',
         ref: txRef,
         callback: function(response){
-          window.focus(); // Bring window back to active focus for iOS Safari
+          window.focus();
           const verifiedRef = response.reference || txRef;
           const fundedAmount = amountInNaira;
           const uniqueTxKey = 'tx_topup_' + Date.now();
 
-          // 1. Update user balance in Firebase
           const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
           userBalanceRef.once('value').then((snap) => {
             const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
             const newBal = currentBal + fundedAmount;
             return userBalanceRef.set(newBal);
           }).then(() => {
-            // 2. Explicitly write credit transaction record
             const creditTx = {
               reference: verifiedRef,
               type: 'Credit',
@@ -1694,7 +1741,6 @@
           }).then(() => {
             alert('Payment successful! Updating your dashboard...');
             document.getElementById("top-up-form").reset();
-            // Force a quick sync reload for mobile UI state
             setTimeout(() => {
               window.location.reload();
             }, 1000);
