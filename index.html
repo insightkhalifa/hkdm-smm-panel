@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HKDM Digital — Modern SMM Panel</title>
+  <title>Hipkhalifa Digital Marketing — Modern SMM Panel</title>
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -520,7 +520,7 @@
   <!-- 1. LOGIN / SIGNUP PAGE -->
   <div id="auth-screen" class="auth-container">
     <div class="auth-card">
-      <div class="logo-brand">HKDM Digital</div>
+      <div class="logo-brand">Hipkhalifa Digital</div>
       <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
@@ -534,7 +534,7 @@
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
-        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
+        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">Hipkhalifa Digital</div>
       </div>
       <div class="nav-right">
         <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -574,10 +574,11 @@
               <div class="form-group">
                 <label for="category">Category</label>
                 <select id="category">
-                  <option value="instagram">Instagram Services</option>
-                  <option value="tiktok">TikTok Services</option>
-                  <option value="youtube">YouTube Services</option>
-                  <option value="facebook">Facebook Services</option>
+                  <option value="twitter">X/Twitter Services</option>
+                  <option value="telegram">Telegram Services</option>
+                  <option value="spotify">Spotify Services</option>
+                  <option value="apple">Apple Music Services</option>
+                  <option value="whatsapp">WhatsApp Services</option>
                 </select>
               </div>
 
@@ -589,13 +590,13 @@
                 <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
               </div>
 
-              <!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES) -->
+              <!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES IF ANY) -->
               <div id="custom-comments-group" class="form-group hidden">
                 <label for="custom-comments">
                   Custom Comments (1 per line) <span class="info-tooltip-icon" title="Enter between 100 to 1,000 custom comments (one comment per line).">?</span>
                 </label>
-                <textarea id="custom-comments" rows="5" placeholder="Enter your custom comments here (min 100, max 1000 lines)..."></textarea>
-                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Lines entered: <span id="comment-count-display">0</span> (Min: 100, Max: 1,000)</div>
+                <textarea id="custom-comments" rows="5" placeholder="Enter your custom comments here..."></textarea>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Lines entered: <span id="comment-count-display">0</span></div>
               </div>
 
               <div class="form-group">
@@ -713,7 +714,6 @@
           <div class="panel-card">
             <h3 class="panel-title">Fund Your Wallet via Paystack</h3>
             
-            <!-- NOTE BANNER -->
             <div class="note-banner">
               Fund your wallet securely using any supported payment method via Paystack. Your balance and transaction record will be credited automatically upon successful payment.
             </div>
@@ -786,7 +786,6 @@
         <!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
         <section id="tab-admin" class="tab-panel hidden">
           
-          <!-- ADMIN SUB-NAVIGATION -->
           <div class="admin-subnav">
             <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
             <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
@@ -794,13 +793,12 @@
 
           <!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
           <div id="admin-sub-orders" class="admin-sub-content">
-            <!-- TOP UP USER BALANCE -->
             <div class="panel-card">
               <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
               <form id="admin-topup-form">
                 <div class="form-group">
                   <label for="admin-user-email">Customer Username / Email / ID</label>
-                  <input type="text" id="admin-user-email" placeholder="e.g. Hipqhalifa or customer@gmail.com" required />
+                  <input type="text" id="admin-user-email" placeholder="e.g. customer@gmail.com" required />
                 </div>
                 <div class="form-group">
                   <label for="admin-amount">Amount to Credit (₦)</label>
@@ -810,7 +808,6 @@
               </form>
             </div>
 
-            <!-- ADMIN ORDER MANAGEMENT -->
             <div class="panel-card">
               <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
               <div class="table-container">
@@ -841,7 +838,7 @@
           <!-- SUB-TAB 2: API DOCUMENTATION -->
           <div id="admin-sub-api" class="admin-sub-content hidden">
             <div class="panel-card">
-              <h3 class="panel-title" style="color: #f59e0b;">🔌 HKDM SMM Panel Admin API Management</h3>
+              <h3 class="panel-title" style="color: #f59e0b;">🔌 Hipkhalifa Digital SMM Panel Admin API Management</h3>
               <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
                 Manage API endpoints and verify system access parameters for external reseller panels or integrations.
               </p>
@@ -901,7 +898,6 @@
     const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
     const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
-    // STRICT ADMIN EMAIL REQUIREMENT
     const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
     const authScreen = document.getElementById("auth-screen");
@@ -940,7 +936,6 @@
       setTheme(isLight);
     });
 
-    // Helper to decode JWT payload from Kinde
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -954,7 +949,6 @@
       }
     }
 
-    // Session Check
     const urlParams = new URLSearchParams(window.location.search);
     const hasCode = urlParams.get("code");
     const idToken = urlParams.get("id_token");
@@ -1025,7 +1019,6 @@
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // LIVE ORDER TRACKER SEARCH FUNCTION
     function checkOrderStatus() {
       const queryId = document.getElementById('trackOrderId').value.trim();
       const resultBox = document.getElementById('trackerResult');
@@ -1080,7 +1073,6 @@
       }
     }
 
-    // FIREBASE REALTIME SYNC FOR USERS & ORDERS
     function initRealtimeSync(email) {
       if (!email) return;
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
@@ -1183,7 +1175,6 @@
       });
     }
 
-    // PKCE OAuth Helpers
     function generateRandomString(length) {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -1219,8 +1210,7 @@
         state: state,
         code_challenge: codeChallenge,
         code_challenge_method: "S256",
-        start_page: startPage,
-        prompt: `Hello Sadiq Abdulrauf, welcome back!`
+        start_page: startPage
       });
 
       window.location.href = `${KINDE_DOMAIN}/oauth2/auth?${params.toString()}`;
@@ -1235,12 +1225,10 @@
       window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
     });
 
-    // Mobile Navigation Toggle
     document.getElementById("menu-btn").addEventListener("click", () => {
       sidebar.classList.toggle("open");
     });
 
-    // Tab Navigation Switcher
     function switchTab(tabName, element) {
       document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
       document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
@@ -1250,7 +1238,6 @@
       sidebar.classList.remove("open");
     }
 
-    // Admin Sub-Tab Switcher
     function switchAdminSubTab(subTabName, element) {
       document.querySelectorAll(".admin-sub-content").forEach(content => content.classList.add("hidden"));
       document.querySelectorAll(".admin-sub-btn").forEach(btn => btn.classList.remove("active"));
@@ -1259,39 +1246,37 @@
       element.classList.add("active");
     }
 
-    // Modal Events
     document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-    // Services Catalog with Tooltips / Descriptions
+    // COMPLETE UPDATED SERVICES CATALOG WITH HIPKHALIFA DIGITAL MARKETING SERVICES & PRICING
     const servicesData = {
-      instagram: [
-        { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
-        { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000, desc: "Instant high-retention post likes to boost engagement metrics and explore page reach." },
-        { name: "Instagram Views", rate: 1500, min: 100, max: 100000000, desc: "Fast reel and video views package to increase overall visibility." },
-        { name: "Instagram Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
+      twitter: [
+        { name: "Twitter Followers", rate: 10000, min: 100, max: 1000000, desc: "Profile URL followers package." },
+        { name: "Twitter Likes", rate: 5000, min: 50, max: 1000000, desc: "Post/Tweet URL likes package." },
+        { name: "Twitter Retweets", rate: 5000, min: 50, max: 1000000, desc: "Post/Tweet URL retweets package." },
+        { name: "Twitter Views", rate: 1000, min: 100, max: 100000000, desc: "Post/Tweet URL views package." },
+        { name: "Twitter Space Listener", rate: 10000, min: 100, max: 1000000, desc: "Space URL listener package (Max: 60 Minutes Watch)." }
       ],
-      tiktok: [
-        { name: "TikTok Followers", rate: 6000, min: 100, max: 1000000, desc: "Grow your TikTok audience base safely with high-retention active profiles." },
-        { name: "TikTok Likes", rate: 2000, min: 100, max: 1000000, desc: "Boost your video algorithm ranking with fast, reliable video likes." },
-        { name: "TikTok Views", rate: 1000, min: 500, max: 100000000, desc: "Super-fast views injection to push content onto the For You Page (FYP)." },
-        { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000, desc: "Increase content credibility and virality metrics with organic shares." },
-        { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000, desc: "High bookmark count to signal strong educational or entertaining value to TikTok." },
-        { name: "TikTok Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
+      telegram: [
+        { name: "Telegram Members / Subscribers", rate: 5000, min: 100, max: 1000000, desc: "Channel/Group Username or URL." },
+        { name: "Telegram Post Views", rate: 3500, min: 100, max: 1000000, desc: "Post URL views package." },
+        { name: "Telegram Reactions", rate: 3500, min: 100, max: 1000000, desc: "Post URL reactions package." }
       ],
-      youtube: [
-        { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000, desc: "Permanent subscriber growth to help meet channel monetization requirements." },
-        { name: "YouTube Views", rate: 2000, min: 100, max: 100000000, desc: "High retention video views with safe traffic sources for watch time." },
-        { name: "YouTube Likes", rate: 2000, min: 50, max: 1000000, desc: "Boost video authority and search ranking with genuine-looking likes." },
-        { name: "YouTube Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
+      spotify: [
+        { name: "Spotify Monthly Listeners", rate: 8000, min: 100, max: 1000000, desc: "Artist Profile URL listeners package." },
+        { name: "Spotify Track Plays / Streams", rate: 5000, min: 100, max: 100000000, desc: "Track URL streams package." },
+        { name: "Spotify Saves", rate: 5000, min: 100, max: 1000000, desc: "Track URL saves package." },
+        { name: "Spotify Followers", rate: 10000, min: 100, max: 1000000, desc: "Artist or Playlist URL followers package." }
       ],
-      facebook: [
-        { name: "Facebook Followers", rate: 5000, min: 100, max: 1000000, desc: "Page and profile followers to expand your brand reach across Facebook." },
-        { name: "Facebook Likes", rate: 2500, min: 50, max: 1000000, desc: "Post and photo likes to maximize user trust and interaction metrics." },
-        { name: "Facebook Views", rate: 1500, min: 100, max: 100000000, desc: "Fast video watch completion and view counts." },
-        { name: "Facebook Shares", rate: 2000, min: 50, max: 1000000, desc: "Amplify post distribution across public feeds and groups." },
-        { name: "Facebook Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." }
+      apple: [
+        { name: "Apple Music Plays / Streams", rate: 5000, min: 100, max: 100000000, desc: "Track or Album URL streams package." },
+        { name: "Apple Music Pre-saves / Saves", rate: 5000, min: 100, max: 1000000, desc: "Track URL saves package." }
+      ],
+      whatsapp: [
+        { name: "WhatsApp Channel Followers / Members", rate: 10000, min: 100, max: 1000000, desc: "Channel Link or URL." },
+        { name: "WhatsApp Channel Emoji Reaction", rate: 5000, min: 100, max: 1000000, desc: "Channel Post Link / URL emoji reactions." }
       ]
     };
 
@@ -1309,7 +1294,7 @@
       const options = servicesData[selectedCat] || [];
       
       serviceSelect.innerHTML = options.map((s, idx) => 
-        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}" data-custom="${s.isCustomComments ? 'true' : 'false'}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
+        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
       ).join("");
 
       updateServiceDetails();
@@ -1322,18 +1307,10 @@
 
       const min = selectedOption.getAttribute("data-min") || 100;
       const max = selectedOption.getAttribute("data-max") || 100000000;
-      const desc = selectedOption.getAttribute("data-desc") || "Standard professional social media promotion service.";
-      const isCustom = selectedOption.getAttribute("data-custom") === "true";
+      const desc = selectedOption.getAttribute("data-desc") || "Standard professional marketing service.";
 
-      if (isCustom) {
-        customCommentsGroup.classList.remove("hidden");
-        customCommentsInput.required = true;
-        updateCommentCount();
-      } else {
-        customCommentsGroup.classList.add("hidden");
-        customCommentsInput.required = false;
-        customCommentsInput.value = "";
-      }
+      customCommentsGroup.classList.add("hidden");
+      customCommentsInput.required = false;
 
       quantityInput.min = min;
       quantityInput.max = max;
@@ -1344,14 +1321,6 @@
       if (parseInt(quantityInput.value) < parseInt(min)) {
         quantityInput.value = min;
       }
-    }
-
-    function updateCommentCount() {
-      const text = customCommentsInput.value;
-      const lines = text.split("\n").filter(line => line.trim().length > 0);
-      const count = lines.length;
-      commentCountDisplay.textContent = count;
-      return count;
     }
 
     function updatePrice() {
@@ -1367,25 +1336,13 @@
       updatePrice();
     });
     quantityInput.addEventListener("input", updatePrice);
-    customCommentsInput.addEventListener("input", updateCommentCount);
 
     loadServices();
 
-    // Order Submission Handling
     document.getElementById("order-form").addEventListener("submit", (e) => {
       e.preventDefault();
 
       const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-      const isCustom = selectedOption.getAttribute("data-custom") === "true";
-
-      if (isCustom) {
-        const commentCount = updateCommentCount();
-        if (commentCount < 100 || commentCount > 1000) {
-          alert(`Custom comments must be between 100 and 1,000 lines (you currently have ${commentCount} lines).`);
-          return;
-        }
-      }
-
       const min = parseInt(selectedOption.getAttribute("data-min")) || 100;
       const max = parseInt(selectedOption.getAttribute("data-max")) || 100000000;
       const qty = parseInt(quantityInput.value) || 0;
@@ -1411,7 +1368,6 @@
 
       const selectedServiceText = selectedOption.text.split(" - ")[0];
       const link = document.getElementById("link").value;
-      const customCommentsVal = isCustom ? customCommentsInput.value : null;
 
       const orderIdKey = "ord_" + Date.now();
       const rawCostValue = totalCost;
@@ -1422,7 +1378,6 @@
         service: selectedServiceText,
         link: link,
         qty: parseInt(qty).toLocaleString(),
-        customComments: customCommentsVal,
         rawCost: rawCostValue,
         charge: `₦${totalCost.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`,
         status: "Pending"
@@ -1448,7 +1403,6 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1470,19 +1424,17 @@
         currency: 'NGN',
         ref: txRef,
         callback: function(response){
-          window.focus(); // Bring window back to active focus for iOS Safari
+          window.focus();
           const verifiedRef = response.reference || txRef;
           const fundedAmount = amountInNaira;
           const uniqueTxKey = 'tx_topup_' + Date.now();
 
-          // 1. Update user balance in Firebase
           const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
           userBalanceRef.once('value').then((snap) => {
             const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
             const newBal = currentBal + fundedAmount;
             return userBalanceRef.set(newBal);
           }).then(() => {
-            // 2. Explicitly write credit transaction record
             const creditTx = {
               reference: verifiedRef,
               type: 'Credit',
@@ -1495,7 +1447,6 @@
           }).then(() => {
             alert('Payment successful! Updating your dashboard...');
             document.getElementById("top-up-form").reset();
-            // Force a quick sync reload for mobile UI state
             setTimeout(() => {
               window.location.reload();
             }, 1000);
@@ -1521,7 +1472,7 @@
       tbody.innerHTML = userOrders.slice().reverse().map(order => `
         <tr>
           <td class="no-wrap">${order.id || order.firebaseKey}</td>
-          <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments Included)</small>' : ''}</td>
+          <td>${order.service}</td>
           <td class="link-column"><a href="${order.link}" target="_blank" style="color: var(--accent-glow); text-decoration: none;">${order.link}</a></td>
           <td class="no-wrap">${order.qty}</td>
           <td class="no-wrap">${order.charge}</td>
@@ -1530,7 +1481,6 @@
       `).join("");
     }
 
-    // Admin Wallet Top-up
     document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
       e.preventDefault();
       
@@ -1606,7 +1556,7 @@
         return `
           <tr>
             <td class="no-wrap">${order.id || order.firebaseKey}</td>
-            <td>${order.service}${order.customComments ? '<br><small style="color:var(--accent-glow);">(Custom Comments)</small>' : ''}</td>
+            <td>${order.service}</td>
             <td class="link-column"><a href="${order.link}" target="_blank" style="color: var(--accent-glow); text-decoration: none;">${order.link}</a></td>
             <td class="no-wrap">${order.qty}</td>
             <td class="no-wrap">${order.charge}</td>
