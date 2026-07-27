@@ -1284,7 +1284,10 @@
         { name: "TikTok Shares", rate: 2000, min: 50, max: 1000000, desc: "Increase content credibility and virality metrics with organic shares." },
         { name: "TikTok Saves", rate: 1500, min: 50, max: 1000000, desc: "High bookmark count to signal strong educational or entertaining value to TikTok." },
         { name: "TikTok Comments", rate: 10000, min: 100, max: 1000, isCustomComments: true, desc: "Custom comments package. Enter between 100 to 1,000 custom comments (1 per line)." },
-        { name: "TikTok Live Stream Views / Engagement", rate: 8000, min: 100, max: 50000, desc: "Boost your live stream audience presence and chat activity." }
+        { name: "TikTok Livestream Views (120 Minutes)", rate: 100000, min: 100, max: 50000, desc: "Boost your live stream audience presence for 120 minutes." },
+        { name: "TikTok Livestream Likes", rate: 500, min: 100, max: 1000000, desc: "High retention live stream likes to boost interaction." },
+        { name: "TikTok Livestream Comments", rate: 20000, min: 100, max: 10000, desc: "Engaging live stream comments package." },
+        { name: "TikTok Livestream Shares", rate: 5000, min: 100, max: 1000000, desc: "Amplify your live stream reach with shares." }
       ],
       youtube: [
         { name: "YouTube Subscribers", rate: 25000, min: 100, max: 1000000, desc: "Permanent subscriber growth to help meet channel monetization requirements." },
@@ -1492,7 +1495,7 @@
 
       const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
       const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-      const txRef = 'psk_' + Math.floor((Math.random() * 1000000000) + 1);
+      const txRef = 'psk_' + Math.floor((Math.random() * 100000000) + 1);
 
       var handler = PaystackPop.setup({
         key: 'pk_test_004006a167e704aeae640f67974b371f62722cbe',
