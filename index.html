@@ -571,9 +571,15 @@
           <div class="panel-card">
             <h3 class="panel-title">Place New Order</h3>
             <form id="order-form">
+              <!-- CATEGORY SELECTOR -->
               <div class="form-group">
                 <label for="category">Category</label>
                 <select id="category">
+                  <option value="whatsapp">WhatsApp Services</option>
+                  <option value="apple-music">Apple Music Services</option>
+                  <option value="spotify">Spotify Services</option>
+                  <option value="telegram">Telegram Services</option>
+                  <option value="twitter">X/Twitter Services</option>
                   <option value="instagram">Instagram Services</option>
                   <option value="tiktok">TikTok Services</option>
                   <option value="youtube">YouTube Services</option>
@@ -581,6 +587,7 @@
                 </select>
               </div>
 
+              <!-- SERVICES DROPDOWN -->
               <div class="form-group">
                 <label for="service">
                   Service <span class="info-tooltip-icon" title="Select a specific service tier tailored for your target platform growth.">?</span>
@@ -1264,8 +1271,27 @@
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-    // Services Catalog with Tooltips / Descriptions
+    // Services Catalog with Tooltips / Descriptions (Combined & Expanded)
     const servicesData = {
+      whatsapp: [
+        { name: "WhatsApp Channel Followers", rate: 10000, min: 100, max: 1000000, desc: "High quality followers for your WhatsApp channels." },
+        { name: "WhatsApp Channel Emoji Reactions", rate: 5000, min: 100, max: 1000000, desc: "Engage your channel updates with real emoji reactions." }
+      ],
+      "apple-music": [
+        { name: "Apple Music Streams & Saves", rate: 5000, min: 100, max: 1000000, desc: "Boost your track visibility with authentic streams and saves." }
+      ],
+      spotify: [
+        { name: "Spotify Monthly Listeners", rate: 6000, min: 100, max: 1000000, desc: "Grow your monthly listener base on Spotify securely." },
+        { name: "Spotify Track Streams", rate: 4000, min: 100, max: 10000000, desc: "High retention stream counts for your playlist or single." }
+      ],
+      telegram: [
+        { name: "Telegram Channel Members", rate: 5000, min: 100, max: 1000000, desc: "Active members added directly to your Telegram channel or group." },
+        { name: "Telegram Post Views", rate: 1500, min: 100, max: 10000000, desc: "Fast view count delivery for your latest posts." }
+      ],
+      twitter: [
+        { name: "X/Twitter Followers", rate: 8000, min: 100, max: 1000000, desc: "Real-looking profile followers to boost your X/Twitter presence." },
+        { name: "X/Twitter Likes & Retweets", rate: 5000, min: 100, max: 1000000, desc: "Increase post engagement metrics instantly." }
+      ],
       instagram: [
         { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
         { name: "Instagram Likes", rate: 2000, min: 50, max: 1000000, desc: "Instant high-retention post likes to boost engagement metrics and explore page reach." },
@@ -1308,8 +1334,8 @@
       const selectedCat = categorySelect.value;
       const options = servicesData[selectedCat] || [];
       
-      serviceSelect.innerHTML = options.map((s, idx) => 
-        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}" data-custom="${s.isCustomComments ? 'true' : 'false'}">${s.name} - ₦${s.rate.toLocaleString()} / 1k (Min: ${s.min.toLocaleString()})</option>`
+      serviceSelect.innerHTML = options.map((s) => 
+        `<option value="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-desc="${s.desc}" data-custom="${s.isCustomComments ? 'true' : 'false'}">${s.name} (₦${s.rate.toLocaleString()} / 1000)</option>`
       ).join("");
 
       updateServiceDetails();
@@ -1409,7 +1435,7 @@
 
       db.ref("users/" + cleanKey + "/balance").set(userBalance);
 
-      const selectedServiceText = selectedOption.text.split(" - ")[0];
+      const selectedServiceText = selectedOption.text.split(" (₦")[0];
       const link = document.getElementById("link").value;
       const customCommentsVal = isCustom ? customCommentsInput.value : null;
 
