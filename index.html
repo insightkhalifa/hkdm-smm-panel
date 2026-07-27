@@ -155,6 +155,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
+      cursor: pointer;
     }
     .subtitle {
       font-size: 14px;
@@ -654,7 +655,7 @@
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
-        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
+        <div class="logo-brand" id="logo-return-home" style="font-size: 20px; margin-bottom: 0;" title="Return to Homepage">HKDM Digital</div>
       </div>
       <div class="nav-right">
         <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -670,6 +671,9 @@
     <div class="dashboard-layout">
       <!-- SIDEBAR NAV MENU -->
       <aside id="sidebar" class="sidebar">
+        <!-- DEDICATED HOMEPAGE TOGGLE BUTTON -->
+        <div class="nav-link" id="sidebar-homepage-btn" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); border: 1px solid rgba(56, 189, 248, 0.3);">🏠 Homepage</div>
+        
         <div class="nav-link active" onclick="switchTab('new-order', this)">🛒 New Order</div>
         <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
         <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
@@ -1168,6 +1172,16 @@
       document.getElementById("user-balance").textContent = 
         `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
+
+    // TOGGLE BACK TO HOMEPAGE FROM DASHBOARD
+    function returnToHomepage() {
+      dashboardScreen.classList.add("hidden");
+      authScreen.classList.add("hidden");
+      homepageScreen.classList.remove("hidden");
+    }
+
+    document.getElementById("sidebar-homepage-btn").addEventListener("click", returnToHomepage);
+    document.getElementById("logo-return-home").addEventListener("click", returnToHomepage);
 
     // LIVE ORDER TRACKER SEARCH FUNCTION
     function checkOrderStatus() {
@@ -1851,4 +1865,4 @@
   </script>
 
 </body>
-</html> 
+</html>
