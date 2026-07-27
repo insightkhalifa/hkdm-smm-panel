@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hipkhalifa Digital Marketing — Premium Social Growth Platform</title>
+  <title>Hipkhalifa Digital Marketing (HKDM) — Modern SMM Panel & Homepage</title>
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -50,164 +50,83 @@
       flex-direction: column;
     }
 
-    /* LANDING PAGE STYLES */
-    .landing-wrapper {
+    /* HOMEPAGE LANDING SCREEN STYLES */
+    .homepage-container {
+      width: 100%;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
-    header {
-      background-color: rgba(21, 28, 44, 0.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px 32px;
+    .landing-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 20px 40px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
-    body.light-theme header {
-      background-color: rgba(255, 255, 255, 0.85);
-    }
-
-    .logo-brand {
-      font-size: 20px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #38bdf8, #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .nav-actions {
+    .landing-hero {
+      flex: 1;
       display: flex;
-      gap: 12px;
+      flex-direction: column;
       align-items: center;
-    }
-
-    .hero {
-      padding: 80px 20px 60px;
+      justify-content: center;
       text-align: center;
-      max-width: 800px;
+      padding: 60px 20px;
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .hero h1 {
-      font-size: clamp(32px, 5vw, 52px);
+    .landing-hero h1 {
+      font-size: 42px;
       font-weight: 800;
       margin-bottom: 20px;
-      letter-spacing: -0.5px;
-    }
-
-    .hero h1 span {
       background: linear-gradient(135deg, #38bdf8, #818cf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      line-height: 1.2;
     }
 
-    .hero p {
-      font-size: clamp(15px, 2vw, 18px);
+    .landing-hero p {
+      font-size: 18px;
       color: var(--text-muted);
-      margin-bottom: 36px;
-      line-height: 1.7;
+      margin-bottom: 30px;
+      line-height: 1.6;
     }
 
-    .hero-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .features-container {
-      max-width: 1100px;
-      margin: 40px auto 80px;
-      padding: 0 20px;
+    .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
     .feature-card {
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
+      padding: 24px;
       border-radius: 16px;
-      padding: 28px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(56, 189, 248, 0.4);
-    }
-
-    .feature-icon {
-      font-size: 32px;
-      margin-bottom: 16px;
+      text-align: left;
     }
 
     .feature-card h3 {
       font-size: 18px;
       margin-bottom: 10px;
       color: var(--text-main);
-      font-weight: 700;
     }
 
     .feature-card p {
       font-size: 14px;
       color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    .platforms-section {
-      background-color: var(--card-bg);
-      border-top: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 40px 20px;
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .platforms-section h2 {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
-
-    .platforms-grid {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      max-width: 900px;
-      margin: 0 auto;
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 15px;
-    }
-
-    .platform-badge {
-      background: var(--bg-dark);
-      border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: 30px;
-    }
-
-    footer {
-      background-color: var(--card-bg);
-      border-top: 1px solid var(--border-color);
-      text-align: center;
-      padding: 24px;
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-top: auto;
+      line-height: 1.5;
     }
 
     /* AUTHENTICATION SCREEN */
@@ -228,6 +147,14 @@
       max-width: 400px;
       border: 1px solid var(--border-color);
       text-align: center;
+    }
+    .logo-brand {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
     }
     .subtitle {
       font-size: 14px;
@@ -259,8 +186,6 @@
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; }
     .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000000; }
     .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #ffffff; }
-    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); width: auto; }
-    .btn-outline:hover { border-color: var(--accent-glow); }
     .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; margin: 2px; }
 
     .form-group { margin-bottom: 18px; text-align: left; position: relative; }
@@ -674,71 +599,51 @@
 </head>
 <body>
 
-  <!-- 0. LANDING PAGE SCREEN -->
-  <div id="landing-screen" class="landing-wrapper hidden">
-    <header>
-      <a href="#" class="logo-brand" onclick="showScreen('landing')">Hipkhalifa Digital</a>
-      <div class="nav-actions">
+  <!-- 0. HOMEPAGE LANDING SCREEN -->
+  <div id="homepage-screen" class="homepage-container">
+    <header class="landing-nav">
+      <div class="logo-brand" style="margin-bottom: 0;">Hipkhalifa Digital Marketing</div>
+      <div style="display: flex; gap: 12px; align-items: center;">
         <button id="landing-theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
-          <span class="theme-icon-el">🌙</span> <span class="theme-text-el">Dark</span>
+          <span id="landing-theme-icon">🌙</span> <span id="landing-theme-text">Dark</span>
         </button>
-        <button onclick="showScreen('auth')" class="btn btn-outline">Dashboard Portal</button>
+        <button id="goto-auth-btn" class="btn btn-primary" style="width: auto; padding: 8px 18px;">Get Started</button>
       </div>
     </header>
 
-    <section class="hero">
-      <h1>Supercharge Your Online Presence with <span>Hipkhalifa Digital</span></h1>
-      <p>Professional social media growth services designed to elevate your brand visibility, boost engagement, and scale your reach across TikTok, Instagram, YouTube, and more.</p>
-      <div class="hero-buttons">
-        <button onclick="showScreen('auth')" class="btn btn-primary" style="padding: 14px 28px; font-size: 16px;">Get Started Now</button>
-      </div>
-    </section>
-
-    <div class="platforms-section">
-      <h2>Supported Platforms & Networks</h2>
-      <div class="platforms-grid">
-        <div class="platform-badge">🎵 TikTok</div>
-        <div class="platform-badge">📸 Instagram</div>
-        <div class="platform-badge">▶️ YouTube</div>
-        <div class="platform-badge">👥 Facebook</div>
-        <div class="platform-badge">✖️ X (Twitter)</div>
-        <div class="platform-badge">🎧 Spotify</div>
-      </div>
-    </div>
-
-    <div class="features-container">
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>Instant Automated Processing</h3>
-        <p>Orders are processed swiftly through our streamlined backend infrastructure, ensuring immediate start times upon submission.</p>
+    <div class="landing-hero">
+      <h1>Supercharge Your Social Media Presence with HKDM Digital</h1>
+      <p>The ultimate modern SMM panel providing fast, reliable, and automated social growth services for Instagram, TikTok, YouTube, Facebook, and more.</p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <button id="hero-login-btn" class="btn btn-primary" style="width: auto; padding: 12px 28px;">Log In to Dashboard</button>
+        <button id="hero-signup-btn" class="btn btn-secondary" style="width: auto; padding: 12px 28px; margin-top: 0;">Create Free Account</button>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon">🛡️</div>
-        <h3>Secure & Reliable</h3>
-        <p>Built with account protection protocols and safe delivery speeds to keep your digital assets secure and growing organically.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">💳</div>
-        <h3>Seamless Wallet Funding</h3>
-        <p>Easily top up your account balance securely using automated card and transfer gateways with instant crediting.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>⚡ Instant Delivery</h3>
+          <p>Orders begin processing immediately through our high-performance backend automation.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🔒 Secure Paystack Funding</h3>
+          <p>Easily top up your wallet instantly using secure localized payment gateways.</p>
+        </div>
+        <div class="feature-card">
+          <h3>📈 Multi-Platform Reach</h3>
+          <p>Comprehensive packages tailored for TikTok, Instagram, YouTube, Twitter, and Telegram growth.</p>
+        </div>
       </div>
     </div>
-
-    <footer>
-      &copy; 2026 Hipkhalifa Digital Marketing. All rights reserved.
-    </footer>
   </div>
 
-  <!-- 1. LOGIN / SIGNUP PAGE -->
+  <!-- 1. LOGIN / SIGNUP AUTH SCREEN -->
   <div id="auth-screen" class="auth-container hidden">
     <div class="auth-card">
-      <div class="logo-brand" onclick="showScreen('landing')" style="cursor:pointer;">Hipkhalifa Digital</div>
+      <div class="logo-brand">HKDM Digital</div>
       <div class="subtitle">Premium Social Growth Platform</div>
       <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
       <button id="register-btn" class="btn btn-secondary" type="button">Sign Up</button>
-      <button onclick="showScreen('landing')" class="btn btn-outline" style="width:100%; margin-top:10px;">Back to Home</button>
+      <button id="back-to-home-btn" class="btn btn-secondary" type="button" style="background: transparent; border: 1px solid var(--border-color); margin-top: 15px;">← Back to Homepage</button>
     </div>
   </div>
 
@@ -749,7 +654,7 @@
     <header class="navbar">
       <div class="nav-left">
         <button id="menu-btn" class="menu-toggle">☰</button>
-        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;" onclick="showScreen('landing')">Hipkhalifa Digital</div>
+        <div class="logo-brand" style="font-size: 20px; margin-bottom: 0;">HKDM Digital</div>
       </div>
       <div class="nav-right">
         <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -1124,7 +1029,7 @@
     // STRICT ADMIN EMAIL REQUIREMENT
     const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
-    const landingScreen = document.getElementById("landing-screen");
+    const homepageScreen = document.getElementById("homepage-screen");
     const authScreen = document.getElementById("auth-screen");
     const dashboardScreen = document.getElementById("dashboard-screen");
     const sidebar = document.getElementById("sidebar");
@@ -1134,21 +1039,27 @@
 
     // THEME TOGGLE LOGIC
     const themeToggleBtn = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+    const themeText = document.getElementById("theme-text");
+
     const landingThemeToggleBtn = document.getElementById("landing-theme-toggle");
+    const landingThemeIcon = document.getElementById("landing-theme-icon");
+    const landingThemeText = document.getElementById("landing-theme-text");
 
     function setTheme(isLight) {
-      const themeIcons = document.querySelectorAll("#theme-icon, .theme-icon-el");
-      const themeTexts = document.querySelectorAll("#theme-text, .theme-text-el");
-
       if (isLight) {
         document.body.classList.add("light-theme");
-        themeIcons.forEach(el => el.textContent = "☀️");
-        themeTexts.forEach(el => el.textContent = "Light");
+        themeIcon.textContent = "☀️";
+        themeText.textContent = "Light";
+        landingThemeIcon.textContent = "☀️";
+        landingThemeText.textContent = "Light";
         localStorage.setItem("hkdm_theme", "light");
       } else {
         document.body.classList.remove("light-theme");
-        themeIcons.forEach(el => el.textContent = "🌙");
-        themeTexts.forEach(el => el.textContent = "Dark");
+        themeIcon.textContent = "🌙";
+        themeText.textContent = "Dark";
+        landingThemeIcon.textContent = "🌙";
+        landingThemeText.textContent = "Dark";
         localStorage.setItem("hkdm_theme", "dark");
       }
     }
@@ -1158,28 +1069,15 @@
       setTheme(true);
     }
 
-    [themeToggleBtn, landingThemeToggleBtn].forEach(btn => {
-      if(btn) {
-        btn.addEventListener("click", () => {
-          const isLight = !document.body.classList.contains("light-theme");
-          setTheme(isLight);
-        });
-      }
+    themeToggleBtn.addEventListener("click", () => {
+      const isLight = !document.body.classList.contains("light-theme");
+      setTheme(isLight);
     });
 
-    function showScreen(screenName) {
-      landingScreen.classList.add("hidden");
-      authScreen.classList.add("hidden");
-      dashboardScreen.classList.add("hidden");
-
-      if (screenName === 'landing') {
-        landingScreen.classList.remove("hidden");
-      } else if (screenName === 'auth') {
-        authScreen.classList.remove("hidden");
-      } else if (screenName === 'dashboard') {
-        dashboardScreen.classList.remove("hidden");
-      }
-    }
+    landingThemeToggleBtn.addEventListener("click", () => {
+      const isLight = !document.body.classList.contains("light-theme");
+      setTheme(isLight);
+    });
 
     // Helper to decode JWT payload from Kinde
     function parseJwt(token) {
@@ -1217,13 +1115,17 @@
     if (hasCode || idToken || isLoggedIn) {
       localStorage.setItem("hkdm_logged_in", "true");
       window.history.replaceState({}, document.title, window.location.pathname);
-      showScreen('dashboard');
+      homepageScreen.classList.add("hidden");
+      authScreen.classList.add("hidden");
+      dashboardScreen.classList.remove("hidden");
 
       checkAdminAccess(currentUserEmail);
       updateUserProfileUI(currentUserEmail);
       initRealtimeSync(currentUserEmail);
     } else {
-      showScreen('landing');
+      homepageScreen.classList.remove("hidden");
+      authScreen.classList.add("hidden");
+      dashboardScreen.classList.add("hidden");
     }
 
     function checkAdminAccess(email) {
@@ -1468,6 +1370,18 @@
       window.location.href = `${KINDE_DOMAIN}/oauth2/auth?${params.toString()}`;
     }
 
+    // Homepage navigation events
+    document.getElementById("goto-auth-btn").addEventListener("click", () => {
+      homepageScreen.classList.add("hidden");
+      authScreen.classList.remove("hidden");
+    });
+    document.getElementById("hero-login-btn").addEventListener("click", () => startAuthFlow("login"));
+    document.getElementById("hero-signup-btn").addEventListener("click", () => startAuthFlow("registration"));
+    document.getElementById("back-to-home-btn").addEventListener("click", () => {
+      authScreen.classList.add("hidden");
+      homepageScreen.classList.remove("hidden");
+    });
+
     document.getElementById("login-btn").addEventListener("click", () => startAuthFlow("login"));
     document.getElementById("register-btn").addEventListener("click", () => startAuthFlow("registration"));
 
@@ -1506,7 +1420,7 @@
     document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
     document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-    // Services Catalog with Full Platform Coverage & Pricing
+    // Updated Services Catalog with Full Platform Coverage & Pricing
     const servicesData = {
       instagram: [
         { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
@@ -1719,7 +1633,7 @@
       updatePrice();
     });
 
-    // Paystack Top-Up Integration Handler
+    // Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
     document.getElementById("top-up-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1741,17 +1655,19 @@
         currency: 'NGN',
         ref: txRef,
         callback: function(response){
-          window.focus();
+          window.focus(); // Bring window back to active focus for iOS Safari
           const verifiedRef = response.reference || txRef;
           const fundedAmount = amountInNaira;
           const uniqueTxKey = 'tx_topup_' + Date.now();
 
+          // 1. Update user balance in Firebase
           const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
           userBalanceRef.once('value').then((snap) => {
             const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
             const newBal = currentBal + fundedAmount;
             return userBalanceRef.set(newBal);
           }).then(() => {
+            // 2. Explicitly write credit transaction record
             const creditTx = {
               reference: verifiedRef,
               type: 'Credit',
@@ -1764,6 +1680,7 @@
           }).then(() => {
             alert('Payment successful! Updating your dashboard...');
             document.getElementById("top-up-form").reset();
+            // Force a quick sync reload for mobile UI state
             setTimeout(() => {
               window.location.reload();
             }, 1000);
@@ -1934,4 +1851,4 @@
   </script>
 
 </body>
-</html> 
+</html>
