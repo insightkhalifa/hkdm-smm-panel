@@ -494,7 +494,7 @@ background-color: var(--card-bg);
 <p class="text-xs text-gray-400 mt-1">Premium Social Growth Platform</p>
 </div>
 
-<!-- About Us / Value Proposition -->
+<!-- About Us / Value Proposition (Reflecting expanded services) -->
 <div class="mb-6 bg-darkCardAlt p-3 rounded-xl border border-gray-700/50 text-left">
 <h2 class="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-1">About Us</h2>
 <p class="text-xs text-gray-400 leading-relaxed">
@@ -552,7 +552,6 @@ Sign Up
 <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
 <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
 <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
-<div class="nav-link" onclick="switchTab('vouchers', this)">🎟️ Vouchers</div>
 <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
 <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
 
@@ -591,7 +590,7 @@ Service <span class="info-tooltip-icon" title="Select a specific service tier ta
 <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
 </div>
 
-<!-- CUSTOM COMMENTS TEXTAREA FIELD -->
+<!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES) -->
 <div id="custom-comments-group" class="form-group hidden">
 <label for="custom-comments">
 Custom Comments (1 per line) <span class="info-tooltip-icon" title="Enter between 100 to 1,000 custom comments (one comment per line).">?</span>
@@ -629,6 +628,8 @@ I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span
 
 <!-- ORDER HISTORY TAB -->
 <section id="tab-order-history" class="tab-panel hidden">
+
+<!-- LIVE ORDER STATUS TRACKER CARD -->
 <div class="panel-card">
 <h3 class="panel-title">Track Your Order</h3>
 <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Enter your Order ID (e.g., #1234 or order reference) to check real-time progress instantly.</p>
@@ -728,26 +729,6 @@ Fund your wallet securely using any supported payment method via Paystack. Your 
 </div>
 </section>
 
-<!-- VOUCHERS TAB -->
-<section id="tab-vouchers" class="tab-panel hidden">
-<div class="panel-card">
-<h3 class="panel-title">Redeem Promotional Voucher</h3>
-
-<div class="note-banner" style="background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.3); color: #38bdf8;">
-Have a promotional voucher code? Enter it below to instantly claim your bonus balance directly into your wallet without processing fees.
-</div>
-
-<form id="voucher-form">
-<div class="form-group">
-<label for="voucher-code-input">Voucher Code</label>
-<input type="text" id="voucher-code-input" placeholder="e.g. HKDM-BONUS-2026" required style="text-transform: uppercase;" />
-</div>
-
-<button type="submit" class="btn btn-primary">Redeem Voucher</button>
-</form>
-</div>
-</section>
-
 <!-- USER PROFILE TAB -->
 <section id="tab-profile" class="tab-panel hidden">
 <div class="panel-card">
@@ -780,6 +761,7 @@ Have a promotional voucher code? Enter it below to instantly claim your bonus ba
 </div>
 </div>
 
+<!-- Professional Log Out Action Button inside Profile Tab -->
 <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
 <button id="logout-btn" class="btn btn-danger" style="width: auto; padding: 10px 24px; display: flex; align-items: center; gap: 8px;">
 🚪 Log Out
@@ -808,15 +790,18 @@ Have a promotional voucher code? Enter it below to instantly claim your bonus ba
 </div>
 </section>
 
-<!-- ADMIN TAB -->
+<!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
 <section id="tab-admin" class="tab-panel hidden">
+
+<!-- ADMIN SUB-NAVIGATION -->
 <div class="admin-subnav">
 <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
-<button class="admin-sub-btn" onclick="switchAdminSubTab('vouchers', this)">🎟️ Manage Vouchers</button>
 <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
 </div>
 
+<!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
 <div id="admin-sub-orders" class="admin-sub-content">
+<!-- TOP UP USER BALANCE -->
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
 <form id="admin-topup-form">
@@ -832,6 +817,7 @@ Have a promotional voucher code? Enter it below to instantly claim your bonus ba
 </form>
 </div>
 
+<!-- ADMIN ORDER MANAGEMENT -->
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
 <div class="table-container">
@@ -859,59 +845,22 @@ No orders to manage.
 </div>
 </div>
 
-<!-- ADMIN VOUCHER CREATION SUBTAB -->
-<div id="admin-sub-vouchers" class="admin-sub-content hidden">
-<div class="panel-card">
-<h3 class="panel-title" style="color: #f59e0b;">🎟️ Create New Voucher Code</h3>
-<form id="admin-voucher-form">
-<div class="form-group">
-<label for="admin-voucher-code">Voucher Code String</label>
-<input type="text" id="admin-voucher-code" placeholder="e.g. HKDM5000" required style="text-transform: uppercase;" />
-</div>
-<div class="form-group">
-<label for="admin-voucher-amount">Voucher Value Amount (₦)</label>
-<input type="number" id="admin-voucher-amount" placeholder="1000" min="100" required />
-</div>
-<button type="submit" class="btn btn-success">Generate Voucher</button>
-</form>
-</div>
-
-<div class="panel-card">
-<h3 class="panel-title" style="color: #f59e0b;">📋 Active System Vouchers</h3>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Code</th>
-<th class="no-wrap">Value</th>
-<th class="no-wrap">Status</th>
-<th class="no-wrap">Action</th>
-</tr>
-</thead>
-<tbody id="admin-vouchers-body">
-<tr>
-<td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
-No vouchers created yet.
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-
+<!-- SUB-TAB 2: API DOCUMENTATION -->
 <div id="admin-sub-api" class="admin-sub-content hidden">
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">🔌 HKDM SMM Panel Admin API Management</h3>
 <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
 Manage API endpoints and verify system access parameters for external reseller panels or integrations.
 </p>
+
 <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px;">1. API Endpoint Gateway</h4>
 <div class="code-block">https://hkdm-smm-panel.vercel.app/api/v2</div>
+
 <h4 style="color: var(--text-main); font-size: 14px; margin-bottom: 6px; margin-top: 16px;">2. Authentication Security</h4>
 <div class="code-block">key=YOUR_SECRET_API_KEY</div>
 </div>
 </div>
+
 </section>
 
 </main>
@@ -959,6 +908,7 @@ const KINDE_DOMAIN = "https://hkdm.kinde.com";
 const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
 const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
+// STRICT ADMIN EMAIL REQUIREMENT
 const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
 const authScreen = document.getElementById("auth-screen");
@@ -968,6 +918,7 @@ const termsModal = document.getElementById("terms-modal");
 const successModal = document.getElementById("success-modal");
 const adminTabLink = document.getElementById("admin-tab-link");
 
+// THEME TOGGLE LOGIC
 const themeToggleBtn = document.getElementById("theme-toggle");
 const themeIcon = document.getElementById("theme-icon");
 const themeText = document.getElementById("theme-text");
@@ -996,6 +947,7 @@ const isLight = !document.body.classList.contains("light-theme");
 setTheme(isLight);
 });
 
+// Helper to decode JWT payload from Kinde
 function parseJwt(token) {
 try {
 const base64Url = token.split('.')[1];
@@ -1009,6 +961,7 @@ return null;
 }
 }
 
+// Session Check
 const urlParams = new URLSearchParams(window.location.search);
 const hasCode = urlParams.get("code");
 const idToken = urlParams.get("id_token");
@@ -1050,7 +1003,6 @@ localStorage.setItem("hkdm_user_email", email);
 if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
 adminTabLink.classList.remove("hidden");
 loadAllSystemOrders();
-loadAdminVouchers();
 } else {
 adminTabLink.classList.add("hidden");
 }
@@ -1080,6 +1032,7 @@ document.getElementById("user-balance").textContent =
 `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+// LIVE ORDER TRACKER SEARCH FUNCTION
 function checkOrderStatus() {
 const queryId = document.getElementById('trackOrderId').value.trim();
 const resultBox = document.getElementById('trackerResult');
@@ -1134,6 +1087,7 @@ resultBox.innerHTML = `<span style="color: #ef4444;">Error looking up order. Ple
 }
 }
 
+// FIREBASE REALTIME SYNC FOR USERS & ORDERS
 function initRealtimeSync(email) {
 if (!email) return;
 const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
@@ -1236,6 +1190,7 @@ renderAdminOrders(allOrders);
 });
 }
 
+// PKCE OAuth Helpers
 function generateRandomString(length) {
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 let result = "";
@@ -1287,10 +1242,12 @@ localStorage.removeItem("hkdm_user_email");
 window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
 });
 
+// Mobile Navigation Toggle
 document.getElementById("menu-btn").addEventListener("click", () => {
 sidebar.classList.toggle("open");
 });
 
+// Tab Navigation Switcher
 function switchTab(tabName, element) {
 document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
 document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
@@ -1300,6 +1257,7 @@ element.classList.add("active");
 sidebar.classList.remove("open");
 }
 
+// Admin Sub-Tab Switcher
 function switchAdminSubTab(subTabName, element) {
 document.querySelectorAll(".admin-sub-content").forEach(content => content.classList.add("hidden"));
 document.querySelectorAll(".admin-sub-btn").forEach(btn => btn.classList.remove("active"));
@@ -1308,11 +1266,13 @@ document.getElementById(`admin-sub-${subTabName}`).classList.remove("hidden");
 element.classList.add("active");
 }
 
+// Modal Events
 document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
 document.getElementById("open-terms-auth").addEventListener("click", () => termsModal.classList.remove("hidden"));
 document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
+// Updated Services Catalog with Full Platform Coverage & Pricing
 const servicesData = {
 instagram: [
 { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
@@ -1448,6 +1408,7 @@ customCommentsInput.addEventListener("input", updateCommentCount);
 
 loadServices();
 
+// Order Submission Handling
 document.getElementById("order-form").addEventListener("submit", (e) => {
 e.preventDefault();
 
@@ -1524,123 +1485,7 @@ updateServiceDetails();
 updatePrice();
 });
 
-// INDEPENDENT VOUCHER REDEMPTION HANDLER
-document.getElementById("voucher-form").addEventListener("submit", (e) => {
-e.preventDefault();
-const inputCode = document.getElementById("voucher-code-input").value.trim().toUpperCase();
-if (!inputCode) return;
-
-const email = localStorage.getItem("hkdm_user_email") || "";
-const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-const voucherRef = db.ref("vouchers/" + inputCode);
-
-voucherRef.once("value").then((snapshot) => {
-const voucherData = snapshot.val();
-if (!voucherData) {
-alert("Invalid voucher code. Please check and try again.");
-return;
-}
-
-if (voucherData.isUsed) {
-alert("This voucher has already been redeemed.");
-return;
-}
-
-const voucherValue = parseFloat(voucherData.amount) || 0;
-
-// Mark voucher as used in database
-voucherRef.update({ isUsed: true, redeemedBy: email, redeemedDate: new Date().toLocaleString() }).then(() => {
-// Credit User Balance
-const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
-userBalanceRef.once("value").then((balSnap) => {
-const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
-const newBal = currentBal + voucherValue;
-
-userBalanceRef.set(newBal).then(() => {
-// Log Transaction
-const uniqueTxKey = "tx_vouch_" + Date.now();
-const creditTx = {
-reference: "VOUCHER_" + inputCode,
-type: "Credit",
-amount: voucherValue,
-description: `Redeemed voucher code: ${inputCode}`,
-status: "Completed",
-date: new Date().toLocaleString()
-};
-
-db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx).then(() => {
-alert(`Success! ₦${voucherValue.toLocaleString()} has been credited to your wallet.`);
-document.getElementById("voucher-form").reset();
-});
-});
-});
-});
-}).catch((err) => {
-console.error("Voucher redemption error:", err);
-alert("An error occurred while processing your voucher. Please try again.");
-});
-});
-
-// ADMIN VOUCHER CREATION HANDLER
-document.getElementById("admin-voucher-form").addEventListener("submit", (e) => {
-e.preventDefault();
-const codeStr = document.getElementById("admin-voucher-code").value.trim().toUpperCase();
-const amountVal = parseFloat(document.getElementById("admin-voucher-amount").value);
-
-if (!codeStr || isNaN(amountVal) || amountVal <= 0) {
-alert("Please enter a valid voucher code and amount.");
-return;
-}
-
-const voucherData = {
-code: codeStr,
-amount: amountVal,
-isUsed: false,
-createdBy: ADMIN_EMAIL,
-createdDate: new Date().toLocaleString()
-};
-
-db.ref("vouchers/" + codeStr).set(voucherData).then(() => {
-alert(`Voucher '${codeStr}' worth ₦${amountVal.toLocaleString()} created successfully!`);
-document.getElementById("admin-voucher-form").reset();
-loadAdminVouchers();
-}).catch((err) => {
-alert("Error creating voucher: " + err.message);
-});
-});
-
-function loadAdminVouchers() {
-db.ref("vouchers").on("value", (snapshot) => {
-const data = snapshot.val();
-const tbody = document.getElementById("admin-vouchers-body");
-if (!data) {
-tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">No vouchers created yet.</td></tr>`;
-return;
-}
-
-tbody.innerHTML = Object.values(data).map(v => `
-<tr>
-<td class="no-wrap"><strong>${v.code}</strong></td>
-<td class="no-wrap">₦${parseFloat(v.amount).toLocaleString()}</td>
-<td class="no-wrap"><span class="badge ${v.isUsed ? 'badge-failed' : 'badge-completed'}">${v.isUsed ? 'Used' : 'Active'}</span></td>
-<td class="no-wrap">
-<button class="btn btn-danger btn-sm" onclick="deleteVoucher('${v.code}')">Delete</button>
-</td>
-</tr>
-`).join("");
-});
-}
-
-function deleteVoucher(code) {
-if (confirm(`Are you sure you want to delete voucher '${code}'?`)) {
-db.ref("vouchers/" + code).remove().then(() => {
-alert("Voucher deleted.");
-loadAdminVouchers();
-});
-}
-}
-
-// FIXED PAYSTACK TOP-UP INTEGRATION HANDLER
+// Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
 e.preventDefault();
 const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1662,20 +1507,19 @@ amount: amountInNaira * 100,
 currency: 'NGN',
 ref: txRef,
 callback: function(response){
-window.focus();
+window.focus(); // Bring window back to active focus for iOS Safari
 const verifiedRef = response.reference || txRef;
 const fundedAmount = amountInNaira;
 const uniqueTxKey = 'tx_topup_' + Date.now();
 
-// 1. Update user balance in Firebase safely
+// 1. Update user balance in Firebase
 const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
 userBalanceRef.once('value').then((snap) => {
 const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
 const newBal = currentBal + fundedAmount;
-
-
-userBalanceRef.set(newBal).then(() => {
-// 2. Save transaction record independently
+return userBalanceRef.set(newBal);
+}).then(() => {
+// 2. Explicitly write credit transaction record
 const creditTx = {
 reference: verifiedRef,
 type: 'Credit',
@@ -1684,22 +1528,16 @@ description: 'Paystack wallet top-up',
 status: 'Completed',
 date: new Date().toLocaleString()
 };
-
-
-db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx).then(() => {
-alert('Payment successful and wallet funded!');
+return db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx);
+}).then(() => {
+alert('Payment successful! Updating your dashboard...');
 document.getElementById("top-up-form").reset();
-setTimeout(() => { window.location.reload(); }, 1000);
-}).catch((txErr) => {
-console.error('Transaction log error:', txErr);
-alert('Balance updated, but log entry failed. Refreshing...');
-setTimeout(() => { window.location.reload(); }, 1000);
-});
-
-}).catch((balErr) => {
-console.error('Balance update error:', balErr);
-alert('Error updating wallet balance. Please contact support.');
-});
+setTimeout(() => {
+window.location.reload();
+}, 1000);
+}).catch((error) => {
+console.error('Failed to update wallet and history:', error);
+alert('Payment successful, but encountered an error saving record.');
 });
 },
 onClose: function(){
@@ -1728,6 +1566,7 @@ tbody.innerHTML = userOrders.slice().reverse().map(order => `
 `).join("");
 }
 
+// Admin Wallet Top-up
 document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
 e.preventDefault();
 
