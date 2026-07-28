@@ -185,10 +185,7 @@
       }
       .nav-link.logout-link {
         color: #ef4444;
-        margin-top: auto;
-        border-top: 1px solid var(--border-color);
-        border-radius: 0;
-        padding-top: 16px;
+        border-radius: 10px;
       }
       .nav-link.logout-link:hover {
         background-color: rgba(239, 68, 68, 0.1);
@@ -564,12 +561,14 @@
             <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
             <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
             <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
+            
+            <!-- Log Out moved directly under Profile -->
+            <div id="logout-btn" class="nav-link logout-link">🚪 Log Out</div>
+
             <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
             
             <!-- ADMIN SECRET TAB (RESTRICTED ACCESS) -->
             <div id="admin-tab-link" class="nav-link admin-link hidden" onclick="switchTab('admin', this)">👑 Admin Panel</div>
-
-            <div id="logout-btn" class="nav-link logout-link">🚪 Log Out</div>
           </aside>
 
           <!-- MAIN PAGE CONTENT -->
