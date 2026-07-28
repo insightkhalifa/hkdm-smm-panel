@@ -9,39 +9,15 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; }
         h1 { color: #38bdf8; margin-bottom: 20px; text-align: center; }
-        h2 { color: #38bdf8; font-size: 1.2rem; margin-bottom: 15px; }
-        .card { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px; text-align: left; }
         .order-card { background: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 15px; text-align: left; }
         .order-header { display: flex; justify-content: space-between; font-weight: bold; color: #38bdf8; margin-bottom: 10px; }
         .order-detail { font-size: 0.9rem; color: #cbd5e1; margin-bottom: 5px; }
         .link-box { background: #0f172a; padding: 8px; border-radius: 6px; border: 1px solid #334155; word-break: break-all; font-family: monospace; color: #38bdf8; margin: 10px 0; }
-        .btn-copy, .btn-submit { background: #0284c7; color: #ffffff; border: none; padding: 8px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-submit:hover { background: #0ea5e9; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #f8fafc; font-size: 0.95rem; }
+        .btn-copy { background: #0284c7; color: #ffffff; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <h1>HKDM Admin Dashboard</h1>
-
-    <!-- NEW: Voucher Creation Form Card -->
-    <div class="card">
-        <h2>Create New Voucher</h2>
-        <form id="createVoucherForm" onsubmit="handleCreateVoucher(event)">
-            <div class="form-group">
-                <label for="voucherCodeInput">Voucher Code</label>
-                <input type="text" id="voucherCodeInput" class="form-control" placeholder="e.g. VIP2026" required>
-            </div>
-            <div class="form-group">
-                <label for="voucherDiscountInput">Discount Amount / Value</label>
-                <input type="number" id="voucherDiscountInput" class="form-control" placeholder="e.g. 1000" required>
-            </div>
-            <button type="submit" class="btn-submit">Generate Voucher</button>
-        </form>
-    </div>
-
-    <h2>Live Orders</h2>
     <div id="ordersContainer">Loading orders...</div>
 
     <script>
@@ -79,37 +55,6 @@
                     <button class="btn-copy" onclick="navigator.clipboard.writeText('${order.target_link}'); alert('Link copied!');">Copy Target Link</button>
                 </div>
             `).join('');
-        }
-
-        // NEW: Handle creating voucher through your secure backend server
-        async function handleCreateVoucher(event) {
-            event.preventDefault();
-
-            const code = document.getElementById('voucherCodeInput').value;
-            const discount = document.getElementById('voucherDiscountInput').value;
-
-            try {
-                // Replace with your live Render backend URL once deployed successfully
-                const response = await fetch('https://hkdm-telegram-notifier.onrender.com/create-voucher', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code, discount }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert('Voucher created successfully!');
-                    document.getElementById('createVoucherForm').reset();
-                } else {
-                    alert(`Error: ${data.error || 'Could not create voucher'}`);
-                }
-            } catch (err) {
-                console.error('Failed to connect to server:', err);
-                alert('Failed to connect to the backend server.');
-            }
         }
 
         fetchOrders();
