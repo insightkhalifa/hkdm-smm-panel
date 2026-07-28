@@ -710,7 +710,7 @@
               </div>
             </section>
 
-            <!-- TOP UP ACCOUNT TAB (PAYSTACK & VOUCHER REDEMPTION) -->
+            <!-- TOP UP ACCOUNT TAB (PAYSTACK & VOUCHER REDEMPTION WITH PREVIEW UI) -->
             <section id="tab-top-up" class="tab-panel hidden">
               <div class="panel-card">
                 <h3 class="panel-title">Fund Your Wallet via Paystack</h3>
@@ -729,11 +729,16 @@
                 </form>
               </div>
 
-              <!-- VOUCHER REDEMPTION CARD -->
+              <!-- VOUCHER REDEMPTION & BONUS PREVIEW CARD -->
               <div class="panel-card">
                 <h3 class="panel-title">Have a Voucher / Coupon Code?</h3>
                 <div class="note-banner" style="background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: var(--accent-glow);">
-                  Enter your promotional voucher code below to instantly claim bonus credit or balance discounts added directly to your wallet.
+                  Enter your promotional voucher code below to preview bonus credit before redeeming directly to your wallet.
+                </div>
+
+                <!-- Voucher Preview UI Box -->
+                <div id="voucher-preview-box" class="hidden" style="background: var(--bg-dark); border: 1px dashed var(--accent-glow); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 13px;">
+                  <span style="color: var(--text-muted);">Bonus Preview:</span> <strong id="voucher-preview-text" style="color: var(--accent-glow);">--</strong>
                 </div>
 
                 <form id="voucher-redeem-form">
@@ -1516,6 +1521,42 @@
 
       loadServices();
 
+      // LIVE VOUCHER BONUS PREVIEW LOGIC
+      const voucherInputBox = document.getElementById("voucher-code-input");
+      const voucherPreviewBox = document.getElementById("voucher-preview-box");
+      const voucherPreviewText = document.getElementById("voucher-preview-text");
+
+      voucherInputBox.addEventListener("input", () => {
+        const codeInput = voucherInputBox.value.trim().toUpperCase();
+        if (!codeInput) {
+          voucherPreviewBox.classList.add("hidden");
+          return;
+        }
+
+        db.ref("vouchers/" + codeInput).once("value").then((snapshot) => {
+          const voucher = snapshot.val();
+          if (voucher) {
+            const currentUsed = voucher.usedCount || 0;
+            if (currentUsed >= voucher.limit) {
+              voucherPreviewBox.classList.remove("hidden");
+              voucherPreviewText.textContent = "Voucher has reached its usage limit.";
+            } else {
+              voucherPreviewBox.classList.remove("hidden");
+              if (voucher.type === 'fixed') {
+                voucherPreviewText.textContent = `Valid! +₦${parseFloat(voucher.value).toLocaleString()} Wallet Bonus`;
+              } else {
+                voucherPreviewText.textContent = `Valid! +${voucher.value}% Bonus`;
+              }
+            }
+          } else {
+            voucherPreviewBox.classList.remove("hidden");
+            voucherPreviewText.textContent = "Invalid voucher code.";
+          }
+        }).catch(() => {
+          voucherPreviewBox.classList.add("hidden");
+        });
+      });
+
       // Order Submission Handling
       document.getElementById("order-form").addEventListener("submit", (e) => {
         e.preventDefault();
@@ -1680,7 +1721,6 @@
             return;
           }
 
-          // Prevent double redemption by the same user if tracked
           const redeemedUsers = voucher.redeemedUsers || {};
           if (redeemedUsers[cleanKey]) {
             alert("You have already redeemed this voucher code.");
@@ -1691,11 +1731,9 @@
           if (voucher.type === 'fixed') {
             bonusAmount = parseFloat(voucher.value);
           } else {
-            // Percentage bonus logic (e.g., applied as wallet credit)
-            bonusAmount = parseFloat(voucher.value); // Interpreted as flat bonus or percentage depending on preference
+            bonusAmount = parseFloat(voucher.value);
           }
 
-          // Update user balance & transactions
           const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
           userBalanceRef.once("value").then((balSnap) => {
             const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
@@ -1714,12 +1752,12 @@
             };
             db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
 
-            // Increment voucher usage and record user redemption
             db.ref("vouchers/" + codeInput + "/usedCount").set(currentUsed + 1);
             db.ref("vouchers/" + codeInput + "/redeemedUsers/" + cleanKey).set(true);
 
             alert(`Success! Redeemed voucher '${codeInput}'. Added ₦${bonusAmount.toLocaleString()} to your wallet balance.`);
             document.getElementById("voucher-redeem-form").reset();
+            voucherPreviewBox.classList.add("hidden");
           });
         }).catch((err) => {
           alert("Error applying voucher: " + err.message);
