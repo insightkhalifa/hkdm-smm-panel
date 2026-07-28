@@ -392,6 +392,7 @@
         margin-bottom: 20px;
         border-bottom: 1px solid var(--border-color);
         padding-bottom: 12px;
+        flex-wrap: wrap;
       }
       .admin-sub-btn {
         background: var(--bg-dark);
@@ -709,7 +710,7 @@
               </div>
             </section>
 
-            <!-- TOP UP ACCOUNT TAB (PAYSTACK INTEGRATION) -->
+            <!-- TOP UP ACCOUNT TAB (PAYSTACK & VOUCHER REDEMPTION) -->
             <section id="tab-top-up" class="tab-panel hidden">
               <div class="panel-card">
                 <h3 class="panel-title">Fund Your Wallet via Paystack</h3>
@@ -725,6 +726,22 @@
                   </div>
 
                   <button type="submit" class="btn btn-success">Confirm Payment via Paystack</button>
+                </form>
+              </div>
+
+              <!-- VOUCHER REDEMPTION CARD -->
+              <div class="panel-card">
+                <h3 class="panel-title">Have a Voucher / Coupon Code?</h3>
+                <div class="note-banner" style="background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: var(--accent-glow);">
+                  Enter your promotional voucher code below to instantly claim bonus credit or balance discounts added directly to your wallet.
+                </div>
+
+                <form id="voucher-redeem-form">
+                  <div class="form-group">
+                    <label for="voucher-code-input">Voucher Code</label>
+                    <input type="text" id="voucher-code-input" placeholder="e.g. HIPKHALIFA20" style="text-transform: uppercase;" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Redeem Voucher</button>
                 </form>
               </div>
             </section>
@@ -796,7 +813,8 @@
               <!-- ADMIN SUB-NAVIGATION -->
               <div class="admin-subnav">
                 <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
-                <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
+                <button class="admin-sub-btn" onclick="switchAdminSubTab('vouchers', this)">🎟️ Voucher Management</button>
+                <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation</button>
               </div>
 
               <!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
@@ -845,7 +863,60 @@
                 </div>
               </div>
 
-              <!-- SUB-TAB 2: API DOCUMENTATION -->
+              <!-- SUB-TAB 2: VOUCHER MANAGEMENT -->
+              <div id="admin-sub-vouchers" class="admin-sub-content hidden">
+                <div class="panel-card">
+                  <h3 class="panel-title" style="color: #f59e0b;">🎟️ Create New Voucher Code</h3>
+                  <form id="admin-voucher-form">
+                    <div class="form-group">
+                      <label for="admin-voucher-code">Voucher Code (e.g. PROMO500)</label>
+                      <input type="text" id="admin-voucher-code" placeholder="PROMO500" style="text-transform: uppercase;" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="admin-voucher-type">Discount / Bonus Type</label>
+                      <select id="admin-voucher-type">
+                        <option value="fixed">Fixed Amount Bonus (₦)</option>
+                        <option value="percentage">Percentage Bonus (%)</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="admin-voucher-value">Value (e.g. 1000 for ₦1000 or 10 for 10%)</label>
+                      <input type="number" id="admin-voucher-value" placeholder="1000" min="1" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="admin-voucher-limit">Max Uses (Total redemptions allowed)</label>
+                      <input type="number" id="admin-voucher-limit" placeholder="50" min="1" value="50" required />
+                    </div>
+                    <button type="submit" class="btn btn-warning">Generate & Publish Voucher</button>
+                  </form>
+                </div>
+
+                <div class="panel-card">
+                  <h3 class="panel-title" style="color: #f59e0b;">📋 Active System Vouchers</h3>
+                  <div class="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th class="no-wrap">Type</th>
+                          <th class="no-wrap">Value</th>
+                          <th class="no-wrap">Uses</th>
+                          <th class="no-wrap">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admin-vouchers-body">
+                        <tr>
+                          <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No active vouchers found.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUB-TAB 3: API DOCUMENTATION -->
               <div id="admin-sub-api" class="admin-sub-content hidden">
                 <div class="panel-card">
                   <h3 class="panel-title" style="color: #f59e0b;">🔌 HKDM SMM Panel Admin API Management</h3>
@@ -1003,6 +1074,7 @@
         if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
           adminTabLink.classList.remove("hidden");
           loadAllSystemOrders();
+          loadAdminVouchers();
         } else {
           adminTabLink.classList.add("hidden");
         }
@@ -1188,6 +1260,42 @@
           const allOrders = data ? Object.values(data) : [];
           renderAdminOrders(allOrders);
         });
+      }
+
+      function loadAdminVouchers() {
+        db.ref("vouchers").on("value", (snapshot) => {
+          const data = snapshot.val();
+          const vouchersList = data ? Object.values(data) : [];
+          const tbody = document.getElementById("admin-vouchers-body");
+          if (!tbody) return;
+
+          if (vouchersList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No active vouchers found.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = vouchersList.map(v => `
+            <tr>
+              <td class="no-wrap" style="font-weight: bold; color: var(--accent-glow);">${v.code}</td>
+              <td class="no-wrap">${v.type}</td>
+              <td class="no-wrap">${v.type === 'fixed' ? '₦' + parseFloat(v.value).toLocaleString() : v.value + '%'}</td>
+              <td class="no-wrap">${v.usedCount || 0} / ${v.limit}</td>
+              <td class="no-wrap">
+                <button class="btn btn-danger btn-sm" onclick="deleteVoucher('${v.code}')">Delete</button>
+              </td>
+            </tr>
+          `).join('');
+        });
+      }
+
+      function deleteVoucher(codeKey) {
+        if (confirm(`Are you sure you want to delete voucher '${codeKey}'?`)) {
+          db.ref("vouchers/" + codeKey).remove().then(() => {
+            alert("Voucher deleted successfully.");
+          }).catch(err => {
+            alert("Error deleting voucher: " + err.message);
+          });
+        }
       }
 
       // PKCE OAuth Helpers
@@ -1485,7 +1593,7 @@
         updatePrice();
       });
 
-      // Paystack Top-Up Integration Handler (Optimized for iOS Safari & Mobile Browsers)
+      // Paystack Top-Up Integration Handler
       document.getElementById("top-up-form").addEventListener("submit", (e) => {
         e.preventDefault();
         const depositAmountInput = document.getElementById("deposit-amount").value;
@@ -1507,19 +1615,17 @@
           currency: 'NGN',
           ref: txRef,
           callback: function(response){
-            window.focus(); // Bring window back to active focus for iOS Safari
+            window.focus();
             const verifiedRef = response.reference || txRef;
             const fundedAmount = amountInNaira;
             const uniqueTxKey = 'tx_topup_' + Date.now();
 
-            // 1. Update user balance in Firebase
             const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
             userBalanceRef.once('value').then((snap) => {
               const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
               const newBal = currentBal + fundedAmount;
               return userBalanceRef.set(newBal);
             }).then(() => {
-              // 2. Explicitly write credit transaction record
               const creditTx = {
                 reference: verifiedRef,
                 type: 'Credit',
@@ -1546,6 +1652,108 @@
         });
 
         handler.openIframe();
+      });
+
+      // VOUCHER REDEMPTION HANDLER
+      document.getElementById("voucher-redeem-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const codeInput = document.getElementById("voucher-code-input").value.trim().toUpperCase();
+        if (!codeInput) return;
+
+        const email = localStorage.getItem("hkdm_user_email") || "";
+        if (!email) {
+          alert("Please log in to redeem vouchers.");
+          return;
+        }
+        const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+
+        db.ref("vouchers/" + codeInput).once("value").then((snapshot) => {
+          const voucher = snapshot.val();
+          if (!voucher) {
+            alert("Invalid voucher code.");
+            return;
+          }
+
+          const currentUsed = voucher.usedCount || 0;
+          if (currentUsed >= voucher.limit) {
+            alert("This voucher has reached its maximum usage limit.");
+            return;
+          }
+
+          // Prevent double redemption by the same user if tracked
+          const redeemedUsers = voucher.redeemedUsers || {};
+          if (redeemedUsers[cleanKey]) {
+            alert("You have already redeemed this voucher code.");
+            return;
+          }
+
+          let bonusAmount = 0;
+          if (voucher.type === 'fixed') {
+            bonusAmount = parseFloat(voucher.value);
+          } else {
+            // Percentage bonus logic (e.g., applied as wallet credit)
+            bonusAmount = parseFloat(voucher.value); // Interpreted as flat bonus or percentage depending on preference
+          }
+
+          // Update user balance & transactions
+          const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
+          userBalanceRef.once("value").then((balSnap) => {
+            const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
+            const newBal = currentBal + bonusAmount;
+
+            userBalanceRef.set(newBal);
+
+            const txRefKey = "tx_vouch_" + Date.now();
+            const newTx = {
+              reference: txRefKey,
+              type: "Credit",
+              amount: bonusAmount,
+              description: `Voucher redemption (${codeInput})`,
+              status: "Completed",
+              date: new Date().toLocaleString()
+            };
+            db.ref(`users/${cleanKey}/transactions/${txRefKey}`).set(newTx);
+
+            // Increment voucher usage and record user redemption
+            db.ref("vouchers/" + codeInput + "/usedCount").set(currentUsed + 1);
+            db.ref("vouchers/" + codeInput + "/redeemedUsers/" + cleanKey).set(true);
+
+            alert(`Success! Redeemed voucher '${codeInput}'. Added ₦${bonusAmount.toLocaleString()} to your wallet balance.`);
+            document.getElementById("voucher-redeem-form").reset();
+          });
+        }).catch((err) => {
+          alert("Error applying voucher: " + err.message);
+        });
+      });
+
+      // ADMIN VOUCHER CREATION HANDLER
+      document.getElementById("admin-voucher-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const code = document.getElementById("admin-voucher-code").value.trim().toUpperCase();
+        const type = document.getElementById("admin-voucher-type").value;
+        const value = parseFloat(document.getElementById("admin-voucher-value").value);
+        const limit = parseInt(document.getElementById("admin-voucher-limit").value);
+
+        if (!code || isNaN(value) || isNaN(limit)) {
+          alert("Please fill in all voucher fields correctly.");
+          return;
+        }
+
+        const voucherData = {
+          code: code,
+          type: type,
+          value: value,
+          limit: limit,
+          usedCount: 0,
+          createdAt: new Date().toLocaleString()
+        };
+
+        db.ref("vouchers/" + code).set(voucherData).then(() => {
+          alert(`Voucher '${code}' created and published successfully!`);
+          document.getElementById("admin-voucher-form").reset();
+        }).catch((err) => {
+          alert("Error creating voucher: " + err.message);
+        });
       });
 
       function renderOrderHistory() {
