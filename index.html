@@ -552,6 +552,7 @@ Sign Up
 <div class="nav-link" onclick="switchTab('order-history', this)">📋 Order History</div>
 <div class="nav-link" onclick="switchTab('transactions-history', this)">📜 Transactions History</div>
 <div class="nav-link" onclick="switchTab('top-up', this)">💳 Top Up Account</div>
+<div class="nav-link" onclick="switchTab('vouchers', this)">🎟️ Vouchers</div>
 <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
 <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
 
@@ -727,6 +728,26 @@ Fund your wallet securely using any supported payment method via Paystack. Your 
 </div>
 </section>
 
+<!-- VOUCHERS TAB -->
+<section id="tab-vouchers" class="tab-panel hidden">
+<div class="panel-card">
+<h3 class="panel-title">Redeem Promotional Voucher</h3>
+
+<div class="note-banner" style="background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.3); color: #38bdf8;">
+Have a promotional voucher code? Enter it below to instantly claim your bonus balance directly into your wallet without processing fees.
+</div>
+
+<form id="voucher-form">
+<div class="form-group">
+<label for="voucher-code-input">Voucher Code</label>
+<input type="text" id="voucher-code-input" placeholder="e.g. HKDM-BONUS-2026" required style="text-transform: uppercase;" />
+</div>
+
+<button type="submit" class="btn btn-primary">Redeem Voucher</button>
+</form>
+</div>
+</section>
+
 <!-- USER PROFILE TAB -->
 <section id="tab-profile" class="tab-panel hidden">
 <div class="panel-card">
@@ -791,6 +812,7 @@ Fund your wallet securely using any supported payment method via Paystack. Your 
 <section id="tab-admin" class="tab-panel hidden">
 <div class="admin-subnav">
 <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
+<button class="admin-sub-btn" onclick="switchAdminSubTab('vouchers', this)">🎟️ Manage Vouchers</button>
 <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
 </div>
 
@@ -829,6 +851,47 @@ Fund your wallet securely using any supported payment method via Paystack. Your 
 <tr>
 <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
 No orders to manage.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ADMIN VOUCHER CREATION SUBTAB -->
+<div id="admin-sub-vouchers" class="admin-sub-content hidden">
+<div class="panel-card">
+<h3 class="panel-title" style="color: #f59e0b;">🎟️ Create New Voucher Code</h3>
+<form id="admin-voucher-form">
+<div class="form-group">
+<label for="admin-voucher-code">Voucher Code String</label>
+<input type="text" id="admin-voucher-code" placeholder="e.g. HKDM5000" required style="text-transform: uppercase;" />
+</div>
+<div class="form-group">
+<label for="admin-voucher-amount">Voucher Value Amount (₦)</label>
+<input type="number" id="admin-voucher-amount" placeholder="1000" min="100" required />
+</div>
+<button type="submit" class="btn btn-success">Generate Voucher</button>
+</form>
+</div>
+
+<div class="panel-card">
+<h3 class="panel-title" style="color: #f59e0b;">📋 Active System Vouchers</h3>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th class="no-wrap">Value</th>
+<th class="no-wrap">Status</th>
+<th class="no-wrap">Action</th>
+</tr>
+</thead>
+<tbody id="admin-vouchers-body">
+<tr>
+<td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+No vouchers created yet.
 </td>
 </tr>
 </tbody>
@@ -987,6 +1050,7 @@ localStorage.setItem("hkdm_user_email", email);
 if (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
 adminTabLink.classList.remove("hidden");
 loadAllSystemOrders();
+loadAdminVouchers();
 } else {
 adminTabLink.classList.add("hidden");
 }
@@ -1460,6 +1524,122 @@ updateServiceDetails();
 updatePrice();
 });
 
+// INDEPENDENT VOUCHER REDEMPTION HANDLER
+document.getElementById("voucher-form").addEventListener("submit", (e) => {
+e.preventDefault();
+const inputCode = document.getElementById("voucher-code-input").value.trim().toUpperCase();
+if (!inputCode) return;
+
+const email = localStorage.getItem("hkdm_user_email") || "";
+const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
+const voucherRef = db.ref("vouchers/" + inputCode);
+
+voucherRef.once("value").then((snapshot) => {
+const voucherData = snapshot.val();
+if (!voucherData) {
+alert("Invalid voucher code. Please check and try again.");
+return;
+}
+
+if (voucherData.isUsed) {
+alert("This voucher has already been redeemed.");
+return;
+}
+
+const voucherValue = parseFloat(voucherData.amount) || 0;
+
+// Mark voucher as used in database
+voucherRef.update({ isUsed: true, redeemedBy: email, redeemedDate: new Date().toLocaleString() }).then(() => {
+// Credit User Balance
+const userBalanceRef = db.ref("users/" + cleanKey + "/balance");
+userBalanceRef.once("value").then((balSnap) => {
+const currentBal = balSnap.val() !== null ? parseFloat(balSnap.val()) : 0;
+const newBal = currentBal + voucherValue;
+
+userBalanceRef.set(newBal).then(() => {
+// Log Transaction
+const uniqueTxKey = "tx_vouch_" + Date.now();
+const creditTx = {
+reference: "VOUCHER_" + inputCode,
+type: "Credit",
+amount: voucherValue,
+description: `Redeemed voucher code: ${inputCode}`,
+status: "Completed",
+date: new Date().toLocaleString()
+};
+
+db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx).then(() => {
+alert(`Success! ₦${voucherValue.toLocaleString()} has been credited to your wallet.`);
+document.getElementById("voucher-form").reset();
+});
+});
+});
+});
+}).catch((err) => {
+console.error("Voucher redemption error:", err);
+alert("An error occurred while processing your voucher. Please try again.");
+});
+});
+
+// ADMIN VOUCHER CREATION HANDLER
+document.getElementById("admin-voucher-form").addEventListener("submit", (e) => {
+e.preventDefault();
+const codeStr = document.getElementById("admin-voucher-code").value.trim().toUpperCase();
+const amountVal = parseFloat(document.getElementById("admin-voucher-amount").value);
+
+if (!codeStr || isNaN(amountVal) || amountVal <= 0) {
+alert("Please enter a valid voucher code and amount.");
+return;
+}
+
+const voucherData = {
+code: codeStr,
+amount: amountVal,
+isUsed: false,
+createdBy: ADMIN_EMAIL,
+createdDate: new Date().toLocaleString()
+};
+
+db.ref("vouchers/" + codeStr).set(voucherData).then(() => {
+alert(`Voucher '${codeStr}' worth ₦${amountVal.toLocaleString()} created successfully!`);
+document.getElementById("admin-voucher-form").reset();
+loadAdminVouchers();
+}).catch((err) => {
+alert("Error creating voucher: " + err.message);
+});
+});
+
+function loadAdminVouchers() {
+db.ref("vouchers").on("value", (snapshot) => {
+const data = snapshot.val();
+const tbody = document.getElementById("admin-vouchers-body");
+if (!data) {
+tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">No vouchers created yet.</td></tr>`;
+return;
+}
+
+tbody.innerHTML = Object.values(data).map(v => `
+<tr>
+<td class="no-wrap"><strong>${v.code}</strong></td>
+<td class="no-wrap">₦${parseFloat(v.amount).toLocaleString()}</td>
+<td class="no-wrap"><span class="badge ${v.isUsed ? 'badge-failed' : 'badge-completed'}">${v.isUsed ? 'Used' : 'Active'}</span></td>
+<td class="no-wrap">
+<button class="btn btn-danger btn-sm" onclick="deleteVoucher('${v.code}')">Delete</button>
+</td>
+</tr>
+`).join("");
+});
+}
+
+function deleteVoucher(code) {
+if (confirm(`Are you sure you want to delete voucher '${code}'?`)) {
+db.ref("vouchers/" + code).remove().then(() => {
+alert("Voucher deleted.");
+loadAdminVouchers();
+});
+}
+}
+
 // FIXED PAYSTACK TOP-UP INTEGRATION HANDLER
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
 e.preventDefault();
@@ -1683,4 +1863,4 @@ alert(`Successfully refunded ₦${refundAmount.toLocaleString()} to ${userEmail}
 </script>
 
 </body>
-</html> 
+</html>
