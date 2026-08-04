@@ -1485,9 +1485,15 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Top-Up Integration Handler (Live Key Configured)
+// Korapay Top-Up Integration Handler with SDK Safety Check
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
 e.preventDefault();
+
+if (typeof Korapay === 'undefined') {
+alert("Payment gateway script is still loading or blocked. Please check your connection or ad-blockers.");
+return;
+}
+
 const depositAmountInput = document.getElementById("deposit-amount").value;
 const amountInNaira = parseFloat(depositAmountInput);
 
@@ -1703,4 +1709,4 @@ alert(`Successfully refunded ₦${refundAmount.toLocaleString()} to ${userEmail}
 </script>
 
 </body>
-</html> 
+</html>
