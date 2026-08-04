@@ -12,9 +12,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-<!-- Korapay SDK -->
-<script src="https://pay.korapay.com/sdk.js"></script>
-
 <script>
 tailwind.config = {
 darkMode: 'class',
@@ -1485,74 +1482,54 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Top-Up Integration Handler with SDK Safety Check
-document.getElementById("top-up-form").addEventListener("submit", (e) => {
-e.preventDefault();
+// Korapay Top-Up Integration Handler using Secure Serverless Backend API
+document.getElementById("top-up-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-if (typeof Korapay === 'undefined') {
-alert("Payment gateway script is still loading or blocked. Please check your connection or ad-blockers.");
-return;
-}
+    const depositAmountInput = document.getElementById("deposit-amount").value;
+    const amount = parseFloat(depositAmountInput);
 
-const depositAmountInput = document.getElementById("deposit-amount").value;
-const amountInNaira = parseFloat(depositAmountInput);
+    if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid deposit amount.");
+        return;
+    }
 
-if (isNaN(amountInNaira) || amountInNaira <= 0) {
-alert("Please enter a valid deposit amount.");
-return;
-}
+    const reference = 'kora_' + Math.floor(Math.random() * 100000000);
+    const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
+    const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
-const email = localStorage.getItem("hkdm_user_email") || "customer@hkdm.com";
-const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
-const txRef = 'kora_' + Math.floor((Math.random() * 100000000) + 1);
+    try {
+        const response = await fetch('/api/initialize-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount, email, reference })
+        });
 
-Korapay.initialize({
-key: 'Pk_live_RJ4Um9P1C5aaMrQ5nXki39mRS95mV8E6wJc8dkW8',
-amount: amountInNaira,
-currency: 'NGN',
-reference: txRef,
-customer: {
-email: email,
-name: email.split('@')[0]
-},
-onClose: function(){
-window.focus();
-},
-onSuccess: function(response){
-window.focus();
-const verifiedRef = response.reference || txRef;
-const fundedAmount = amountInNaira;
-const uniqueTxKey = 'tx_topup_' + Date.now();
+        const result = await response.json();
 
-// 1. Update user balance in Firebase
-const userBalanceRef = db.ref('users/' + cleanKey + '/balance');
-userBalanceRef.once('value').then((snap) => {
-const currentBal = snap.val() !== null ? parseFloat(snap.val()) : 0;
-const newBal = currentBal + fundedAmount;
-return userBalanceRef.set(newBal);
-}).then(() => {
-// 2. Explicitly write credit transaction record
-const creditTx = {
-reference: verifiedRef,
-type: 'Credit',
-amount: fundedAmount,
-description: 'Korapay wallet top-up',
-status: 'Completed',
-date: new Date().toLocaleString()
-};
-return db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(creditTx);
-}).then(() => {
-alert('Payment successful via Korapay! Updating your dashboard...');
-document.getElementById("top-up-form").reset();
-setTimeout(() => {
-window.location.reload();
-}, 1000);
-}).catch((error) => {
-console.error('Failed to update wallet and history:', error);
-alert('Payment successful, but encountered an error saving record.');
-});
-}
-});
+        if (result.status && result.data.checkout_url) {
+            // Log pending transaction record before redirection (or let webhook/success handle confirmation)
+            const uniqueTxKey = 'tx_topup_' + Date.now();
+            const pendingTx = {
+                reference: reference,
+                type: 'Credit',
+                amount: amount,
+                description: 'Korapay wallet top-up initiated',
+                status: 'Pending',
+                date: new Date().toLocaleString()
+            };
+            
+            await db.ref(`users/${cleanKey}/transactions/${uniqueTxKey}`).set(pendingTx);
+
+            // Redirect user to Korapay checkout URL safely
+            window.location.href = result.data.checkout_url;
+        } else {
+            alert("Failed to initialize payment: " + (result.message || "Unknown error"));
+        }
+    } catch (err) {
+        console.error("Network error:", err);
+        alert("Something went wrong. Please check your connection.");
+    }
 });
 
 function renderOrderHistory() {
