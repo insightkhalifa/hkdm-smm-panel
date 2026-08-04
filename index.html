@@ -725,6 +725,7 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 </div>
 
 <button type="submit" class="btn btn-success">Confirm Payment via Korapay</button>
+<button type="button" id="retry-korapay-btn" class="btn btn-secondary hidden" style="margin-top: 10px;">Retry Opening Payment Window</button>
 </form>
 </div>
 </section>
@@ -1485,7 +1486,7 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Top-Up Integration Handler with Polling / Auto-Retry Support
+// Korapay Top-Up Integration Handler with Extended Polling & Fallback Retry Button
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -1501,7 +1502,6 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
     const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
     const txRef = 'kora_' + Math.floor((Math.random() * 100000000) + 1);
 
-    // Helper function to trigger Korapay checkout
     function launchKorapay() {
         Korapay.initialize({
             key: 'Pk_live_RJ4Um9P1C5aaMrQ5nXki39mRS95mV8E6wJc8dkW8',
@@ -1539,6 +1539,7 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
                 }).then(() => {
                     alert('Payment successful via Korapay! Updating your dashboard...');
                     document.getElementById("top-up-form").reset();
+                    document.getElementById("retry-korapay-btn").classList.add("hidden");
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -1550,21 +1551,34 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
         });
     }
 
-    // Check if Korapay is ready; if not, poll up to 5 times (1.5 seconds total) before throwing the error
+    // Attempt launch immediately if loaded, otherwise poll up to 15 times (~4.5 seconds)
     if (typeof Korapay !== 'undefined') {
         launchKorapay();
     } else {
         let attempts = 0;
+        const retryBtn = document.getElementById("retry-korapay-btn");
         const checkInterval = setInterval(() => {
             attempts++;
             if (typeof Korapay !== 'undefined') {
                 clearInterval(checkInterval);
+                retryBtn.classList.add("hidden");
                 launchKorapay();
-            } else if (attempts >= 5) {
+            } else if (attempts >= 15) {
                 clearInterval(checkInterval);
-                alert("Payment gateway script is still loading or blocked. Please check your connection or try disabling mobile ad-blockers.");
+                retryBtn.classList.remove("hidden");
+                alert("Payment gateway script is still loading. Click the 'Retry Opening Payment Window' button once your connection stabilizes.");
             }
         }, 300);
+
+        // Allow manual retry click
+        retryBtn.onclick = function() {
+            if (typeof Korapay !== 'undefined') {
+                retryBtn.classList.add("hidden");
+                launchKorapay();
+            } else {
+                alert("Korapay SDK is still loading. Please wait another moment.");
+            }
+        };
     }
 });
 
