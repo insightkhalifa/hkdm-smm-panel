@@ -491,7 +491,7 @@ background-color: var(--card-bg);
 <p class="text-xs text-gray-400 mt-1">Premium Social Growth Platform</p>
 </div>
 
-<!-- About Us / Value Proposition (Reflecting expanded services) -->
+<!-- About Us / Value Proposition -->
 <div class="mb-6 bg-darkCardAlt p-3 rounded-xl border border-gray-700/50 text-left">
 <h2 class="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-1">About Us</h2>
 <p class="text-xs text-gray-400 leading-relaxed">
@@ -552,7 +552,7 @@ Sign Up
 <div class="nav-link" onclick="switchTab('profile', this)">👤 Profile</div>
 <div class="nav-link" onclick="switchTab('support', this)">💬 Support</div>
 
-<!-- ADMIN SECRET TAB (RESTRICTED ACCESS) -->
+<!-- ADMIN SECRET TAB -->
 <div id="admin-tab-link" class="nav-link admin-link hidden" onclick="switchTab('admin', this)">👑 Admin Panel</div>
 </aside>
 
@@ -587,7 +587,7 @@ Service <span class="info-tooltip-icon" title="Select a specific service tier ta
 <div id="service-desc-box" class="service-description-box">High quality real engagement package with instant start guarantee.</div>
 </div>
 
-<!-- CUSTOM COMMENTS TEXTAREA FIELD (SHOWN ONLY FOR COMMENT SERVICES) -->
+<!-- CUSTOM COMMENTS TEXTAREA FIELD -->
 <div id="custom-comments-group" class="form-group hidden">
 <label for="custom-comments">
 Custom Comments (1 per line) <span class="info-tooltip-icon" title="Enter between 100 to 1,000 custom comments (one comment per line).">?</span>
@@ -625,8 +625,6 @@ I agree to the <span id="open-terms" class="terms-link">Terms & Conditions</span
 
 <!-- ORDER HISTORY TAB -->
 <section id="tab-order-history" class="tab-panel hidden">
-
-<!-- LIVE ORDER STATUS TRACKER CARD -->
 <div class="panel-card">
 <h3 class="panel-title">Track Your Order</h3>
 <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Enter your Order ID (e.g., #1234 or order reference) to check real-time progress instantly.</p>
@@ -706,7 +704,7 @@ No transactions found.
 </div>
 </section>
 
-<!-- TOP UP ACCOUNT TAB (KORAPAY INTEGRATION) -->
+<!-- TOP UP ACCOUNT TAB -->
 <section id="tab-top-up" class="tab-panel hidden">
 <div class="panel-card">
 <h3 class="panel-title">Fund Your Wallet via Korapay</h3>
@@ -718,7 +716,7 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 <form id="top-up-form">
 <div class="form-group">
 <label for="deposit-amount">Amount You Wish to Deposit (₦)</label>
-<input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" value="5000" required />
+<input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
 </div>
 
 <button type="submit" class="btn btn-success">Confirm Payment via Korapay</button>
@@ -758,7 +756,6 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 </div>
 </div>
 
-<!-- Professional Log Out Action Button inside Profile Tab -->
 <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
 <button id="logout-btn" class="btn btn-danger" style="width: auto; padding: 10px 24px; display: flex; align-items: center; gap: 8px;">
 🚪 Log Out
@@ -787,18 +784,14 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 </div>
 </section>
 
-<!-- ADMIN TAB (MANAGEMENT DASHBOARD) -->
+<!-- ADMIN TAB -->
 <section id="tab-admin" class="tab-panel hidden">
-
-<!-- ADMIN SUB-NAVIGATION -->
 <div class="admin-subnav">
 <button class="admin-sub-btn active" onclick="switchAdminSubTab('orders', this)">📦 Orders & Topup</button>
 <button class="admin-sub-btn" onclick="switchAdminSubTab('api', this)">🔌 API Documentation Management</button>
 </div>
 
-<!-- SUB-TAB 1: ORDERS & WALLET MANAGEMENT -->
 <div id="admin-sub-orders" class="admin-sub-content">
-<!-- TOP UP USER BALANCE -->
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">💳 Top Up Customer Wallet</h3>
 <form id="admin-topup-form">
@@ -814,7 +807,6 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 </form>
 </div>
 
-<!-- ADMIN ORDER MANAGEMENT -->
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">📦 All System Orders</h3>
 <div class="table-container">
@@ -842,7 +834,6 @@ No orders to manage.
 </div>
 </div>
 
-<!-- SUB-TAB 2: API DOCUMENTATION -->
 <div id="admin-sub-api" class="admin-sub-content hidden">
 <div class="panel-card">
 <h3 class="panel-title" style="color: #f59e0b;">🔌 Hipkhalifa Digital Marketing Admin API Management</h3>
@@ -905,7 +896,6 @@ const KINDE_DOMAIN = "https://hkdm.kinde.com";
 const CLIENT_ID = "3ce3ed295cfe47988291f19d1c157a1f";
 const REDIRECT_URI = "https://hkdm-smm-panel.vercel.app";
 
-// STRICT ADMIN EMAIL REQUIREMENT
 const ADMIN_EMAIL = "admin.hkdm@gmail.com";
 
 const authScreen = document.getElementById("auth-screen");
@@ -944,7 +934,6 @@ const isLight = !document.body.classList.contains("light-theme");
 setTheme(isLight);
 });
 
-// Helper to decode JWT payload from Kinde
 function parseJwt(token) {
 try {
 const base64Url = token.split('.')[1];
@@ -958,7 +947,6 @@ return null;
 }
 }
 
-// Session Check
 const urlParams = new URLSearchParams(window.location.search);
 const hasCode = urlParams.get("code");
 const idToken = urlParams.get("id_token");
@@ -1029,7 +1017,6 @@ document.getElementById("user-balance").textContent =
 `₦${userBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-// LIVE ORDER TRACKER SEARCH FUNCTION
 function checkOrderStatus() {
 const queryId = document.getElementById('trackOrderId').value.trim();
 const resultBox = document.getElementById('trackerResult');
@@ -1084,7 +1071,6 @@ resultBox.innerHTML = `<span style="color: #ef4444;">Error looking up order. Ple
 }
 }
 
-// FIREBASE REALTIME SYNC FOR USERS & ORDERS
 function initRealtimeSync(email) {
 if (!email) return;
 const cleanKey = email.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
@@ -1187,7 +1173,6 @@ renderAdminOrders(allOrders);
 });
 }
 
-// PKCE OAuth Helpers
 function generateRandomString(length) {
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 let result = "";
@@ -1239,12 +1224,10 @@ localStorage.removeItem("hkdm_user_email");
 window.location.href = `${KINDE_DOMAIN}/logout?redirect=${encodeURIComponent(REDIRECT_URI)}`;
 });
 
-// Mobile Navigation Toggle
 document.getElementById("menu-btn").addEventListener("click", () => {
 sidebar.classList.toggle("open");
 });
 
-// Tab Navigation Switcher
 function switchTab(tabName, element) {
 document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
 document.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
@@ -1254,7 +1237,6 @@ element.classList.add("active");
 sidebar.classList.remove("open");
 }
 
-// Admin Sub-Tab Switcher
 function switchAdminSubTab(subTabName, element) {
 document.querySelectorAll(".admin-sub-content").forEach(content => content.classList.add("hidden"));
 document.querySelectorAll(".admin-sub-btn").forEach(btn => btn.classList.remove("active"));
@@ -1263,13 +1245,11 @@ document.getElementById(`admin-sub-${subTabName}`).classList.remove("hidden");
 element.classList.add("active");
 }
 
-// Modal Events
 document.getElementById("open-terms").addEventListener("click", () => termsModal.classList.remove("hidden"));
 document.getElementById("open-terms-auth").addEventListener("click", () => termsModal.classList.remove("hidden"));
 document.getElementById("close-terms").addEventListener("click", () => termsModal.classList.add("hidden"));
 document.getElementById("close-success-modal").addEventListener("click", () => successModal.classList.add("hidden"));
 
-// Updated Services Catalog with Full Platform Coverage & Pricing
 const servicesData = {
 instagram: [
 { name: "Instagram Followers", rate: 5000, min: 100, max: 1000000, desc: "High quality profile followers with gradual drip-feed delivery to protect account safety." },
@@ -1405,7 +1385,6 @@ customCommentsInput.addEventListener("input", updateCommentCount);
 
 loadServices();
 
-// Order Submission Handling
 document.getElementById("order-form").addEventListener("submit", (e) => {
 e.preventDefault();
 
@@ -1482,7 +1461,6 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Direct API Top-Up Handler via Korapay Inline SDK (Fixed PBFPubKey parameter error & SDK fallback)
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -1505,7 +1483,7 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
     try {
         if (typeof Korapay !== 'undefined' && Korapay.initialize) {
             Korapay.initialize({
-                key: "pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Replace with your valid Korapay Public Key (starts with pk_live_ or pk_test_)
+                key: "pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                 reference: reference,
                 amount: amount,
                 currency: "NGN",
@@ -1524,7 +1502,6 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
                 }
             });
         } else {
-            // Graceful prompt handling matching the user's current screenshot test simulation flow
             const confirmSimulate = confirm(`Korapay SDK not loaded. Would you like to simulate a successful deposit of ₦${amount.toLocaleString()} for testing?`);
             if (confirmSimulate) {
                 verifyAndCreditKorapay(reference, amount, email);
@@ -1534,10 +1511,7 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
         }
     } catch (err) {
         console.error("Korapay initialization error:", err);
-        const confirmSimulate = confirm(`Korapay SDK not loaded. Would you like to simulate a successful deposit of ₦${amount.toLocaleString()} for testing?`);
-        if (confirmSimulate) {
-            verifyAndCreditKorapay(reference, amount, email);
-        }
+        alert("Error initializing payment gateway. Please try again.");
         submitBtn.innerText = originalBtnText;
         submitBtn.disabled = false;
     }
@@ -1583,7 +1557,6 @@ tbody.innerHTML = userOrders.slice().reverse().map(order => `
 `).join("");
 }
 
-// Admin Wallet Top-up
 document.getElementById("admin-topup-form").addEventListener("submit", (e) => {
 e.preventDefault();
 
