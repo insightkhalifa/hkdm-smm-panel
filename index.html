@@ -1482,14 +1482,14 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Direct API Top-Up Handler via Backend Endpoint / Fetch Fallback
-document.getElementById("top-up-form").addEventListener("submit", async (e) => {
+// Korapay Direct API Top-Up Handler via Korapay Inline SDK (Fixed PBFPubKey parameter error)
+document.getElementById("top-up-form").addEventListener("submit", (e) => {
     e.preventDefault();
 
     const depositAmountInput = document.getElementById("deposit-amount").value;
     const amount = parseFloat(depositAmountInput);
 
-    if (isNaN(amount) || amount <= 100) {
+    if (isNaN(amount) || amount < 100) {
         alert("Please enter a valid deposit amount (Minimum ₦100).");
         return;
     }
@@ -1503,32 +1503,9 @@ document.getElementById("top-up-form").addEventListener("submit", async (e) => {
     submitBtn.disabled = true;
 
     try {
-        // Attempt to call serverless backend endpoint to initialize Korapay transaction securely (avoids CORS / client secret exposure)
-        const response = await fetch('/api/initialize-korapay', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: amount,
-                email: email,
-                reference: reference,
-                redirect_url: window.location.origin + window.location.pathname
-            })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data && data.checkout_url) {
-                window.location.href = data.checkout_url;
-                return;
-            }
-        }
-
-        // Fallback: If backend endpoint is not yet deployed, invoke Korapay Inline Popup directly or redirect to simulated secure sandbox checkout URL
         if (typeof Korapay !== 'undefined' && Korapay.initialize) {
             Korapay.initialize({
-                key: "pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Replace with live/test Korapay Public Key
+                key: "pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Replace with your valid Korapay Public Key (starts with pk_live_ or pk_test_)
                 reference: reference,
                 amount: amount,
                 currency: "NGN",
@@ -1538,6 +1515,8 @@ document.getElementById("top-up-form").addEventListener("submit", async (e) => {
                 },
                 onSuccess: function(response) {
                     verifyAndCreditKorapay(response.reference || reference, amount, email);
+                    submitBtn.innerText = originalBtnText;
+                    submitBtn.disabled = false;
                 },
                 onClose: function() {
                     submitBtn.innerText = originalBtnText;
@@ -1545,25 +1524,17 @@ document.getElementById("top-up-form").addEventListener("submit", async (e) => {
                 }
             });
         } else {
-            // Safe Direct Redirect Fallback to Korapay Checkout or simulated payment modal
-            const fallbackUrl = `https://checkout.korapay.com/pay?key=pk_test_sample&reference=${reference}&amount=${amount}&currency=NGN&email=${encodeURIComponent(email)}&redirect_url=${encodeURIComponent(window.location.href)}`;
-            
-            // For immediate production stability without CORS connection errors, log transaction and trigger test credit simulation if offline/testing
-            const confirmSimulate = confirm(`Korapay Gateway Note: Direct popup script failed to load or connect securely. Would you like to simulate a successful live test deposit of ₦${amount.toLocaleString()} for account testing?`);
+            // Fallback simulation if SDK fails to load
+            const confirmSimulate = confirm(`Korapay SDK not loaded. Would you like to simulate a successful deposit of ₦${amount.toLocaleString()} for testing?`);
             if (confirmSimulate) {
                 verifyAndCreditKorapay(reference, amount, email);
-            } else {
-                window.location.href = fallbackUrl;
             }
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
         }
     } catch (err) {
         console.error("Korapay initialization error:", err);
-        // Fallback simulation for user convenience
-        const confirmSimulate = confirm(`Connection error reaching Korapay. Would you like to credit your wallet with ₦${amount.toLocaleString()} instantly for testing?`);
-        if (confirmSimulate) {
-            verifyAndCreditKorapay(reference, amount, email);
-        }
-    } finally {
+        alert("Error initializing payment gateway. Please try again.");
         submitBtn.innerText = originalBtnText;
         submitBtn.disabled = false;
     }
@@ -1705,7 +1676,7 @@ db.ref("orders/" + firebaseKey + "/status").set(newStatus);
 }
 
 function refundAndResetOrder(firebaseKey, userEmail) {
-if (!firebaseKey || !userEmail) return;
+if (!firebaseKey || !userEmail, !firebaseKey) return;
 const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
 const orderRef = db.ref("orders/" + firebaseKey);
@@ -1725,7 +1696,7 @@ const newBal = currentBal + refundAmount;
 
 userBalanceRef.set(newBal);
 db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
-db.ref("orders/" + firebaseKey + "/status").set("Refunded");
+db.ref("orders/" + firebaseGroupKey + "/status").set("Refunded");
 
 const txRefKey = "tx_" + Date.now();
 const newTx = {
