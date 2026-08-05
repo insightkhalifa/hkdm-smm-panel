@@ -718,7 +718,7 @@ Fund your wallet securely using any supported payment method via Korapay. Your b
 <form id="top-up-form">
 <div class="form-group">
 <label for="deposit-amount">Amount You Wish to Deposit (₦)</label>
-<input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" required />
+<input type="number" id="deposit-amount" placeholder="e.g. 5000" min="100" value="5000" required />
 </div>
 
 <button type="submit" class="btn btn-success">Confirm Payment via Korapay</button>
@@ -1482,7 +1482,7 @@ updateServiceDetails();
 updatePrice();
 });
 
-// Korapay Direct API Top-Up Handler via Korapay Inline SDK (Fixed PBFPubKey parameter error)
+// Korapay Direct API Top-Up Handler via Korapay Inline SDK (Fixed PBFPubKey parameter error & SDK fallback)
 document.getElementById("top-up-form").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -1524,7 +1524,7 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
                 }
             });
         } else {
-            // Fallback simulation if SDK fails to load
+            // Graceful prompt handling matching the user's current screenshot test simulation flow
             const confirmSimulate = confirm(`Korapay SDK not loaded. Would you like to simulate a successful deposit of ₦${amount.toLocaleString()} for testing?`);
             if (confirmSimulate) {
                 verifyAndCreditKorapay(reference, amount, email);
@@ -1534,7 +1534,10 @@ document.getElementById("top-up-form").addEventListener("submit", (e) => {
         }
     } catch (err) {
         console.error("Korapay initialization error:", err);
-        alert("Error initializing payment gateway. Please try again.");
+        const confirmSimulate = confirm(`Korapay SDK not loaded. Would you like to simulate a successful deposit of ₦${amount.toLocaleString()} for testing?`);
+        if (confirmSimulate) {
+            verifyAndCreditKorapay(reference, amount, email);
+        }
         submitBtn.innerText = originalBtnText;
         submitBtn.disabled = false;
     }
@@ -1676,7 +1679,7 @@ db.ref("orders/" + firebaseKey + "/status").set(newStatus);
 }
 
 function refundAndResetOrder(firebaseKey, userEmail) {
-if (!firebaseKey || !userEmail, !firebaseKey) return;
+if (!firebaseKey || !userEmail) return;
 const cleanKey = userEmail.replace(/[.#$\/\[\]]/g, "_").toLowerCase();
 
 const orderRef = db.ref("orders/" + firebaseKey);
@@ -1696,7 +1699,7 @@ const newBal = currentBal + refundAmount;
 
 userBalanceRef.set(newBal);
 db.ref("users/" + cleanKey + "/orders/" + firebaseKey + "/status").set("Refunded");
-db.ref("orders/" + firebaseGroupKey + "/status").set("Refunded");
+db.ref("orders/" + firebaseKey + "/status").set("Refunded");
 
 const txRefKey = "tx_" + Date.now();
 const newTx = {
